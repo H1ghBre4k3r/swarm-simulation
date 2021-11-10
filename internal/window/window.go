@@ -1,10 +1,20 @@
 package window
 
-import "github.com/veandco/go-sdl2/sdl"
+import (
+	"github.com/veandco/go-sdl2/sdl"
+)
 
 type Window struct {
 	window  *sdl.Window
 	surface *sdl.Surface
+}
+
+type Drawable interface {
+	GetX() int32
+	GetY() int32
+	GetWidth() int32
+	GetHeight() int32
+	GetColor() uint32
 }
 
 // Create a new window
@@ -39,8 +49,15 @@ func (w *Window) Destroy() {
 }
 
 // Render content to the screen/window
-func (w *Window) Render(rect *sdl.Rect) {
+func (w *Window) Render(entities []Drawable) {
 	w.surface.FillRect(nil, 0)
-	w.surface.FillRect(rect, 0xffff0000)
+	for _, e := range entities {
+		w.surface.FillRect(&sdl.Rect{
+			X: e.GetX(),
+			Y: e.GetY(),
+			W: e.GetWidth(),
+			H: e.GetHeight(),
+		}, e.GetColor())
+	}
 	w.window.UpdateSurface()
 }

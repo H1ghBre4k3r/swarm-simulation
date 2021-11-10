@@ -1,23 +1,19 @@
 package main
 
 import (
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/entities"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/window"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 func main() {
-	window, err := window.New("Hello, World!", 1024, 1024)
+	w, err := window.New("Hello, World!", 1024, 1024)
 	if err != nil {
 		panic(err)
 	}
-	defer window.Destroy()
+	defer w.Destroy()
 
-	rect := &sdl.Rect{
-		X: 0,
-		Y: 0,
-		W: 200,
-		H: 200,
-	}
+	ents := []entities.Entity{*entities.New("randomId")}
 
 	running := true
 	for running {
@@ -29,7 +25,11 @@ func main() {
 				break
 
 			default:
-				window.Render(rect)
+				ns := make([]window.Drawable, 0, len(ents))
+				for _, e := range ents {
+					ns = append(ns, &e)
+				}
+				w.Render(ns)
 				println("Render")
 			}
 		}
