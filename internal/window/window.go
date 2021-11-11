@@ -1,8 +1,6 @@
 package window
 
-import (
-	"github.com/veandco/go-sdl2/sdl"
-)
+import "github.com/veandco/go-sdl2/sdl"
 
 type Window struct {
 	window  *sdl.Window

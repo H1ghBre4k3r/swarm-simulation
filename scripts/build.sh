@@ -15,9 +15,35 @@ GIT_COMMIT=$(git rev-parse HEAD)
 GIT_DIRTY=$(test -n "`git status --porcelain`" && echo "+CHANGES" || true)
 
 # Determine the arch/os combos we're building for
-XC_ARCH=${XC_ARCH:-"386 amd64 arm"}
-XC_OS=${XC_OS:-linux darwin windows freebsd openbsd solaris}
-XC_EXCLUDE_OSARCH="!darwin/arm !darwin/386"
+XC_OS=$(go env GOOS)
+XC_ARCH=$(go env GOARCH)
+
+# Check flags for cross-compiling
+if [[ -n "${FULL_BUILD}" ]]; then
+    XC_ARCH=${XC_ARCH:-"386 amd64 arm"}
+    XC_OS=${XC_OS:-linux darwin windows freebsd openbsd solaris}
+    XC_EXCLUDE_OSARCH="!darwin/arm !darwin/386"
+fi
+
+# link staically
+GO_TAGS="";
+if [[ -n "${STATIC_LINK}" ]]; then
+    GO_TAGS="${GO_TAGS} static"
+fi
+
+# Instruct gox to build statically linked binaries
+export CGO_ENABLED=1
+
+# Set module download mode to readonly to not implicitly update go.mod
+export GOFLAGS="-mod=readonly"
+
+# # In release mode we don't want debug information in the binary
+if [[ -n "${PESCA_RELEASE}" ]]; then
+    LD_FLAGS="-s -w"
+else 
+    # In dev mode, LD_FLAGS to be appended during development compilations
+    LD_FLAGS="-X main.GitCommit=${GIT_COMMIT}${GIT_DIRTY} $LD_FLAGS"
+fi
 
 # Delete the old dir
 echo "==> Removing old directory..."
@@ -25,31 +51,11 @@ rm -rf bin/*
 rm -rf pkg/*
 mkdir -p bin/
 
-# If its dev mode, only build for ourself
-if [[ -n "${PESCA_DEV}" ]]; then
-    XC_OS=$(go env GOOS)
-    XC_ARCH=$(go env GOARCH)
-    # Allow LD_FLAGS to be appended during development compilations
-    LD_FLAGS="-X main.GitCommit=${GIT_COMMIT}${GIT_DIRTY} $LD_FLAGS"
-fi
-
-
+# install gox
 if ! which gox > /dev/null; then
     echo "==> Installing gox..."
     go get github.com/mitchellh/gox
 fi
-
-# Instruct gox to build statically linked binaries
-export CGO_ENABLED=0
-
-# Set module download mode to readonly to not implicitly update go.mod
-export GOFLAGS="-mod=readonly"
-
-# In release mode we don't want debug information in the binary
-if [[ -n "${PESCA_RELEASE}" ]]; then
-    LD_FLAGS="-s -w"
-fi
-
 
 # Ensure all remote modules are downloaded and cached before build so that
 # the concurrent builds launched by gox won't race to redundantly download them.
@@ -68,6 +74,7 @@ gox \
     -arch="${XC_ARCH}" \
     -osarch="${XC_EXCLUDE_OSARCH}" \
     -ldflags "${LD_FLAGS}" \
+    -tags "${GO_TAGS}" \
     -output "bin/{{.OS}}_{{.Arch}}/swarm-simulation" \
     ./cmd/swarm-simulation
 
