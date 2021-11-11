@@ -6,7 +6,9 @@ Swarm simulation written in Go.
 
 ## Requirements
 
-SDL2 (and some optional dependencies installed):
+1. Go installed.
+
+2. SDL2 (and some optional dependencies installed):
 
 On **Ubuntu 14.04 and above**, type:\
 `apt install libsdl2{,-image,-mixer,-ttf,-gfx}-dev`
@@ -22,3 +24,31 @@ On **Gentoo**, type:\
 
 On **macOS**, install SDL2 via [Homebrew](http://brew.sh) like so:\
 `brew install sdl2{,_image,_mixer,_ttf,_gfx} pkg-config`
+
+## Development
+
+Simply open this folder in your favourite editor and start coding.
+
+### Running
+
+```sh
+$ make run
+```
+
+### Running Tests
+
+```sh
+$ make test
+```
+
+### Building (for development)
+
+```sh
+$ make build
+```
+
+### Building (for production)
+
+```sh
+$ make release
+```
