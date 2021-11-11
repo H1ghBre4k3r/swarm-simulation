@@ -7,14 +7,14 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	entity := entities.New("someRandomId")
+	entity := entities.Create("someRandomId", entities.Rect{}, 0x0)
 	if entity.Id() != "someRandomId" {
 		t.Fatal("Initial ID is not set correctly")
 	}
 }
 
 func TestSetters(t *testing.T) {
-	entity := entities.New("")
+	entity := entities.Create("", entities.Rect{}, 0xffff0000)
 
 	entity.SetX(200)
 	if entity.GetX() != 200 {

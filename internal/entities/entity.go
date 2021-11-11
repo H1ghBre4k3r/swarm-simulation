@@ -1,60 +1,61 @@
 package entities
 
-// Basic entity type which can be renderred in SDL
-type Entity struct {
-	id     interface{}
-	x      int32
-	y      int32
-	width  int32
-	height int32
-	color  uint32
+type Rect struct {
+	X      int32
+	Y      int32
+	Width  int32
+	Height int32
 }
 
-func New(id interface{}) *Entity {
+// Basic entity type which can be renderred in SDL
+type Entity struct {
+	id    string
+	rect  Rect
+	color uint32
+}
+
+func Create(id string, rect Rect, color uint32) *Entity {
 	return &Entity{
-		id:     id,
-		x:      100,
-		y:      0,
-		width:  200,
-		height: 200,
-		color:  0xffff0000,
+		id:    id,
+		color: color,
+		rect:  rect,
 	}
 }
 
-func (e *Entity) Id() interface{} {
+func (e *Entity) Id() string {
 	return e.id
 }
 
 func (e *Entity) GetX() int32 {
-	return e.x
+	return e.rect.X
 }
 
 func (e *Entity) SetX(x int32) {
-	e.x = x
+	e.rect.X = x
 }
 
 func (e *Entity) GetY() int32 {
-	return e.y
+	return e.rect.Y
 }
 
 func (e *Entity) SetY(y int32) {
-	e.y = y
+	e.rect.Y = y
 }
 
 func (e *Entity) GetWidth() int32 {
-	return e.width
+	return e.rect.Width
 }
 
 func (e *Entity) SetWidth(width int32) {
-	e.width = width
+	e.rect.Width = width
 }
 
 func (e *Entity) GetHeight() int32 {
-	return e.height
+	return e.rect.Height
 }
 
 func (e *Entity) SetHeight(height int32) {
-	e.height = height
+	e.rect.Height = height
 }
 
 func (e *Entity) GetColor() uint32 {

@@ -7,7 +7,8 @@ import (
 )
 
 type Simulation struct {
-	window *window.Window
+	window   *window.Window
+	entities *entities.EntityManger
 }
 
 func New() *Simulation {
@@ -15,6 +16,7 @@ func New() *Simulation {
 }
 
 func (s *Simulation) Start() error {
+	s.init()
 	win, err := window.New("Hello, World!", 1024, 1024)
 	if err != nil {
 		return err
@@ -24,25 +26,34 @@ func (s *Simulation) Start() error {
 	return nil
 }
 
+func (s *Simulation) init() {
+	s.entities = entities.Manager()
+
+	s.entities.Add(entities.Create("someId", entities.Rect{
+		X:      100,
+		Y:      200,
+		Width:  10,
+		Height: 10,
+	}, 0xffff0000))
+}
+
 func (s *Simulation) Loop() {
-	ents := []entities.Entity{*entities.New("randomId")}
 
 main_loop:
 	for {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
-				println("Quit")
 				break main_loop
 			}
 		}
 		// draw all entities to the screen
+		ents := s.entities.Get()
 		ns := make([]window.Drawable, 0, len(ents))
 		for _, e := range ents {
-			ns = append(ns, &e)
+			ns = append(ns, e)
 		}
 		s.window.Render(ns)
-		println("Render")
 	}
 }
 
