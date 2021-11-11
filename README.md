@@ -1,5 +1,7 @@
 # swarm-simulation
 
+[![Test](https://github.com/H1ghBre4k3r/swarm-simulation/actions/workflows/test.yml/badge.svg)](https://github.com/H1ghBre4k3r/swarm-simulation/actions/workflows/test.yml)
+
 Swarm simulation written in Go.
 
 ## Requirements
