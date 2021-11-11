@@ -1,10 +1,13 @@
 package window
 
-import "github.com/veandco/go-sdl2/sdl"
+import (
+	"github.com/veandco/go-sdl2/gfx"
+	"github.com/veandco/go-sdl2/sdl"
+)
 
 type Window struct {
-	window  *sdl.Window
-	surface *sdl.Surface
+	window   *sdl.Window
+	renderer *sdl.Renderer
 }
 
 type Drawable interface {
@@ -26,7 +29,7 @@ func New(title string, width int32, height int32) (*Window, error) {
 		return nil, err
 	}
 
-	surface, err := window.GetSurface()
+	renderer, err := sdl.CreateRenderer(window, 0, sdl.RENDERER_ACCELERATED)
 	if err != nil {
 		window.Destroy()
 		sdl.Quit()
@@ -35,7 +38,7 @@ func New(title string, width int32, height int32) (*Window, error) {
 
 	return &Window{
 		window,
-		surface,
+		renderer,
 	}, nil
 }
 
@@ -47,14 +50,10 @@ func (w *Window) Destroy() {
 
 // Render content to the screen/window
 func (w *Window) Render(entities []Drawable) {
-	w.surface.FillRect(nil, 0)
+	w.renderer.SetDrawColor(0, 0, 0, 255)
+	w.renderer.Clear()
 	for _, e := range entities {
-		w.surface.FillRect(&sdl.Rect{
-			X: e.GetX() - (e.GetR() / 2),
-			Y: e.GetY() - (e.GetR() / 2),
-			W: e.GetR(),
-			H: e.GetR(),
-		}, e.GetColor())
+		gfx.FilledCircleRGBA(w.renderer, e.GetX(), e.GetY(), e.GetR(), 255, 0, 0, 255)
 	}
-	w.window.UpdateSurface()
+	w.renderer.Present()
 }
