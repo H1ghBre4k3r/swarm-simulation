@@ -5,32 +5,40 @@ import (
 	"time"
 )
 
-type Rect struct {
-	X      int32
-	Y      int32
-	Width  int32
-	Height int32
+type Position struct {
+	X int32
+	Y int32
+	R int32
 }
-type manager interface {
-	Get() []*Entity
+
+type Obstacle interface {
+	GetX() int32
+	GetY() int32
+	GetR() int32
 }
+
+type GetObstacles func(int) []Obstacle
+
+// type manager interface {
+// 	Get() []Obstacle
+// }
 
 // Basic entity type which can be renderred in SDL
 type Entity struct {
-	id      string
-	rect    Rect
-	color   uint32
-	manager manager
-	running bool
+	id        string
+	pos       Position
+	color     uint32
+	obstacles GetObstacles
+	running   bool
 }
 
-func Create(id string, rect Rect, color uint32, manager manager) *Entity {
+func Create(id string, position Position, color uint32, obstacles GetObstacles) *Entity {
 	return &Entity{
-		id:      id,
-		color:   color,
-		rect:    rect,
-		manager: manager,
-		running: false,
+		id:        id,
+		color:     color,
+		pos:       position,
+		obstacles: obstacles,
+		running:   false,
 	}
 }
 
@@ -39,35 +47,27 @@ func (e *Entity) Id() string {
 }
 
 func (e *Entity) GetX() int32 {
-	return e.rect.X
+	return e.pos.X
 }
 
 func (e *Entity) SetX(x int32) {
-	e.rect.X = x
+	e.pos.X = x
 }
 
 func (e *Entity) GetY() int32 {
-	return e.rect.Y
+	return e.pos.Y
 }
 
 func (e *Entity) SetY(y int32) {
-	e.rect.Y = y
+	e.pos.Y = y
 }
 
-func (e *Entity) GetWidth() int32 {
-	return e.rect.Width
+func (e *Entity) GetR() int32 {
+	return e.pos.R
 }
 
-func (e *Entity) SetWidth(width int32) {
-	e.rect.Width = width
-}
-
-func (e *Entity) GetHeight() int32 {
-	return e.rect.Height
-}
-
-func (e *Entity) SetHeight(height int32) {
-	e.rect.Height = height
+func (e *Entity) SetR(r int32) {
+	e.pos.R = r
 }
 
 func (e *Entity) GetColor() uint32 {
@@ -86,10 +86,10 @@ func (e *Entity) Start() {
 func (e *Entity) loop() {
 	ticker := time.NewTicker(1 * time.Millisecond)
 	defer ticker.Stop()
-	i := float64(e.rect.X)
+	i := float64(e.pos.X)
 	for ; e.running; <-ticker.C {
-		e.rect.X = int32(math.Sin(float64(i*(math.Pi/180)))*300) + 512
-		e.rect.Y = int32(math.Cos(float64(i*(math.Pi/180)))*300) + 512
+		e.pos.X = int32(math.Sin(float64(i*(math.Pi/180)))*300) + 512
+		e.pos.Y = int32(math.Cos(float64(i*(math.Pi/180)))*300) + 512
 		i += 0.1
 	}
 }

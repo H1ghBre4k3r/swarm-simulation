@@ -7,14 +7,14 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	entity := entities.Create("someRandomId", entities.Rect{}, 0x0, nil)
+	entity := entities.Create("someRandomId", entities.Position{}, 0x0, nil)
 	if entity.Id() != "someRandomId" {
 		t.Fatal("Initial ID is not set correctly")
 	}
 }
 
 func TestSetters(t *testing.T) {
-	entity := entities.Create("", entities.Rect{}, 0xffff0000, nil)
+	entity := entities.Create("", entities.Position{}, 0xffff0000, nil)
 
 	entity.SetX(200)
 	if entity.GetX() != 200 {
@@ -26,14 +26,9 @@ func TestSetters(t *testing.T) {
 		t.Fatal("SetY does not set the value returned by SetY")
 	}
 
-	entity.SetWidth(100)
-	if entity.GetWidth() != 100 {
-		t.Fatal("SetWidth does not set the value returned by GetWidth")
-	}
-
-	entity.SetHeight(360)
-	if entity.GetHeight() != 360 {
-		t.Fatal("SetHeight does not set the value returned by GetHeight")
+	entity.SetR(100)
+	if entity.GetR() != 100 {
+		t.Fatal("SetR does not set the value returned by GetR")
 	}
 
 	entity.SetColor(0x20202020)

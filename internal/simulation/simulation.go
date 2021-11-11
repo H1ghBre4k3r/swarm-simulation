@@ -30,12 +30,19 @@ func (s *Simulation) init() {
 	s.entities = entities.Manager()
 
 	for i := int32(0); i < 1000; i++ {
-		s.entities.Add(entities.Create("", entities.Rect{
-			X:      i,
-			Y:      0,
-			Width:  5,
-			Height: 5,
-		}, 0xffff0000, s.entities))
+		s.entities.Add(entities.Create("", entities.Position{
+			X: i,
+			Y: 0,
+			R: 5,
+		}, 0xffff0000, func(distance int) []entities.Obstacle {
+
+			ents := s.entities.Get()
+			obstacles := make([]entities.Obstacle, 0, len(ents))
+			for _, e := range ents {
+				obstacles = append(obstacles, e)
+			}
+			return obstacles
+		}))
 	}
 
 	for _, e := range s.entities.Get() {

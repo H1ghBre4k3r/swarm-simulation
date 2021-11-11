@@ -10,8 +10,7 @@ type Window struct {
 type Drawable interface {
 	GetX() int32
 	GetY() int32
-	GetWidth() int32
-	GetHeight() int32
+	GetR() int32
 	GetColor() uint32
 }
 
@@ -51,10 +50,10 @@ func (w *Window) Render(entities []Drawable) {
 	w.surface.FillRect(nil, 0)
 	for _, e := range entities {
 		w.surface.FillRect(&sdl.Rect{
-			X: e.GetX(),
-			Y: e.GetY(),
-			W: e.GetWidth(),
-			H: e.GetHeight(),
+			X: e.GetX() - (e.GetR() / 2),
+			Y: e.GetY() - (e.GetR() / 2),
+			W: e.GetR(),
+			H: e.GetR(),
 		}, e.GetColor())
 	}
 	w.window.UpdateSurface()
