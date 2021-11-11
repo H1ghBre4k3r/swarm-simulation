@@ -17,11 +17,7 @@ type Obstacle interface {
 	GetR() int32
 }
 
-type GetObstacles func(int) []Obstacle
-
-// type manager interface {
-// 	Get() []Obstacle
-// }
+type GetObstacles func(*Entity, int) []*Entity
 
 // Basic entity type which can be renderred in SDL
 type Entity struct {
@@ -88,6 +84,7 @@ func (e *Entity) loop() {
 	defer ticker.Stop()
 	i := float64(e.pos.X)
 	for ; e.running; <-ticker.C {
+		println(len(e.obstacles(e, 200)))
 		e.pos.X = int32(math.Sin(float64(i*(math.Pi/180)))*300) + 512
 		e.pos.Y = int32(math.Cos(float64(i*(math.Pi/180)))*300) + 512
 		i += 0.1
