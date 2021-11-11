@@ -17,7 +17,7 @@ func New() *Simulation {
 
 func (s *Simulation) Start() error {
 	s.init()
-	win, err := window.New("Hello, World!", 1024, 1024)
+	win, err := window.New("Swarm Simulation", 1024, 1024)
 	if err != nil {
 		return err
 	}
@@ -29,12 +29,18 @@ func (s *Simulation) Start() error {
 func (s *Simulation) init() {
 	s.entities = entities.Manager()
 
-	s.entities.Add(entities.Create("someId", entities.Rect{
-		X:      100,
-		Y:      200,
-		Width:  10,
-		Height: 10,
-	}, 0xffff0000))
+	for i := int32(0); i < 1000; i++ {
+		s.entities.Add(entities.Create("", entities.Rect{
+			X:      i,
+			Y:      0,
+			Width:  5,
+			Height: 5,
+		}, 0xffff0000, s.entities))
+	}
+
+	for _, e := range s.entities.Get() {
+		e.Start()
+	}
 }
 
 func (s *Simulation) Loop() {
@@ -58,5 +64,8 @@ main_loop:
 }
 
 func (s *Simulation) Stop() {
+	for _, e := range s.entities.Get() {
+		e.Stop()
+	}
 	s.window.Destroy()
 }
