@@ -2,6 +2,7 @@ package process
 
 import (
 	"bufio"
+	"io"
 	"os/exec"
 )
 
@@ -42,40 +43,43 @@ func Spawn(command string, args ...string) (*Process, error) {
 		return nil, err
 	}
 
-	go func() {
-		defer si.Close()
-		for {
-			message, ok := <-p.inputChannel
-			if !ok {
-				p.Stop()
-				break
-			}
-
-			if message[len(message)-1] != '\n' {
-				message += "\n"
-			}
-
-			_, err = si.Write([]byte(message))
-			if err != nil {
-				panic(err)
-			}
-		}
-	}()
-
-	go func() {
-		defer so.Close()
-		reader := bufio.NewReader(so)
-		for {
-			answer, err := reader.ReadString('\n')
-			if err != nil {
-				p.Stop()
-				break
-			}
-			p.outputChannel <- answer
-		}
-	}()
+	go p.writeStdIn(si)
+	go p.readStdOut(so)
 
 	return p, nil
+}
+
+func (p *Process) writeStdIn(si io.WriteCloser) {
+	defer si.Close()
+	for {
+		message, ok := <-p.inputChannel
+		if !ok {
+			p.Stop()
+			break
+		}
+
+		if message[len(message)-1] != '\n' {
+			message += "\n"
+		}
+
+		_, err := si.Write([]byte(message))
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func (p *Process) readStdOut(so io.ReadCloser) {
+	defer so.Close()
+	reader := bufio.NewReader(so)
+	for {
+		answer, err := reader.ReadString('\n')
+		if err != nil {
+			p.Stop()
+			break
+		}
+		p.outputChannel <- answer
+	}
 }
 
 func (p *Process) Stop() error {
