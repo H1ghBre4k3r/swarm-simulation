@@ -20,8 +20,8 @@ XC_ARCH=$(go env GOARCH)
 
 # Check flags for cross-compiling
 if [[ -n "${FULL_BUILD}" ]]; then
-    XC_ARCH=${XC_ARCH:-"386 amd64 arm"}
-    XC_OS=${XC_OS:-linux darwin windows freebsd openbsd solaris}
+    XC_ARCH="386 amd64 arm"
+    XC_OS="linux darwin windows freebsd openbsd solaris"
     XC_EXCLUDE_OSARCH="!darwin/arm !darwin/386"
 fi
 

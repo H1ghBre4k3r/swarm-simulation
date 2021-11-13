@@ -16,6 +16,9 @@ build:
 release: 
 	PESCA_RELEASE=1 ./scripts/build.sh
 
+static: 
+	STATIC_LINK=1 PESCA_RELEASE=1 ./scripts/build.sh
+
 # clean build folder
 clean: 
 	rm -rf bin/*
