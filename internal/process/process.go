@@ -7,9 +7,9 @@ import (
 )
 
 type Process struct {
-	c *exec.Cmd
-	// si io.WriteCloser
-	// so io.ReadCloser
+	c  *exec.Cmd
+	si io.WriteCloser
+	so io.ReadCloser
 
 	inputChannel  chan string
 	outputChannel chan string
@@ -21,16 +21,17 @@ type Process struct {
 func Spawn(command string, args ...string) (*Process, error) {
 	p := &Process{}
 	p.c = exec.Command(command, args...)
-
 	si, err := p.c.StdinPipe()
 	if err != nil {
 		return nil, err
 	}
+	p.si = si
 
 	so, err := p.c.StdoutPipe()
 	if err != nil {
 		return nil, err
 	}
+	p.so = so
 
 	p.inputChannel = make(chan string)
 	p.outputChannel = make(chan string)
@@ -38,19 +39,22 @@ func Spawn(command string, args ...string) (*Process, error) {
 	p.In = p.inputChannel
 	p.Out = p.outputChannel
 
-	err = p.c.Start()
-	if err != nil {
-		return nil, err
-	}
-
-	go p.writeStdIn(si)
-	go p.readStdOut(so)
-
 	return p, nil
 }
 
-func (p *Process) writeStdIn(si io.WriteCloser) {
-	defer si.Close()
+func (p *Process) Start() error {
+	err := p.c.Start()
+	if err != nil {
+		return err
+	}
+
+	go p.writeStdIn()
+	go p.readStdOut()
+	return nil
+}
+
+func (p *Process) writeStdIn() {
+	defer p.si.Close()
 	for {
 		message, ok := <-p.inputChannel
 		if !ok {
@@ -62,23 +66,23 @@ func (p *Process) writeStdIn(si io.WriteCloser) {
 			message += "\n"
 		}
 
-		_, err := si.Write([]byte(message))
+		_, err := p.si.Write([]byte(message))
 		if err != nil {
 			panic(err)
 		}
 	}
 }
 
-func (p *Process) readStdOut(so io.ReadCloser) {
-	defer so.Close()
-	reader := bufio.NewReader(so)
+func (p *Process) readStdOut() {
+	defer p.so.Close()
+	reader := bufio.NewReader(p.so)
 	for {
-		answer, err := reader.ReadString('\n')
+		line, _, err := reader.ReadLine()
 		if err != nil {
 			p.Stop()
 			break
 		}
-		p.outputChannel <- answer
+		p.outputChannel <- string(line)
 	}
 }
 

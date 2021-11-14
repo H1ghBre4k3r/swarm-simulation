@@ -1,8 +1,11 @@
 package entities
 
 import (
-	"math"
-	"time"
+	"fmt"
+	"strconv"
+	"strings"
+
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/process"
 )
 
 type Position struct {
@@ -26,15 +29,22 @@ type Entity struct {
 	color     uint32
 	obstacles GetObstacles
 	running   bool
+	process   *process.Process
 }
 
-func Create(id string, position Position, color uint32, obstacles GetObstacles) *Entity {
+func Create(id string, position Position, color uint32, obstacles GetObstacles, script string) *Entity {
+	p, err := process.Spawn(script)
+	if err != nil {
+		fmt.Printf("Cannot start process for entity '%v': %v\n", id, err.Error())
+		return nil
+	}
 	return &Entity{
 		id:        id,
 		color:     color,
 		pos:       position,
 		obstacles: obstacles,
 		running:   false,
+		process:   p,
 	}
 }
 
@@ -74,20 +84,30 @@ func (e *Entity) SetColor(color uint32) {
 	e.color = color
 }
 
-func (e *Entity) Start() {
+func (e *Entity) Start() error {
+	err := e.process.Start()
+	if err != nil {
+		return err
+	}
 	e.running = true
 	go e.loop()
+	return nil
 }
 
 func (e *Entity) loop() {
-	ticker := time.NewTicker(1 * time.Millisecond)
-	defer ticker.Stop()
-	i := float64(e.pos.X)
-	for ; e.running; <-ticker.C {
-		println(len(e.obstacles(e, 200)))
-		e.pos.X = int32(math.Sin(float64(i*(math.Pi/180)))*300) + 512
-		e.pos.Y = int32(math.Cos(float64(i*(math.Pi/180)))*300) + 512
-		i += 0.1
+	for e.running {
+		msg := <-e.process.Out
+		coords := strings.Split(msg, " ")
+		x, err := strconv.Atoi(strings.Split(coords[0], ".")[0])
+		if err != nil {
+			continue
+		}
+		y, err := strconv.Atoi(strings.Split(coords[1], ".")[0])
+		if err != nil {
+			continue
+		}
+		e.pos.X = int32(x)
+		e.pos.Y = int32(y)
 	}
 }
 
