@@ -10,6 +10,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Setup Go environment
         uses: actions/setup-go@v2.1.4
+      - name: Update packages
+        run: sudo apt update
       - name: Setup SDL2
         run: sudo apt install libsdl2{,-image,-mixer,-ttf,-gfx}-dev
       - name: Run tests
