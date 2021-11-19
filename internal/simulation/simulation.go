@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/collision"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/entities"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/window"
 	"github.com/veandco/go-sdl2/sdl"
@@ -9,10 +10,14 @@ import (
 type Simulation struct {
 	window   *window.Window
 	entities *entities.EntityManger
+	spatial  *collision.SpatialHashmap
 }
 
 func New() *Simulation {
-	return &Simulation{}
+	return &Simulation{
+		entities: entities.Manager(),
+		spatial:  collision.New(64),
+	}
 }
 
 func (s *Simulation) Start() error {
@@ -27,17 +32,23 @@ func (s *Simulation) Start() error {
 }
 
 func (s *Simulation) init() {
-	s.entities = entities.Manager()
 
-	for i := int32(0); i < 100; i++ {
+	insert := func(entity *entities.Entity) {
+		s.spatial.Insert(entity)
+	}
+
+	remove := func(entity *entities.Entity) {
+		s.spatial.Remove(entity)
+	}
+
+	for i := int32(0); i < 1; i++ {
 		entity := entities.Create("1", entities.Position{
 			R: 5,
-		}, 0xffff0000, func(e *entities.Entity, i int) []*entities.Entity {
-			return s.entities.Get()
-		}, "../../test.py")
+		}, 0xffff0000, insert, remove, "./test.py")
 
 		if entity != nil {
 			s.entities.Add(entity)
+			s.spatial.Insert(entity)
 		}
 	}
 
@@ -50,7 +61,6 @@ func (s *Simulation) init() {
 }
 
 func (s *Simulation) Loop() {
-
 main_loop:
 	for {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {

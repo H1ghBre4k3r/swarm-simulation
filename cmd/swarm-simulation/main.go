@@ -1,8 +1,23 @@
 package main
 
-import "github.com/H1ghBre4k3r/swarm-simulation/internal/simulation"
+import (
+	"flag"
+
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/simulation"
+)
 
 func main() {
+
+	usage := flag.Bool("h", false, "Show this information")
+	// noGui := flag.Bool("no-gui", false, "hide gui")
+
+	flag.Parse()
+
+	if *usage {
+		flag.PrintDefaults()
+		return
+	}
+
 	sim := simulation.New()
 	if err := sim.Start(); err != nil {
 		panic(err)

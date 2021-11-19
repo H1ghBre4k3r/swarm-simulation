@@ -22,29 +22,33 @@ type Obstacle interface {
 
 type GetObstacles func(*Entity, int) []*Entity
 
+type UpdateFn func(*Entity)
+
 // Basic entity type which can be renderred in SDL
 type Entity struct {
-	id        string
-	pos       Position
-	color     uint32
-	obstacles GetObstacles
-	running   bool
-	process   *process.Process
+	id      string
+	pos     Position
+	color   uint32
+	insert  UpdateFn
+	remove  UpdateFn
+	running bool
+	process *process.Process
 }
 
-func Create(id string, position Position, color uint32, obstacles GetObstacles, script string) *Entity {
+func Create(id string, position Position, color uint32, insertFn UpdateFn, removeFn UpdateFn, script string) *Entity {
 	p, err := process.Spawn(script)
 	if err != nil {
 		fmt.Printf("Cannot start process for entity '%v': %v\n", id, err.Error())
 		return nil
 	}
 	return &Entity{
-		id:        id,
-		color:     color,
-		pos:       position,
-		obstacles: obstacles,
-		running:   false,
-		process:   p,
+		id:      id,
+		color:   color,
+		pos:     position,
+		insert:  insertFn,
+		remove:  removeFn,
+		running: false,
+		process: p,
 	}
 }
 
@@ -106,8 +110,10 @@ func (e *Entity) loop() {
 		if err != nil {
 			continue
 		}
+		e.remove(e)
 		e.pos.X = int32(x)
 		e.pos.Y = int32(y)
+		e.insert(e)
 	}
 }
 
