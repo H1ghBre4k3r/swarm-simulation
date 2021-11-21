@@ -3,18 +3,28 @@ package simulation
 import (
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/collision"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/entities"
-	"github.com/H1ghBre4k3r/swarm-simulation/internal/window"
-	"github.com/veandco/go-sdl2/sdl"
 )
 
+type Drawable interface {
+	GetX() int32
+	GetY() int32
+	GetR() int32
+	GetColor() uint32
+}
+
+type View interface {
+	Render([]Drawable)
+}
+
 type Simulation struct {
-	window   *window.Window
+	views    []View
 	entities *entities.EntityManger
 	spatial  *collision.SpatialHashmap
 }
 
-func New() *Simulation {
+func New(views []View) *Simulation {
 	return &Simulation{
+		views:    views,
 		entities: entities.Manager(),
 		spatial:  collision.New(64),
 	}
@@ -22,12 +32,6 @@ func New() *Simulation {
 
 func (s *Simulation) Start() error {
 	s.init()
-	win, err := window.New("Swarm Simulation", 1024, 1024)
-	if err != nil {
-		return err
-	}
-	s.window = win
-
 	return nil
 }
 
@@ -60,22 +64,15 @@ func (s *Simulation) init() {
 	}
 }
 
-func (s *Simulation) Loop() {
-main_loop:
-	for {
-		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch event.(type) {
-			case *sdl.QuitEvent:
-				break main_loop
-			}
-		}
-		// draw all entities to the screen
-		ents := s.entities.Get()
-		ns := make([]window.Drawable, 0, len(ents))
-		for _, e := range ents {
-			ns = append(ns, e)
-		}
-		s.window.Render(ns)
+func (s *Simulation) Tick() {
+	// draw all entities to the screen
+	ents := s.entities.Get()
+	ns := make([]Drawable, 0, len(ents))
+	for _, e := range ents {
+		ns = append(ns, e)
+	}
+	for _, v := range s.views {
+		v.Render(ns)
 	}
 }
 
@@ -83,5 +80,4 @@ func (s *Simulation) Stop() {
 	for _, e := range s.entities.Get() {
 		e.Stop()
 	}
-	s.window.Destroy()
 }

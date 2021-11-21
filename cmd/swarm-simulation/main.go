@@ -4,12 +4,14 @@ import (
 	"flag"
 
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/simulation"
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/view/window"
+	"github.com/veandco/go-sdl2/sdl"
 )
 
 func main() {
 
 	usage := flag.Bool("h", false, "Show this information")
-	// noGui := flag.Bool("no-gui", false, "hide gui")
+	noGui := flag.Bool("no-gui", false, "hide gui")
 
 	flag.Parse()
 
@@ -18,22 +20,30 @@ func main() {
 		return
 	}
 
-	sim := simulation.New()
+	views := []simulation.View{}
+
+	if !*noGui {
+		win, err := window.New("Swarm Simulation", 1024, 1024)
+		if err != nil {
+			panic(err)
+		}
+		views = append(views, win)
+	}
+
+	sim := simulation.New(views)
 	if err := sim.Start(); err != nil {
 		panic(err)
 	}
 	defer sim.Stop()
 
-	sim.Loop()
-
-	// 	p, err := process.Spawn("../../test.py")
-
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-
-	// 	p.In <- "'Hello, World!'\n"
-	// 	// time.Sleep(30 * time.Second)
-	// 	println(<-p.Out)
-	// 	p.Stop()
+main_loop:
+	for {
+		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
+			switch event.(type) {
+			case *sdl.QuitEvent:
+				break main_loop
+			}
+		}
+		sim.Tick()
+	}
 }

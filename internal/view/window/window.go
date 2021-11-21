@@ -1,6 +1,7 @@
 package window
 
 import (
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/simulation"
 	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -8,13 +9,6 @@ import (
 type Window struct {
 	window   *sdl.Window
 	renderer *sdl.Renderer
-}
-
-type Drawable interface {
-	GetX() int32
-	GetY() int32
-	GetR() int32
-	GetColor() uint32
 }
 
 // Create a new window
@@ -49,7 +43,7 @@ func (w *Window) Destroy() {
 }
 
 // Render content to the screen/window
-func (w *Window) Render(entities []Drawable) {
+func (w *Window) Render(entities []simulation.Drawable) {
 	w.renderer.SetDrawColor(0, 0, 0, 255)
 	w.renderer.Clear()
 	for _, e := range entities {
