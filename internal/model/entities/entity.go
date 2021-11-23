@@ -9,9 +9,9 @@ import (
 )
 
 type Position struct {
-	X int32
-	Y int32
-	R int32
+	X float64
+	Y float64
+	R float64
 }
 
 type Obstacle interface {
@@ -56,27 +56,27 @@ func (e *Entity) Id() string {
 	return e.id
 }
 
-func (e *Entity) GetX() int32 {
+func (e *Entity) GetX() float64 {
 	return e.pos.X
 }
 
-func (e *Entity) SetX(x int32) {
+func (e *Entity) SetX(x float64) {
 	e.pos.X = x
 }
 
-func (e *Entity) GetY() int32 {
+func (e *Entity) GetY() float64 {
 	return e.pos.Y
 }
 
-func (e *Entity) SetY(y int32) {
+func (e *Entity) SetY(y float64) {
 	e.pos.Y = y
 }
 
-func (e *Entity) GetR() int32 {
+func (e *Entity) GetR() float64 {
 	return e.pos.R
 }
 
-func (e *Entity) SetR(r int32) {
+func (e *Entity) SetR(r float64) {
 	e.pos.R = r
 }
 
@@ -102,17 +102,17 @@ func (e *Entity) loop() {
 	for e.running {
 		msg := <-e.process.Out
 		coords := strings.Split(msg, " ")
-		x, err := strconv.Atoi(strings.Split(coords[0], ".")[0])
+		x, err := strconv.ParseFloat(coords[0], 64)
 		if err != nil {
 			continue
 		}
-		y, err := strconv.Atoi(strings.Split(coords[1], ".")[0])
+		y, err := strconv.ParseFloat(coords[1], 64)
 		if err != nil {
 			continue
 		}
 		e.remove(e)
-		e.pos.X = int32(x)
-		e.pos.Y = int32(y)
+		e.pos.X += x
+		e.pos.Y += y
 		e.insert(e)
 	}
 }

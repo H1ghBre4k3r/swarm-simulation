@@ -1,14 +1,16 @@
 package simulation
 
 import (
+	"math"
+
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/collision"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/entities"
 )
 
 type Drawable interface {
-	GetX() int32
-	GetY() int32
-	GetR() int32
+	GetX() float64
+	GetY() float64
+	GetR() float64
 	GetColor() uint32
 }
 
@@ -45,9 +47,11 @@ func (s *Simulation) init() {
 		s.spatial.Remove(entity)
 	}
 
-	for i := int32(0); i < 1; i++ {
+	for i := int32(0); i < 100; i++ {
 		entity := entities.Create("1", entities.Position{
-			R: 5,
+			X: math.Sin(0)*0.3 + 0.5,
+			Y: math.Cos(0)*0.3 + 0.5,
+			R: 0.005,
 		}, 0xffff0000, insert, remove, "./test.py")
 
 		if entity != nil {

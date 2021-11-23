@@ -7,17 +7,18 @@ import (
 )
 
 type Window struct {
+	scale    int32
 	window   *sdl.Window
 	renderer *sdl.Renderer
 }
 
 // Create a new window
-func New(title string, width int32, height int32) (*Window, error) {
+func New(title string, scale int32) (*Window, error) {
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		return nil, err
 	}
 
-	window, err := sdl.CreateWindow(title, sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, width, height, sdl.WINDOW_SHOWN)
+	window, err := sdl.CreateWindow(title, sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, scale, scale, sdl.WINDOW_SHOWN)
 	if err != nil {
 		sdl.Quit()
 		return nil, err
@@ -31,6 +32,7 @@ func New(title string, width int32, height int32) (*Window, error) {
 	}
 
 	return &Window{
+		scale,
 		window,
 		renderer,
 	}, nil
@@ -47,7 +49,7 @@ func (w *Window) Render(entities []simulation.Drawable) {
 	w.renderer.SetDrawColor(0, 0, 0, 255)
 	w.renderer.Clear()
 	for _, e := range entities {
-		gfx.FilledCircleRGBA(w.renderer, e.GetX(), e.GetY(), e.GetR(), 255, 0, 0, 255)
+		gfx.FilledCircleRGBA(w.renderer, int32(e.GetX()*float64(w.scale)), int32(e.GetY()*float64(w.scale)), int32(e.GetR()*float64(w.scale)), 255, 0, 0, 255)
 	}
 	w.renderer.Present()
 }

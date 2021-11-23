@@ -23,7 +23,7 @@ func main() {
 	views := []simulation.View{}
 
 	if !*noGui {
-		win, err := window.New("Swarm Simulation", 1024, 1024)
+		win, err := window.New("Swarm Simulation", 1024)
 		if err != nil {
 			panic(err)
 		}

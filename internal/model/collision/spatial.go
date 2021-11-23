@@ -5,17 +5,17 @@ import (
 )
 
 type Insertable interface {
-	GetX() int32
-	GetY() int32
+	GetX() float64
+	GetY() float64
 }
 
 // Map for storing information about entities in 2d space
 type SpatialHashmap struct {
-	cellSize int32
+	cellSize float64
 	contents sync.Map
 }
 
-func New(cellSize int32) *SpatialHashmap {
+func New(cellSize float64) *SpatialHashmap {
 	return &SpatialHashmap{
 		cellSize: cellSize,
 		// contents: make(map[int]map[int][]interface{}),
