@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/H1ghBre4k3r/swarm-simulation/internal/process"
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/process"
 )
 
 type Position struct {

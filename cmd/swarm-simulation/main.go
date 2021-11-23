@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	"github.com/H1ghBre4k3r/swarm-simulation/internal/simulation"
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/simulation"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/view/window"
 	"github.com/veandco/go-sdl2/sdl"
 )

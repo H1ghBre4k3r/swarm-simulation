@@ -3,7 +3,7 @@ package entities_test
 import (
 	"testing"
 
-	"github.com/H1ghBre4k3r/swarm-simulation/internal/entities"
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/entities"
 )
 
 func TestNew(t *testing.T) {

@@ -1,7 +1,7 @@
 package window
 
 import (
-	"github.com/H1ghBre4k3r/swarm-simulation/internal/simulation"
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/simulation"
 	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
 )
