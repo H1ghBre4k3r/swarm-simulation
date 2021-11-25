@@ -1,9 +1,8 @@
 package entities
 
 import (
+	"encoding/json"
 	"fmt"
-	"strconv"
-	"strings"
 
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/process"
 )
@@ -105,23 +104,31 @@ func (e *Entity) Start() error {
 func (e *Entity) loop() {
 	for e.running {
 		msg := <-e.process.Out
-		coords := strings.Split(msg, " ")
-		x, err := strconv.ParseFloat(coords[0], 64)
-		if err != nil {
-			continue
+
+		parsed := SimulationMessage{}
+		if err := json.Unmarshal([]byte(msg), &parsed); err != nil {
+			panic(err)
 		}
-		y, err := strconv.ParseFloat(coords[1], 64)
-		if err != nil {
-			continue
+
+		switch parsed.Action {
+		case "move":
+			message := MovementMessage{}
+			if err := json.Unmarshal([]byte(msg), &message); err != nil {
+				panic(err)
+			}
+			e.handleMove(&message.Payload)
 		}
-		vel := &Velocity{
-			X: x,
-			Y: y,
-		}
-		e.remove(e)
-		e.Move(vel)
-		e.insert(e)
 	}
+}
+
+func (e *Entity) handleMove(payload *MovementPayload) {
+	vel := &Velocity{
+		X: payload.X,
+		Y: payload.Y,
+	}
+	e.remove(e)
+	e.Move(vel)
+	e.insert(e)
 }
 
 func (e *Entity) Stop() {
