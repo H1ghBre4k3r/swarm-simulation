@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/process"
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
 )
 
 type Obstacle interface {
@@ -27,9 +28,10 @@ type Entity struct {
 	remove  UpdateFn
 	running bool
 	process *process.Process
+	barrier *util.Barrier
 }
 
-func Create(id string, position Position, color uint32, insertFn UpdateFn, removeFn UpdateFn, script string) *Entity {
+func Create(id string, position Position, color uint32, insertFn UpdateFn, removeFn UpdateFn, script string, barrier *util.Barrier) *Entity {
 	p, err := process.Spawn(script)
 	if err != nil {
 		fmt.Printf("Cannot start process for entity '%v': %v\n", id, err.Error())
@@ -43,6 +45,7 @@ func Create(id string, position Position, color uint32, insertFn UpdateFn, remov
 		remove:  removeFn,
 		running: false,
 		process: p,
+		barrier: barrier,
 	}
 }
 
@@ -103,8 +106,12 @@ func (e *Entity) Start() error {
 
 func (e *Entity) loop() {
 	for e.running {
+		// wait for barrier to drop
+		e.barrier.Wait()
+		// send sample message to process
+		e.process.In <- "sample"
+		// receive answer message from process
 		msg := <-e.process.Out
-
 		parsed := SimulationMessage{}
 		if err := json.Unmarshal([]byte(msg), &parsed); err != nil {
 			panic(err)
@@ -116,12 +123,13 @@ func (e *Entity) loop() {
 			if err := json.Unmarshal([]byte(msg), &message); err != nil {
 				panic(err)
 			}
-			e.handleMove(&message.Payload)
+			e.performMovement(&message.Payload)
 		}
+		e.barrier.Resolve()
 	}
 }
 
-func (e *Entity) handleMove(payload *MovementPayload) {
+func (e *Entity) performMovement(payload *MovementPayload) {
 	vel := &Velocity{
 		X: payload.X,
 		Y: payload.Y,

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3 -u
 import json
 import math
+import sys
 import time
 
 
@@ -9,6 +10,7 @@ def main():
     oldX = math.sin(i * (math.pi / 180)) * 0.3 + 0.5
     oldY = math.cos(i * (math.pi / 180)) * 0.3 + 0.5
     while True:
+        sys.stdin.readline()
         x = math.sin(i * (math.pi / 180)) * 0.3 + 0.5
         y = math.cos(i * (math.pi / 180)) * 0.3 + 0.5
         val = {
@@ -21,7 +23,6 @@ def main():
         oldX = x
         oldY = y
         print(json.dumps(val))
-        time.sleep(0.02)
         i += 2
 
 if __name__ == "__main__":

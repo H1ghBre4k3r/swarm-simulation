@@ -36,14 +36,18 @@ func main() {
 	}
 	defer sim.Stop()
 
-main_loop:
+	// detach simulation loop in background so it does not freeze the window
+	go sim.Loop()
+
+	// actually draw something
+draw_loop:
 	for {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
-				break main_loop
+				break draw_loop
 			}
 		}
-		sim.Tick()
+		sim.Draw()
 	}
 }
