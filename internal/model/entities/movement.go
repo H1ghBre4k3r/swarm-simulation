@@ -1,9 +1,9 @@
 package entities
 
 type Position struct {
-	X float64
-	Y float64
-	R float64
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+	R float64 `json:"r"`
 }
 
 type Velocity struct {

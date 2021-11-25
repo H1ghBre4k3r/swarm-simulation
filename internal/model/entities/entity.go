@@ -85,13 +85,18 @@ func (e *Entity) SetColor(color uint32) {
 	e.color = color
 }
 
-func (e *Entity) Move(vel *Velocity) {
-	e.vel = *vel
-	e.pos.Move(vel)
+func (e *Entity) Move() {
+	e.remove(e)
+	e.pos.Move(&e.vel)
+	e.insert(e)
 }
 
 func (e *Entity) GetVelocity() Velocity {
 	return e.vel
+}
+
+func (e *Entity) SetVelocity(vel *Velocity) {
+	e.vel = *vel
 }
 
 func (e *Entity) Start() error {
@@ -108,8 +113,18 @@ func (e *Entity) loop() {
 	for e.running {
 		// wait for barrier to drop
 		e.barrier.Wait()
+		// perform movement with current velocity
+		e.Move()
+
 		// send sample message to process
-		e.process.In <- "sample"
+		information := InformationMessage{}
+		information.Position = e.pos
+		outMsg, err := json.Marshal(&information)
+		if err != nil {
+			panic(err)
+		}
+		e.process.In <- string(outMsg)
+
 		// receive answer message from process
 		msg := <-e.process.Out
 		parsed := SimulationMessage{}
@@ -123,20 +138,14 @@ func (e *Entity) loop() {
 			if err := json.Unmarshal([]byte(msg), &message); err != nil {
 				panic(err)
 			}
-			e.performMovement(&message.Payload)
+			// update current velocity
+			e.SetVelocity(&Velocity{
+				X: message.Payload.X,
+				Y: message.Payload.Y,
+			})
 		}
 		e.barrier.Resolve()
 	}
-}
-
-func (e *Entity) performMovement(payload *MovementPayload) {
-	vel := &Velocity{
-		X: payload.X,
-		Y: payload.Y,
-	}
-	e.remove(e)
-	e.Move(vel)
-	e.insert(e)
 }
 
 func (e *Entity) Stop() {
