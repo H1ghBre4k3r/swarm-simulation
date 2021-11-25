@@ -11,5 +11,5 @@ while True:
     print("{} {}".format(x - oldX, y - oldY))
     oldX = x
     oldY = y
-    time.sleep(0.01)
-    i += 1
+    time.sleep(0.02)
+    i += 2

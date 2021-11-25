@@ -8,12 +8,6 @@ import (
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/process"
 )
 
-type Position struct {
-	X float64
-	Y float64
-	R float64
-}
-
 type Obstacle interface {
 	GetX() int32
 	GetY() int32
@@ -28,6 +22,7 @@ type UpdateFn func(*Entity)
 type Entity struct {
 	id      string
 	pos     Position
+	vel     Velocity
 	color   uint32
 	insert  UpdateFn
 	remove  UpdateFn
@@ -88,6 +83,15 @@ func (e *Entity) SetColor(color uint32) {
 	e.color = color
 }
 
+func (e *Entity) Move(vel *Velocity) {
+	e.vel = *vel
+	e.pos.Move(vel)
+}
+
+func (e *Entity) GetVelocity() Velocity {
+	return e.vel
+}
+
 func (e *Entity) Start() error {
 	err := e.process.Start()
 	if err != nil {
@@ -110,9 +114,12 @@ func (e *Entity) loop() {
 		if err != nil {
 			continue
 		}
+		vel := &Velocity{
+			X: x,
+			Y: y,
+		}
 		e.remove(e)
-		e.pos.X += x
-		e.pos.Y += y
+		e.Move(vel)
 		e.insert(e)
 	}
 }

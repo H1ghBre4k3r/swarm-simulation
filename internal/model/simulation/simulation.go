@@ -12,6 +12,7 @@ type Drawable interface {
 	GetY() float64
 	GetR() float64
 	GetColor() uint32
+	GetVelocity() entities.Velocity
 }
 
 type View interface {
@@ -47,7 +48,7 @@ func (s *Simulation) init() {
 		s.spatial.Remove(entity)
 	}
 
-	for i := int32(0); i < 100; i++ {
+	for i := int32(0); i < 1; i++ {
 		entity := entities.Create("1", entities.Position{
 			X: math.Sin(0)*0.3 + 0.5,
 			Y: math.Cos(0)*0.3 + 0.5,
