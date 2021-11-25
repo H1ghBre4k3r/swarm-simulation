@@ -12,6 +12,7 @@ func main() {
 
 	usage := flag.Bool("h", false, "Show this information")
 	noGui := flag.Bool("no-gui", false, "hide gui")
+	noGrid := flag.Bool("no-grid", false, "hide grid")
 
 	flag.Parse()
 
@@ -23,7 +24,7 @@ func main() {
 	views := []simulation.View{}
 
 	if !*noGui {
-		win, err := window.New("Swarm Simulation", 1024)
+		win, err := window.New("Swarm Simulation", 1024, !*noGrid)
 		if err != nil {
 			panic(err)
 		}
