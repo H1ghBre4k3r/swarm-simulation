@@ -3,18 +3,18 @@ package entities_test
 import (
 	"testing"
 
-	"github.com/H1ghBre4k3r/swarm-simulation/internal/entities"
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/entities"
 )
 
 func TestNew(t *testing.T) {
-	entity := entities.Create("someRandomId", entities.Position{}, 0x0, nil)
+	entity := entities.Create("someRandomId", entities.Position{}, 0x0, nil, nil, "", nil)
 	if entity.Id() != "someRandomId" {
 		t.Fatal("Initial ID is not set correctly")
 	}
 }
 
 func TestSetters(t *testing.T) {
-	entity := entities.Create("", entities.Position{}, 0xffff0000, nil)
+	entity := entities.Create("", entities.Position{}, 0xffff0000, nil, nil, "", nil)
 
 	entity.SetX(200)
 	if entity.GetX() != 200 {
