@@ -123,6 +123,7 @@ func (e *Entity) loop() {
 		if err != nil {
 			panic(err)
 		}
+		// TODO lome: this panics, if underlying process terminates
 		e.process.In <- string(outMsg)
 
 		// receive answer message from process

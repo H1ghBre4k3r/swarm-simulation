@@ -55,7 +55,7 @@ func (s *Simulation) init() {
 		s.spatial.Remove(entity)
 	}
 
-	for i := int32(0); i < 100; i++ {
+	for i := int32(0); i < 1; i++ {
 		entity := entities.Create(fmt.Sprintf("id_%v", i), entities.Position{
 			X: math.Sin(0)*0.3 + 0.5,
 			Y: math.Cos(0)*0.3 + 0.5,
