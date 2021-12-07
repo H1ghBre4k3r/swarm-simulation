@@ -26,5 +26,11 @@ type MovementMessage struct {
 
 // Message to send to the process about the current information about the system
 type InformationMessage struct {
+	Position     Position                 `json:"position"`
+	Participants []ParticipantInformation `json:"participants"`
+}
+
+type ParticipantInformation struct {
 	Position Position `json:"position"`
+	Velocity Velocity `json:"velocity"`
 }

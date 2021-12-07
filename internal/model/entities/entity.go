@@ -136,12 +136,14 @@ func (e *Entity) loop() {
 		// send sample message to process
 		information := InformationMessage{}
 		information.Position = e.pos
+		information.Participants = []ParticipantInformation{}
 		outMsg, err := json.Marshal(&information)
 		if err != nil {
 			panic(err)
 		}
 		// TODO lome: this panics, if underlying process terminates
 		e.process.In <- string(outMsg)
+		fmt.Println(string(outMsg))
 
 		// receive answer message from process
 		msg := <-e.process.Out
