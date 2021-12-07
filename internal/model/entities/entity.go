@@ -143,7 +143,6 @@ func (e *Entity) loop() {
 		}
 		// TODO lome: this panics, if underlying process terminates
 		e.process.In <- string(outMsg)
-		fmt.Println(string(outMsg))
 
 		// receive answer message from process
 		msg := <-e.process.Out

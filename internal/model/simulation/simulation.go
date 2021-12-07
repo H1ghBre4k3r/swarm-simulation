@@ -60,7 +60,7 @@ func (s *Simulation) init() {
 	}, 0.005, entities.Position{
 		X: 0.9,
 		Y: 0.5,
-	}, 0xff000000, insert, remove, "./test.py", s.barrier))
+	}, 0xff000000, insert, remove, "./examples/test.py", s.barrier))
 
 	s.addEntity(entities.Create("2", entities.Position{
 		X: 0.9,
@@ -69,7 +69,7 @@ func (s *Simulation) init() {
 	}, 0.005, entities.Position{
 		X: 0.1,
 		Y: 0.5,
-	}, 0x0000ff00, insert, remove, "./test.py", s.barrier))
+	}, 0x0000ff00, insert, remove, "./examples/test.py", s.barrier))
 
 	for _, e := range s.entities.Get() {
 		err := e.Start()
