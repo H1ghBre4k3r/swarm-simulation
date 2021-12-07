@@ -22,6 +22,8 @@ type UpdateFn func(*Entity)
 type Entity struct {
 	id      string
 	pos     Position
+	target  Position
+	vmax    float64
 	vel     Velocity
 	color   uint32
 	insert  UpdateFn
@@ -31,7 +33,7 @@ type Entity struct {
 	barrier *util.Barrier
 }
 
-func Create(id string, position Position, color uint32, insertFn UpdateFn, removeFn UpdateFn, script string, barrier *util.Barrier) *Entity {
+func Create(id string, position Position, vmax float64, target Position, color uint32, insertFn UpdateFn, removeFn UpdateFn, script string, barrier *util.Barrier) *Entity {
 	p, err := process.Spawn(script)
 	if err != nil {
 		fmt.Printf("Cannot start process for entity '%v': %v\n", id, err.Error())
@@ -41,6 +43,8 @@ func Create(id string, position Position, color uint32, insertFn UpdateFn, remov
 		id:      id,
 		color:   color,
 		pos:     position,
+		target:  target,
+		vmax:    vmax,
 		insert:  insertFn,
 		remove:  removeFn,
 		running: false,
@@ -99,11 +103,24 @@ func (e *Entity) SetVelocity(vel *Velocity) {
 	e.vel = *vel
 }
 
+func (e *Entity) sendSetupMessage() {
+	setupInformation := SetupMessage{}
+	setupInformation.Position = e.pos
+	setupInformation.Target = e.target
+	setupInformation.Vmax = e.vmax
+	setupMessage, err := json.Marshal(&setupInformation)
+	if err != nil {
+		panic(err)
+	}
+	e.process.In <- string(setupMessage)
+}
+
 func (e *Entity) Start() error {
 	err := e.process.Start()
 	if err != nil {
 		return err
 	}
+	e.sendSetupMessage()
 	e.running = true
 	go e.loop()
 	return nil

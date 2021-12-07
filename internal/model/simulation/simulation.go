@@ -1,8 +1,6 @@
 package simulation
 
 import (
-	"fmt"
-	"math"
 	"time"
 
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/collision"
@@ -55,24 +53,36 @@ func (s *Simulation) init() {
 		s.spatial.Remove(entity)
 	}
 
-	for i := int32(0); i < 1; i++ {
-		entity := entities.Create(fmt.Sprintf("id_%v", i), entities.Position{
-			X: math.Sin(0)*0.3 + 0.5,
-			Y: math.Cos(0)*0.3 + 0.5,
-			R: 0.005,
-		}, 0xffff0000, insert, remove, "./test.py", s.barrier)
+	s.addEntity(entities.Create("1", entities.Position{
+		X: 0.1,
+		Y: 0.5,
+		R: 0.005,
+	}, 0.005, entities.Position{
+		X: 0.9,
+		Y: 0.5,
+	}, 0xffff0000, insert, remove, "./test.py", s.barrier))
 
-		if entity != nil {
-			s.entities.Add(entity)
-			s.spatial.Insert(entity)
-		}
-	}
+	s.addEntity(entities.Create("2", entities.Position{
+		X: 0.9,
+		Y: 0.5,
+		R: 0.005,
+	}, 0.005, entities.Position{
+		X: 0.1,
+		Y: 0.5,
+	}, 0xffff0000, insert, remove, "./test.py", s.barrier))
 
 	for _, e := range s.entities.Get() {
 		err := e.Start()
 		if err != nil {
 			panic(err)
 		}
+	}
+}
+
+func (s *Simulation) addEntity(entity *entities.Entity) {
+	if entity != nil {
+		s.entities.Add(entity)
+		s.spatial.Insert(entity)
 	}
 }
 

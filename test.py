@@ -1,28 +1,30 @@
 #!/usr/bin/env python3 -u
 import json
-import math
 import sys
-import time
+import numpy as np
 
 
 def main(): 
-    i = 0
+    setup = json.loads(sys.stdin.readline())
+    position = np.array([setup["position"]["x"], setup["position"]["y"]])
+    target = np.array([setup["target"]["x"], setup["target"]["y"]])
+    vmax = setup["vmax"]
     while True:
         inp = json.loads(sys.stdin.readline())
-        pos = inp["position"]
-        oldX = pos["x"]
-        oldY = pos["y"]
-        x = math.sin(i * (math.pi / 180)) * 0.3 + 0.5
-        y = math.cos(i * (math.pi / 180)) * 0.3 + 0.5
+        position = np.array([inp["position"]["x"], inp["position"]["y"]])
+        targetDir = target - position
+        if np.linalg.norm(targetDir) > vmax:
+            targetDir = targetDir / np.linalg.norm(targetDir)
+            targetDir = targetDir * vmax
+        
         val = {
             "action": "move",
             "payload": {
-                "x": x - oldX,
-                "y": y - oldY,
+                "x": targetDir[0],
+                "y": targetDir[1],
             }
         }
         print(json.dumps(val))
-        i += 4
 
 if __name__ == "__main__":
     main()
