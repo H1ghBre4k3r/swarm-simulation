@@ -8,18 +8,6 @@ import (
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
 )
 
-type Drawable interface {
-	GetX() float64
-	GetY() float64
-	GetR() float64
-	GetColor() uint32
-	GetVelocity() entities.Velocity
-}
-
-type View interface {
-	Render([]Drawable)
-}
-
 type Simulation struct {
 	views    []View
 	entities *entities.EntityManger
@@ -53,20 +41,24 @@ func (s *Simulation) init() {
 		s.spatial.Remove(entity)
 	}
 
-	s.addEntity(entities.Create("1", entities.Position{
-		X: 0.1,
-		Y: 0.5,
-		R: 0.005,
-	}, 0.005, entities.Position{
+	s.addEntity(entities.Create("1", entities.Shape{
+		Position: util.Vec2D{
+			X: 0.1,
+			Y: 0.5,
+		},
+		Radius: 0.005,
+	}, 0.005, util.Vec2D{
 		X: 0.9,
 		Y: 0.5,
 	}, 0xff000000, insert, remove, "./examples/test.py", s.barrier))
 
-	s.addEntity(entities.Create("2", entities.Position{
-		X: 0.9,
-		Y: 0.5,
-		R: 0.005,
-	}, 0.005, entities.Position{
+	s.addEntity(entities.Create("2", entities.Shape{
+		Position: util.Vec2D{
+			X: 0.9,
+			Y: 0.5,
+		},
+		Radius: 0.005,
+	}, 0.005, util.Vec2D{
 		X: 0.1,
 		Y: 0.5,
 	}, 0x0000ff00, insert, remove, "./examples/test.py", s.barrier))

@@ -8,23 +8,15 @@ import (
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
 )
 
-type Obstacle interface {
-	GetX() int32
-	GetY() int32
-	GetR() int32
-}
-
-type GetObstacles func(*Entity, int) []*Entity
-
 type UpdateFn func(*Entity)
 
 // Basic entity type which can be renderred in SDL
 type Entity struct {
 	id      string
-	pos     Position
-	target  Position
+	shape   Shape
+	target  util.Vec2D
 	vmax    float64
-	vel     Velocity
+	vel     util.Vec2D
 	color   uint32
 	insert  UpdateFn
 	remove  UpdateFn
@@ -33,7 +25,12 @@ type Entity struct {
 	barrier *util.Barrier
 }
 
-func Create(id string, position Position, vmax float64, target Position, color uint32, insertFn UpdateFn, removeFn UpdateFn, script string, barrier *util.Barrier) *Entity {
+type Shape struct {
+	Position util.Vec2D `json:"position"`
+	Radius   float64    `json:"radius"`
+}
+
+func Create(id string, shape Shape, vmax float64, target util.Vec2D, color uint32, insertFn UpdateFn, removeFn UpdateFn, script string, barrier *util.Barrier) *Entity {
 	p, err := process.Spawn(script)
 	if err != nil {
 		fmt.Printf("Cannot start process for entity '%v': %v\n", id, err.Error())
@@ -42,7 +39,7 @@ func Create(id string, position Position, vmax float64, target Position, color u
 	return &Entity{
 		id:      id,
 		color:   color,
-		pos:     position,
+		shape:   shape,
 		target:  target,
 		vmax:    vmax,
 		insert:  insertFn,
@@ -58,27 +55,23 @@ func (e *Entity) Id() string {
 }
 
 func (e *Entity) GetX() float64 {
-	return e.pos.X
+	return e.shape.Position.X
 }
 
 func (e *Entity) SetX(x float64) {
-	e.pos.X = x
+	e.shape.Position.X = x
 }
 
 func (e *Entity) GetY() float64 {
-	return e.pos.Y
+	return e.shape.Position.Y
 }
 
 func (e *Entity) SetY(y float64) {
-	e.pos.Y = y
+	e.shape.Position.Y = y
 }
 
 func (e *Entity) GetR() float64 {
-	return e.pos.R
-}
-
-func (e *Entity) SetR(r float64) {
-	e.pos.R = r
+	return e.shape.Radius
 }
 
 func (e *Entity) GetColor() uint32 {
@@ -91,21 +84,22 @@ func (e *Entity) SetColor(color uint32) {
 
 func (e *Entity) Move() {
 	e.remove(e)
-	e.pos.Move(&e.vel)
+	e.shape.Position.AddI(&e.vel)
 	e.insert(e)
 }
 
-func (e *Entity) GetVelocity() Velocity {
+func (e *Entity) GetVelocity() util.Vec2D {
 	return e.vel
 }
 
-func (e *Entity) SetVelocity(vel *Velocity) {
+func (e *Entity) SetVelocity(vel *util.Vec2D) {
 	e.vel = *vel
 }
 
 func (e *Entity) sendSetupMessage() {
 	setupInformation := SetupMessage{}
-	setupInformation.Position = e.pos
+	setupInformation.Position = e.shape.Position
+	setupInformation.Radius = e.shape.Radius
 	setupInformation.Target = e.target
 	setupInformation.Vmax = e.vmax
 	setupMessage, err := json.Marshal(&setupInformation)
@@ -135,7 +129,7 @@ func (e *Entity) loop() {
 
 		// send sample message to process
 		information := InformationMessage{}
-		information.Position = e.pos
+		information.Position = e.shape.Position
 		information.Participants = []ParticipantInformation{}
 		outMsg, err := json.Marshal(&information)
 		if err != nil {
@@ -158,7 +152,7 @@ func (e *Entity) loop() {
 				panic(err)
 			}
 			// update current velocity
-			e.SetVelocity(&Velocity{
+			e.SetVelocity(&util.Vec2D{
 				X: message.Payload.X,
 				Y: message.Payload.Y,
 			})

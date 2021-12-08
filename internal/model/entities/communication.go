@@ -1,10 +1,13 @@
 package entities
 
+import "github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
+
 // Message to send when starting the entities
 type SetupMessage struct {
-	Position Position `json:"position"`
-	Vmax     float64  `json:"vmax"`
-	Target   Position `json:"target"`
+	Position util.Vec2D `json:"position"`
+	Radius   float64    `json:"radius"`
+	Vmax     float64    `json:"vmax"`
+	Target   util.Vec2D `json:"target"`
 }
 
 type SimulationMessage struct {
@@ -26,11 +29,11 @@ type MovementMessage struct {
 
 // Message to send to the process about the current information about the system
 type InformationMessage struct {
-	Position     Position                 `json:"position"`
+	Position     util.Vec2D               `json:"position"`
 	Participants []ParticipantInformation `json:"participants"`
 }
 
 type ParticipantInformation struct {
-	Position Position `json:"position"`
-	Velocity Velocity `json:"velocity"`
+	Position util.Vec2D `json:"position"`
+	Velocity util.Vec2D `json:"velocity"`
 }

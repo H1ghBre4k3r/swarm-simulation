@@ -7,6 +7,7 @@ import numpy as np
 def main(): 
     setup = json.loads(sys.stdin.readline())
     position = np.array([setup["position"]["x"], setup["position"]["y"]])
+    radius = setup["radius"]
     target = np.array([setup["target"]["x"], setup["target"]["y"]])
     vmax = setup["vmax"]
     while True:
