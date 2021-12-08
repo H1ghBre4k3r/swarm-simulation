@@ -36,7 +36,8 @@ func (s *Simulation) Start() error {
 
 func (s *Simulation) init() {
 	portal := SimulationPortal{
-		spatial: *s.spatial,
+		spatial:  s.spatial,
+		entities: s.entities,
 	}
 
 	// initialize all participants mentioned in the configuration

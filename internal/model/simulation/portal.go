@@ -6,7 +6,8 @@ import (
 )
 
 type SimulationPortal struct {
-	spatial collision.SpatialHashmap
+	spatial  *collision.SpatialHashmap
+	entities *entities.EntityManger
 }
 
 func (p *SimulationPortal) Insert(entity *entities.Entity) {
@@ -15,4 +16,8 @@ func (p *SimulationPortal) Insert(entity *entities.Entity) {
 
 func (p *SimulationPortal) Remove(entity *entities.Entity) {
 	p.spatial.Remove(entity)
+}
+
+func (p *SimulationPortal) Participants() []*entities.Entity {
+	return p.entities.Get()
 }

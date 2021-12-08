@@ -7,6 +7,7 @@ type UpdateFn func(*Entity)
 type Portal interface {
 	Insert(*Entity)
 	Remove(*Entity)
+	Participants() []*Entity
 }
 
 type Shape struct {
