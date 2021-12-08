@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/collision"
@@ -68,8 +69,11 @@ func (s *Simulation) Loop() {
 	// create a new ticker which ticks every X milliseconds
 	ticker := time.NewTicker(50 * time.Millisecond)
 	for ; ; <-ticker.C {
+		start := time.Now()
 		ents := s.entities.Get()
 		s.barrier.Tick(len(ents))
+		elapsed := time.Since(start)
+		log.Printf("Tick took %s\n", elapsed)
 	}
 }
 

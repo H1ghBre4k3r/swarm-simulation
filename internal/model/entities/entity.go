@@ -119,6 +119,17 @@ func (e *Entity) loop() {
 		information := InformationMessage{}
 		information.Position = e.shape.Position
 		information.Participants = []ParticipantInformation{}
+
+		participants := e.portal.Participants()
+		for _, x := range participants {
+			if e.id != x.id {
+				information.Participants = append(information.Participants, ParticipantInformation{
+					Position: x.shape.Position,
+					Velocity: x.vel,
+				})
+			}
+		}
+
 		outMsg, err := json.Marshal(&information)
 		if err != nil {
 			panic(err)
