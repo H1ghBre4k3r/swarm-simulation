@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/AvraamMavridis/randomcolor"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/process"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
 )
@@ -17,7 +18,7 @@ type Entity struct {
 	target  util.Vec2D
 	vmax    float64
 	vel     util.Vec2D
-	color   uint32
+	color   randomcolor.RGBColor
 	insert  UpdateFn
 	remove  UpdateFn
 	running bool
@@ -30,7 +31,7 @@ type Shape struct {
 	Radius   float64    `json:"radius"`
 }
 
-func Create(id string, shape Shape, vmax float64, target util.Vec2D, color uint32, insertFn UpdateFn, removeFn UpdateFn, script string, barrier *util.Barrier) *Entity {
+func Create(id string, shape Shape, vmax float64, target util.Vec2D, insertFn UpdateFn, removeFn UpdateFn, script string, barrier *util.Barrier) *Entity {
 	p, err := process.Spawn(script)
 	if err != nil {
 		fmt.Printf("Cannot start process for entity '%v': %v\n", id, err.Error())
@@ -38,7 +39,7 @@ func Create(id string, shape Shape, vmax float64, target util.Vec2D, color uint3
 	}
 	return &Entity{
 		id:      id,
-		color:   color,
+		color:   randomcolor.GetRandomColorInRgb(),
 		shape:   shape,
 		target:  target,
 		vmax:    vmax,
@@ -74,12 +75,8 @@ func (e *Entity) GetR() float64 {
 	return e.shape.Radius
 }
 
-func (e *Entity) GetColor() uint32 {
+func (e *Entity) GetColor() randomcolor.RGBColor {
 	return e.color
-}
-
-func (e *Entity) SetColor(color uint32) {
-	e.color = color
 }
 
 func (e *Entity) Move() {

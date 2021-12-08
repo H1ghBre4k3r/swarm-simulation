@@ -48,7 +48,7 @@ func (s *Simulation) init() {
 		s.addEntity(entities.Create(fmt.Sprintf("id_%v", i), entities.Shape{
 			Position: p.Start,
 			Radius:   p.Radius,
-		}, p.VMax, p.Target, 0xff000000, insert, remove, p.Script, s.barrier))
+		}, p.VMax, p.Target, insert, remove, p.Script, s.barrier))
 	}
 
 	for _, e := range s.entities.Get() {
