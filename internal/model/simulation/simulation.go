@@ -35,20 +35,16 @@ func (s *Simulation) Start() error {
 }
 
 func (s *Simulation) init() {
-
-	insert := func(entity *entities.Entity) {
-		s.spatial.Insert(entity)
+	portal := SimulationPortal{
+		spatial: *s.spatial,
 	}
 
-	remove := func(entity *entities.Entity) {
-		s.spatial.Remove(entity)
-	}
-
+	// initialize all participants mentioned in the configuration
 	for i, p := range s.configuration.Participants {
 		s.addEntity(entities.Create(fmt.Sprintf("id_%v", i), entities.Shape{
 			Position: p.Start,
 			Radius:   p.Radius,
-		}, p.VMax, p.Target, insert, remove, p.Script, s.barrier))
+		}, p.VMax, p.Target, &portal, p.Script, s.barrier))
 	}
 
 	for _, e := range s.entities.Get() {

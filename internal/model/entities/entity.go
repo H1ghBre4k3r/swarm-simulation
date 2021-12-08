@@ -9,8 +9,6 @@ import (
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
 )
 
-type UpdateFn func(*Entity)
-
 // Basic entity type which can be renderred in SDL
 type Entity struct {
 	id      string
@@ -19,19 +17,13 @@ type Entity struct {
 	vmax    float64
 	vel     util.Vec2D
 	color   randomcolor.RGBColor
-	insert  UpdateFn
-	remove  UpdateFn
+	portal  Portal
 	running bool
 	process *process.Process
 	barrier *util.Barrier
 }
 
-type Shape struct {
-	Position util.Vec2D `json:"position"`
-	Radius   float64    `json:"radius"`
-}
-
-func Create(id string, shape Shape, vmax float64, target util.Vec2D, insertFn UpdateFn, removeFn UpdateFn, script string, barrier *util.Barrier) *Entity {
+func Create(id string, shape Shape, vmax float64, target util.Vec2D, portal Portal, script string, barrier *util.Barrier) *Entity {
 	p, err := process.Spawn(script)
 	if err != nil {
 		fmt.Printf("Cannot start process for entity '%v': %v\n", id, err.Error())
@@ -43,8 +35,7 @@ func Create(id string, shape Shape, vmax float64, target util.Vec2D, insertFn Up
 		shape:   shape,
 		target:  target,
 		vmax:    vmax,
-		insert:  insertFn,
-		remove:  removeFn,
+		portal:  portal,
 		running: false,
 		process: p,
 		barrier: barrier,
@@ -80,9 +71,9 @@ func (e *Entity) GetColor() randomcolor.RGBColor {
 }
 
 func (e *Entity) Move() {
-	e.remove(e)
+	e.portal.Remove(e)
 	e.shape.Position.AddI(&e.vel)
-	e.insert(e)
+	e.portal.Insert(e)
 }
 
 func (e *Entity) GetVelocity() util.Vec2D {
