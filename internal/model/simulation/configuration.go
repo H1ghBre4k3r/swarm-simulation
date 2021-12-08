@@ -7,8 +7,9 @@ type ParticipantSetupInformation struct {
 	Radius float64    `json:"radius"`
 	VMax   float64    `json:"vmax"`
 	Target util.Vec2D `json:"target"`
+	Script string     `json:"script"`
 }
 
-type SimulationConfiguration struct {
-	Participants []ParticipantSetupInformation `json:"participants"`
+type Configuration struct {
+	Participants []*ParticipantSetupInformation `json:"participants"`
 }

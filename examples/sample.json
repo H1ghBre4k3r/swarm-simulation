@@ -1,0 +1,56 @@
+{
+  "participants": [
+    {
+      "start": {
+        "x": 0.1,
+        "y": 0.5
+      },
+      "radius": 0.01,
+      "vmax": 0.005,
+      "target": {
+        "x": 0.9,
+        "y": 0.5
+      },
+      "script": "scripts/test.py"
+    },
+    {
+      "start": {
+        "x": 0.9,
+        "y": 0.5
+      },
+      "radius": 0.005,
+      "vmax": 0.03,
+      "target": {
+        "x": 0.1,
+        "y": 0.5
+      },
+      "script": "scripts/test.py"
+    },
+    {
+      "start": {
+        "x": 0.5,
+        "y": 0.1
+      },
+      "radius": 0.02,
+      "vmax": 0.005,
+      "target": {
+        "x": 0.5,
+        "y": 0.9
+      },
+      "script": "scripts/test.py"
+    },
+    {
+      "start": {
+        "x": 0.5,
+        "y": 0.9
+      },
+      "radius": 0.005,
+      "vmax": 0.01,
+      "target": {
+        "x": 0.5,
+        "y": 0.1
+      },
+      "script": "scripts/test.py"
+    }
+  ]
+}

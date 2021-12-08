@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/collision"
@@ -9,18 +10,20 @@ import (
 )
 
 type Simulation struct {
-	views    []View
-	entities *entities.EntityManger
-	spatial  *collision.SpatialHashmap
-	barrier  *util.Barrier
+	configuration *Configuration
+	views         []View
+	entities      *entities.EntityManger
+	spatial       *collision.SpatialHashmap
+	barrier       *util.Barrier
 }
 
-func New(views []View) *Simulation {
+func New(configuration *Configuration, views []View) *Simulation {
 	return &Simulation{
-		views:    views,
-		entities: entities.Manager(),
-		spatial:  collision.New(64),
-		barrier:  util.NewBarrier(),
+		configuration: configuration,
+		views:         views,
+		entities:      entities.Manager(),
+		spatial:       collision.New(64),
+		barrier:       util.NewBarrier(),
 	}
 }
 
@@ -41,27 +44,12 @@ func (s *Simulation) init() {
 		s.spatial.Remove(entity)
 	}
 
-	s.addEntity(entities.Create("1", entities.Shape{
-		Position: util.Vec2D{
-			X: 0.1,
-			Y: 0.5,
-		},
-		Radius: 0.005,
-	}, 0.005, util.Vec2D{
-		X: 0.9,
-		Y: 0.5,
-	}, 0xff000000, insert, remove, "./examples/test.py", s.barrier))
-
-	s.addEntity(entities.Create("2", entities.Shape{
-		Position: util.Vec2D{
-			X: 0.9,
-			Y: 0.5,
-		},
-		Radius: 0.005,
-	}, 0.005, util.Vec2D{
-		X: 0.1,
-		Y: 0.5,
-	}, 0x0000ff00, insert, remove, "./examples/test.py", s.barrier))
+	for i, p := range s.configuration.Participants {
+		s.addEntity(entities.Create(fmt.Sprintf("id_%v", i), entities.Shape{
+			Position: p.Start,
+			Radius:   p.Radius,
+		}, p.VMax, p.Target, 0xff000000, insert, remove, p.Script, s.barrier))
+	}
 
 	for _, e := range s.entities.Get() {
 		err := e.Start()
