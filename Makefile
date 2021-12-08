@@ -15,6 +15,10 @@ build:
 # build program for release (without debug information)
 release: 
 	PESCA_RELEASE=1 ./scripts/build.sh
+	
+# build program for release (without debug information)
+gui: 
+	PESCA_RELEASE=1 ./scripts/build.sh
 
 static: 
 	STATIC_LINK=1 PESCA_RELEASE=1 ./scripts/build.sh

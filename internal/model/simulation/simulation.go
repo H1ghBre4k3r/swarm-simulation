@@ -2,7 +2,7 @@ package simulation
 
 import (
 	"fmt"
-	"math"
+	"log"
 	"time"
 
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/collision"
@@ -10,31 +10,21 @@ import (
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
 )
 
-type Drawable interface {
-	GetX() float64
-	GetY() float64
-	GetR() float64
-	GetColor() uint32
-	GetVelocity() entities.Velocity
-}
-
-type View interface {
-	Render([]Drawable)
-}
-
 type Simulation struct {
-	views    []View
-	entities *entities.EntityManger
-	spatial  *collision.SpatialHashmap
-	barrier  *util.Barrier
+	configuration *Configuration
+	views         []View
+	entities      *entities.EntityManger
+	spatial       *collision.SpatialHashmap
+	barrier       *util.Barrier
 }
 
-func New(views []View) *Simulation {
+func New(configuration *Configuration, views []View) *Simulation {
 	return &Simulation{
-		views:    views,
-		entities: entities.Manager(),
-		spatial:  collision.New(64),
-		barrier:  util.NewBarrier(),
+		configuration: configuration,
+		views:         views,
+		entities:      entities.Manager(),
+		spatial:       collision.New(64),
+		barrier:       util.NewBarrier(),
 	}
 }
 
@@ -46,26 +36,17 @@ func (s *Simulation) Start() error {
 }
 
 func (s *Simulation) init() {
-
-	insert := func(entity *entities.Entity) {
-		s.spatial.Insert(entity)
+	portal := SimulationPortal{
+		spatial:  s.spatial,
+		entities: s.entities,
 	}
 
-	remove := func(entity *entities.Entity) {
-		s.spatial.Remove(entity)
-	}
-
-	for i := int32(0); i < 1; i++ {
-		entity := entities.Create(fmt.Sprintf("id_%v", i), entities.Position{
-			X: math.Sin(0)*0.3 + 0.5,
-			Y: math.Cos(0)*0.3 + 0.5,
-			R: 0.005,
-		}, 0xffff0000, insert, remove, "./test.py", s.barrier)
-
-		if entity != nil {
-			s.entities.Add(entity)
-			s.spatial.Insert(entity)
-		}
+	// initialize all participants mentioned in the configuration
+	for i, p := range s.configuration.Participants {
+		s.addEntity(entities.Create(fmt.Sprintf("id_%v", i), entities.Shape{
+			Position: p.Start,
+			Radius:   p.Radius,
+		}, p.VMax, p.Target, &portal, p.Script, s.barrier))
 	}
 
 	for _, e := range s.entities.Get() {
@@ -76,13 +57,23 @@ func (s *Simulation) init() {
 	}
 }
 
+func (s *Simulation) addEntity(entity *entities.Entity) {
+	if entity != nil {
+		s.entities.Add(entity)
+		s.spatial.Insert(entity)
+	}
+}
+
 // Main loop for the simulation.
 func (s *Simulation) Loop() {
 	// create a new ticker which ticks every X milliseconds
 	ticker := time.NewTicker(50 * time.Millisecond)
 	for ; ; <-ticker.C {
+		start := time.Now()
 		ents := s.entities.Get()
 		s.barrier.Tick(len(ents))
+		elapsed := time.Since(start)
+		log.Printf("Tick took %s\n", elapsed)
 	}
 }
 

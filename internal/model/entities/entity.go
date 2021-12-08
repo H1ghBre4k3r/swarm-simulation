@@ -4,34 +4,26 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/AvraamMavridis/randomcolor"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/process"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
 )
 
-type Obstacle interface {
-	GetX() int32
-	GetY() int32
-	GetR() int32
-}
-
-type GetObstacles func(*Entity, int) []*Entity
-
-type UpdateFn func(*Entity)
-
 // Basic entity type which can be renderred in SDL
 type Entity struct {
 	id      string
-	pos     Position
-	vel     Velocity
-	color   uint32
-	insert  UpdateFn
-	remove  UpdateFn
+	shape   Shape
+	target  util.Vec2D
+	vmax    float64
+	vel     util.Vec2D
+	color   randomcolor.RGBColor
+	portal  Portal
 	running bool
 	process *process.Process
 	barrier *util.Barrier
 }
 
-func Create(id string, position Position, color uint32, insertFn UpdateFn, removeFn UpdateFn, script string, barrier *util.Barrier) *Entity {
+func Create(id string, shape Shape, vmax float64, target util.Vec2D, portal Portal, script string, barrier *util.Barrier) *Entity {
 	p, err := process.Spawn(script)
 	if err != nil {
 		fmt.Printf("Cannot start process for entity '%v': %v\n", id, err.Error())
@@ -39,10 +31,11 @@ func Create(id string, position Position, color uint32, insertFn UpdateFn, remov
 	}
 	return &Entity{
 		id:      id,
-		color:   color,
-		pos:     position,
-		insert:  insertFn,
-		remove:  removeFn,
+		color:   randomcolor.GetRandomColorInRgb(),
+		shape:   shape,
+		target:  target,
+		vmax:    vmax,
+		portal:  portal,
 		running: false,
 		process: p,
 		barrier: barrier,
@@ -54,49 +47,54 @@ func (e *Entity) Id() string {
 }
 
 func (e *Entity) GetX() float64 {
-	return e.pos.X
+	return e.shape.Position.X
 }
 
 func (e *Entity) SetX(x float64) {
-	e.pos.X = x
+	e.shape.Position.X = x
 }
 
 func (e *Entity) GetY() float64 {
-	return e.pos.Y
+	return e.shape.Position.Y
 }
 
 func (e *Entity) SetY(y float64) {
-	e.pos.Y = y
+	e.shape.Position.Y = y
 }
 
 func (e *Entity) GetR() float64 {
-	return e.pos.R
+	return e.shape.Radius
 }
 
-func (e *Entity) SetR(r float64) {
-	e.pos.R = r
-}
-
-func (e *Entity) GetColor() uint32 {
+func (e *Entity) GetColor() randomcolor.RGBColor {
 	return e.color
 }
 
-func (e *Entity) SetColor(color uint32) {
-	e.color = color
-}
-
 func (e *Entity) Move() {
-	e.remove(e)
-	e.pos.Move(&e.vel)
-	e.insert(e)
+	e.portal.Remove(e)
+	e.shape.Position.AddI(&e.vel)
+	e.portal.Insert(e)
 }
 
-func (e *Entity) GetVelocity() Velocity {
+func (e *Entity) GetVelocity() util.Vec2D {
 	return e.vel
 }
 
-func (e *Entity) SetVelocity(vel *Velocity) {
+func (e *Entity) SetVelocity(vel *util.Vec2D) {
 	e.vel = *vel
+}
+
+func (e *Entity) sendSetupMessage() {
+	setupInformation := SetupMessage{}
+	setupInformation.Position = e.shape.Position
+	setupInformation.Radius = e.shape.Radius
+	setupInformation.Target = e.target
+	setupInformation.Vmax = e.vmax
+	setupMessage, err := json.Marshal(&setupInformation)
+	if err != nil {
+		panic(err)
+	}
+	e.process.In <- string(setupMessage)
 }
 
 func (e *Entity) Start() error {
@@ -104,6 +102,7 @@ func (e *Entity) Start() error {
 	if err != nil {
 		return err
 	}
+	e.sendSetupMessage()
 	e.running = true
 	go e.loop()
 	return nil
@@ -118,7 +117,19 @@ func (e *Entity) loop() {
 
 		// send sample message to process
 		information := InformationMessage{}
-		information.Position = e.pos
+		information.Position = e.shape.Position
+		information.Participants = []ParticipantInformation{}
+
+		participants := e.portal.Participants()
+		for _, x := range participants {
+			if e.id != x.id {
+				information.Participants = append(information.Participants, ParticipantInformation{
+					Position: x.shape.Position,
+					Velocity: x.vel,
+				})
+			}
+		}
+
 		outMsg, err := json.Marshal(&information)
 		if err != nil {
 			panic(err)
@@ -140,7 +151,7 @@ func (e *Entity) loop() {
 				panic(err)
 			}
 			// update current velocity
-			e.SetVelocity(&Velocity{
+			e.SetVelocity(&util.Vec2D{
 				X: message.Payload.X,
 				Y: message.Payload.Y,
 			})

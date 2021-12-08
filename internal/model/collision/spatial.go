@@ -18,7 +18,6 @@ type SpatialHashmap struct {
 func New(cellSize float64) *SpatialHashmap {
 	return &SpatialHashmap{
 		cellSize: cellSize,
-		// contents: make(map[int]map[int][]interface{}),
 	}
 }
 

@@ -59,7 +59,7 @@ func (w *Window) Render(entities []simulation.Drawable) {
 		}
 	}
 	for _, e := range entities {
-		gfx.FilledCircleRGBA(w.renderer, int32(e.GetX()*float64(w.scale)), int32(e.GetY()*float64(w.scale)), int32(e.GetR()*float64(w.scale)), 255, 0, 0, 255)
+		gfx.FilledCircleRGBA(w.renderer, int32(e.GetX()*float64(w.scale)), int32(e.GetY()*float64(w.scale)), int32(e.GetR()*float64(w.scale)), uint8(e.GetColor().Red), uint8(e.GetColor().Green), uint8(e.GetColor().Blue), 255)
 		gfx.ThickLineRGBA(w.renderer, int32(e.GetX()*float64(w.scale)), int32(e.GetY()*float64(w.scale)), int32((e.GetX()+e.GetVelocity().X)*float64(w.scale)), int32((e.GetY()+e.GetVelocity().Y)*float64(w.scale)), 2, 0, 255, 0, 255)
 	}
 	w.renderer.Present()
