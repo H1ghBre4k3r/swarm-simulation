@@ -36,4 +36,5 @@ type InformationMessage struct {
 type ParticipantInformation struct {
 	Position util.Vec2D `json:"position"`
 	Velocity util.Vec2D `json:"velocity"`
+	Distance float64    `json:"distance"`
 }

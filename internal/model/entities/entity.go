@@ -126,6 +126,7 @@ func (e *Entity) loop() {
 				information.Participants = append(information.Participants, ParticipantInformation{
 					Position: x.shape.Position,
 					Velocity: x.vel,
+					Distance: e.shape.Position.Add(x.shape.Position.Scale(-1)).Length(),
 				})
 			}
 		}
