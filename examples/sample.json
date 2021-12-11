@@ -1,12 +1,15 @@
 {
+  "settings": {
+    "tickLength": 500
+  },
   "participants": [
     {
       "start": {
         "x": 0.1,
         "y": 0.5
       },
-      "radius": 0.01,
-      "vmax": 0.005,
+      "radius": 0.025,
+      "vmax": 0.05,
       "target": {
         "x": 0.9,
         "y": 0.5
@@ -18,8 +21,8 @@
         "x": 0.9,
         "y": 0.5
       },
-      "radius": 0.005,
-      "vmax": 0.03,
+      "radius": 0.025,
+      "vmax": 0.05,
       "target": {
         "x": 0.1,
         "y": 0.5

@@ -10,6 +10,11 @@ type ParticipantSetupInformation struct {
 	Script string     `json:"script"`
 }
 
+type Settings struct {
+	TickLength int64 `json:"tickLength"`
+}
+
 type Configuration struct {
+	Settings     Settings
 	Participants []*ParticipantSetupInformation `json:"participants"`
 }
