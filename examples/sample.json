@@ -1,6 +1,6 @@
 {
   "settings": {
-    "tickLength": 500
+    "tickLength": 50
   },
   "participants": [
     {
@@ -8,52 +8,26 @@
         "x": 0.1,
         "y": 0.5
       },
-      "radius": 0.025,
-      "vmax": 0.05,
+      "radius": 0.015,
+      "vmax": 0.005,
       "target": {
         "x": 0.9,
         "y": 0.5
       },
-      "script": "scripts/test.py"
+      "script": "scripts/orca/main.py"
     },
     {
       "start": {
         "x": 0.9,
         "y": 0.5
       },
-      "radius": 0.025,
-      "vmax": 0.05,
+      "radius": 0.015,
+      "vmax": 0.005,
       "target": {
         "x": 0.1,
         "y": 0.5
       },
-      "script": "scripts/test.py"
-    },
-    {
-      "start": {
-        "x": 0.5,
-        "y": 0.1
-      },
-      "radius": 0.02,
-      "vmax": 0.005,
-      "target": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "script": "scripts/test.py"
-    },
-    {
-      "start": {
-        "x": 0.5,
-        "y": 0.9
-      },
-      "radius": 0.005,
-      "vmax": 0.01,
-      "target": {
-        "x": 0.5,
-        "y": 0.1
-      },
-      "script": "scripts/test.py"
+      "script": "scripts/orca/main.py"
     }
   ]
 }
