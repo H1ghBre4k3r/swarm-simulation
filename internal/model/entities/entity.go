@@ -70,10 +70,8 @@ func (e *Entity) GetColor() randomcolor.RGBColor {
 	return e.color
 }
 
-func (e *Entity) Move() {
-	e.portal.Remove(e)
-	e.shape.Position.AddI(&e.vel)
-	e.portal.Insert(e)
+func (e *Entity) GetTarget() util.Vec2D {
+	return e.target
 }
 
 func (e *Entity) GetVelocity() util.Vec2D {
@@ -82,6 +80,12 @@ func (e *Entity) GetVelocity() util.Vec2D {
 
 func (e *Entity) SetVelocity(vel *util.Vec2D) {
 	e.vel = *vel
+}
+
+func (e *Entity) Move() {
+	e.portal.Remove(e)
+	e.shape.Position.AddI(&e.vel)
+	e.portal.Insert(e)
 }
 
 func (e *Entity) sendSetupMessage() {

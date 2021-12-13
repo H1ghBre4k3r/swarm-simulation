@@ -11,6 +11,7 @@ type Drawable interface {
 	GetR() float64
 	GetColor() randomcolor.RGBColor
 	GetVelocity() util.Vec2D
+	GetTarget() util.Vec2D
 }
 
 type View interface {

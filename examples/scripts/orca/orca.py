@@ -2,7 +2,7 @@ from agent import Participant
 import numpy as np
 import sys
 
-tau = 100
+tau = 25.0
 
 
 def r2d(rad: float) -> float:
@@ -44,10 +44,10 @@ def dist(x: np.ndarray, y: np.ndarray) -> float:
     return np.linalg.norm(x-y)
 
 
-def orca(we: Participant, other: Participant) -> np.ndarray:
-    x = other.position - we.position
-    r = other.radius + we.radius
-    # r *= 2
+def orca(a: Participant, b: Participant) -> np.ndarray:
+    x = b.position - a.position
+    r = b.radius + a.radius
+    r *= 2
     positionAngle = angle(x)
 
     # information about the cone
@@ -64,29 +64,35 @@ def orca(we: Participant, other: Participant) -> np.ndarray:
     # relative velocity calculations
     # if norm(we.velocity) <= 0 or norm(other.velocity) <= 0:
     #     return we.velocity
-    vel = we.velocity - other.velocity
+    vel = a.velocity - b.velocity
     velocityAngle = angle(vel)
-    differenceAngle = np.abs(velocityAngle % 360 - positionAngle % 360)
+    differenceAngle = np.abs(np.abs(positionAngle) - np.abs(velocityAngle))
     u_vec = np.array([0, 0])
     if differenceAngle < sideAngle:
         # we are colliding at some point in time
         if norm(vel) <= norm(discCenter) and dist(vel, discCenter) < discRadius:
             # we are colliding with the truncating disc
             sys.stderr.write("Collision with truncating disc\n")
+            vec = vel - discCenter
+            vecDist = norm(vec)
+            u = (discRadius - vecDist)
+            u_vec = (vec / vecDist) * u
+
         if norm(vel) >= norm(discCenter):
             # we are colliding with the cone
-            distLeft = norm(
-                np.cross(leftSide, -vel)) / norm(leftSide)
-            distRight = norm(
-                np.cross(rightSide, -vel)) / norm(rightSide)
+            distLeft = np.abs(norm(
+                np.cross(leftSide, -vel)) / norm(leftSide))
+            distRight = np.abs(norm(
+                np.cross(rightSide, -vel)) / norm(rightSide))
             u = 0
-            if distLeft < distRight:
+            if distLeft <= distRight:
                 u = distLeft
                 u_vec = np.array([-leftSide[1], leftSide[0]])
             else:
                 u = distRight
-                u_vec = np.array([leftSide[1], -leftSide[0]])
+                u_vec = np.array([rightSide[1], -rightSide[0]])
             u_vec = u_vec / norm(u_vec)
-            u_vec *= u / 2
+            # TODO lome: why do they still collide?
+            u_vec = u_vec * u
 
-    return we.velocity + u_vec
+    return a.velocity + u_vec

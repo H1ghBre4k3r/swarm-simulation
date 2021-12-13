@@ -40,6 +40,10 @@ func New(title string, scale int32, lines bool) (*Window, error) {
 	}, nil
 }
 
+func (w *Window) Scale(n float64) float64 {
+	return float64(w.scale) * n
+}
+
 // Destroy this window
 func (w *Window) Destroy() {
 	w.window.Destroy()
@@ -59,8 +63,10 @@ func (w *Window) Render(entities []simulation.Drawable) {
 		}
 	}
 	for _, e := range entities {
-		gfx.FilledCircleRGBA(w.renderer, int32(e.GetX()*float64(w.scale)), int32(e.GetY()*float64(w.scale)), int32(e.GetR()*float64(w.scale)), uint8(e.GetColor().Red), uint8(e.GetColor().Green), uint8(e.GetColor().Blue), 255)
-		gfx.ThickLineRGBA(w.renderer, int32(e.GetX()*float64(w.scale)), int32(e.GetY()*float64(w.scale)), int32((e.GetX()+e.GetVelocity().X)*float64(w.scale)), int32((e.GetY()+e.GetVelocity().Y)*float64(w.scale)), 2, 0, 255, 0, 255)
+		gfx.FilledCircleRGBA(w.renderer, int32(w.Scale(e.GetX())), int32(w.Scale(e.GetY())), int32(w.Scale(e.GetR())), uint8(e.GetColor().Red), uint8(e.GetColor().Green), uint8(e.GetColor().Blue), 255)
+		gfx.ThickLineRGBA(w.renderer, int32(w.Scale(e.GetX())), int32(w.Scale(e.GetY())), int32(w.Scale(e.GetX()+e.GetVelocity().X)), int32(w.Scale(e.GetY()+e.GetVelocity().Y)), 2, 0, 255, 0, 255)
+
+		gfx.LineRGBA(w.renderer, int32(w.Scale(e.GetX())), int32(w.Scale(e.GetY())), int32(w.Scale(e.GetTarget().X)), int32(w.Scale(e.GetTarget().Y)), 0, 0, 0, 10)
 	}
 	w.renderer.Present()
 }

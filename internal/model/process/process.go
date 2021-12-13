@@ -43,10 +43,24 @@ func Spawn(command string, args ...string) (*Process, error) {
 }
 
 func (p *Process) Start() error {
-	err := p.c.Start()
+	pipe, err := p.c.StderrPipe()
+	if err != nil {
+		panic(err)
+	}
+	err = p.c.Start()
 	if err != nil {
 		return err
 	}
+	reader := bufio.NewReader(pipe)
+	go func() {
+		for {
+			line, _, err := reader.ReadLine()
+			if err != nil {
+				panic(err)
+			}
+			println(string(line))
+		}
+	}()
 
 	go p.writeStdIn()
 	go p.readStdOut()
