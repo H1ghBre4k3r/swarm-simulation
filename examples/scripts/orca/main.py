@@ -3,7 +3,7 @@ import json
 import sys
 import numpy as np
 
-from agent import Participant
+from participant import Participant
 from orca import orca
 
 
