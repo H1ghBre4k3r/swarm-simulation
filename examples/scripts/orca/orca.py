@@ -2,7 +2,7 @@ from participant import Participant
 import numpy as np
 import sys
 
-tau = 4
+tau = 2
 
 
 def r2d(rad: float) -> float:
@@ -81,10 +81,18 @@ def closest_point_on_line(l0: np.ndarray, l1: np.ndarray, tar: np.ndarray) -> np
     return mix(l0, l1, np.clip(t, 0, 1))
 
 
+def angle_diff(a, b):
+    x = a + 360
+    x %= 360
+    y = b + 360
+    y %= 360
+    return min(abs(x - y), abs(x - y - 360), abs(x - y + 360))
+
+
 def orca(a: Participant, b: Participant) -> np.ndarray:
     x = b.position - a.position
     r = b.radius + a.radius
-    r *= 2
+    # r *= 2
     positionAngle = angle(x)
 
     # information about the cone
@@ -103,7 +111,7 @@ def orca(a: Participant, b: Participant) -> np.ndarray:
     #     return we.velocity
     vel = a.velocity - b.velocity
     velocityAngle = angle(vel)
-    differenceAngle = np.abs(np.abs(positionAngle) - np.abs(velocityAngle))
+    differenceAngle = angle_diff(positionAngle, velocityAngle)
     u_vec = np.array([0, 0])
     if differenceAngle < sideAngle:
         # we are colliding at some point in time
@@ -114,7 +122,11 @@ def orca(a: Participant, b: Participant) -> np.ndarray:
             vecDist = norm(vec)
             u = (discRadius - vecDist)
             u_vec = (vec / vecDist) * u
-        else:
+            u_ang = angle(u_vec)
+            u_ang += 10
+            u_vec = angle2Vec(u_ang)
+            u_vec = u_vec * u
+        elif norm(vel) > norm(discCenter):
             leftPoint = closest_point_on_line(np.array([0, 0]), leftSide, vel)
             rightPoint = closest_point_on_line(
                 np.array([0, 0]), rightSide, vel)
@@ -129,5 +141,10 @@ def orca(a: Participant, b: Participant) -> np.ndarray:
                 u_vec = right_u
 
             u_vec = u_vec / 2
+    elif dist(vel, discCenter) < discRadius:
+        vec = vel - discCenter
+        vecDist = norm(vec)
+        u = (discRadius - vecDist)
+        u_vec = (vec / vecDist) * u
 
     return a.velocity + u_vec
