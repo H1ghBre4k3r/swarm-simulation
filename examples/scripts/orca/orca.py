@@ -1,35 +1,50 @@
-from agent import Participant
+from participant import Participant
 import numpy as np
 import sys
 
-tau = 25.0
+tau = 4
 
 
 def r2d(rad: float) -> float:
+    """
+    Convert radians to degrees.
+    """
     return np.rad2deg(rad)
 
 
 def d2r(deg: float) -> float:
+    """
+    Convert between degrees and radians.
+    """
     return np.deg2rad(deg)
 
 
-def angle(x: np.ndarray, deg=True) -> float:
+def angle(vector: np.ndarray, deg=True) -> float:
+    """
+    Calculate the angle of a vector.
+    """
     ref = np.array([1, 0])
     ref_unit = ref / np.linalg.norm(ref)
-    x_unit = x / np.linalg.norm(x)
+    x_unit = vector / np.linalg.norm(vector)
     ang = np.arccos(np.dot(ref_unit, x_unit))
     if deg:
         ang = r2d(ang)
-        if x[1] < 0:
+        if vector[1] < 0:
             ang = -ang
     return ang
 
 
 def angle2Vec(angle: float) -> np.ndarray:
+    """
+    Convert an angle to a vector.
+    """
     return np.array([np.cos(d2r(angle)), np.sin(d2r(angle))])
 
 
 def arcsin(gegenKat: float, hypo: float, deg=True) -> float:
+    """
+    Calculate the arcsin of a value.
+    """
     val = np.arctan2(gegenKat, hypo)
     if deg:
         val = r2d(val)
@@ -37,11 +52,33 @@ def arcsin(gegenKat: float, hypo: float, deg=True) -> float:
 
 
 def norm(x: np.ndarray) -> float:
+    """"
+    Calculate the norm of a vector.
+    """
     return np.linalg.norm(x)
 
 
 def dist(x: np.ndarray, y: np.ndarray) -> float:
+    """
+    Calculate the distance between two points.
+    """
     return np.linalg.norm(x-y)
+
+
+def mix(a, b, amount):
+    return a + (b - a) * amount
+
+
+def closest_point_on_line(l0: np.ndarray, l1: np.ndarray, tar: np.ndarray) -> np.ndarray:
+    """
+    Find the closest point on a line to a target point.
+    """
+    c = tar - l0
+    v = l1 - l0
+    v = v / np.linalg.norm(v)
+    d = norm(l0 - l1)
+    t = np.dot(c, v) / d
+    return mix(l0, l1, np.clip(t, 0, 1))
 
 
 def orca(a: Participant, b: Participant) -> np.ndarray:
@@ -51,7 +88,7 @@ def orca(a: Participant, b: Participant) -> np.ndarray:
     positionAngle = angle(x)
 
     # information about the cone
-    sideAngle = arcsin(norm(r), norm(x))
+    sideAngle = arcsin(r, norm(x))
     rightSideAngle = positionAngle - sideAngle
     leftSideAngle = positionAngle + sideAngle
     rightSide = angle2Vec(rightSideAngle)
@@ -77,22 +114,20 @@ def orca(a: Participant, b: Participant) -> np.ndarray:
             vecDist = norm(vec)
             u = (discRadius - vecDist)
             u_vec = (vec / vecDist) * u
+        else:
+            leftPoint = closest_point_on_line(np.array([0, 0]), leftSide, vel)
+            rightPoint = closest_point_on_line(
+                np.array([0, 0]), rightSide, vel)
+            left_u = leftPoint - vel
+            right_u = rightPoint - vel
+            leftDist = dist(leftPoint, vel)
+            rightDist = dist(rightPoint, vel)
 
-        if norm(vel) >= norm(discCenter):
-            # we are colliding with the cone
-            distLeft = np.abs(norm(
-                np.cross(leftSide, -vel)) / norm(leftSide))
-            distRight = np.abs(norm(
-                np.cross(rightSide, -vel)) / norm(rightSide))
-            u = 0
-            if distLeft <= distRight:
-                u = distLeft
-                u_vec = np.array([-leftSide[1], leftSide[0]])
+            if leftDist < rightDist:
+                u_vec = left_u
             else:
-                u = distRight
-                u_vec = np.array([rightSide[1], -rightSide[0]])
-            u_vec = u_vec / norm(u_vec)
-            # TODO lome: why do they still collide?
-            u_vec = u_vec * u
+                u_vec = right_u
+
+            u_vec = u_vec / 2
 
     return a.velocity + u_vec

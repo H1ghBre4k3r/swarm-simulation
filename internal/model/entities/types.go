@@ -14,3 +14,10 @@ type Shape struct {
 	Position util.Vec2D `json:"position"`
 	Radius   float64    `json:"radius"`
 }
+
+func (s *Shape) Copy() *Shape {
+	return &Shape{
+		Position: *s.Position.Copy(),
+		Radius:   s.Radius,
+	}
+}

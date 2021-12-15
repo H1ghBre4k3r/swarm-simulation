@@ -42,6 +42,21 @@ func Create(id string, shape Shape, vmax float64, target util.Vec2D, portal Port
 	}
 }
 
+func (e *Entity) Copy() *Entity {
+	return &Entity{
+		id:      e.id,
+		shape:   e.shape,
+		target:  e.target,
+		vmax:    e.vmax,
+		vel:     e.vel,
+		color:   e.color,
+		portal:  e.portal,
+		running: e.running,
+		process: e.process,
+		barrier: e.barrier,
+	}
+}
+
 func (e *Entity) Id() string {
 	return e.id
 }
