@@ -137,8 +137,7 @@ def orca(a: Participant, b: Participant) -> np.ndarray:
             u_angle = angle(u)
             u_angle += v_angle
             u = angle2Vec(u_angle)
-            u = u / norm(u)
+            u /= norm(u)
             u *= l
-            sys.stderr.write("ORCA: u is {}\n".format(l))
 
-    return a.velocity + u / 2
+    return a.velocity + u

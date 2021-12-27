@@ -99,10 +99,6 @@ def orca(a: Participant, b: Participant) -> np.ndarray:
     v_angle %= 360
     v_angle -= 180
 
-    new_v = angle2Vec(v_angle)
-    new_v /= norm(new_v)
-    new_v *= norm(v)
-
     x_angle = angle(x)
     x_angle -= v_angle
     x_angle += 180
@@ -132,7 +128,7 @@ def orca(a: Participant, b: Participant) -> np.ndarray:
             left_dist = norm(left_u)
             right_dist = norm(right_u)
 
-            if left_dist < right_dist:
+            if left_dist <= right_dist:
                 u = left_u
             else:
                 u = right_u
@@ -144,4 +140,4 @@ def orca(a: Participant, b: Participant) -> np.ndarray:
             u /= norm(u)
             u *= l
 
-    return a.velocity + u / 2
+    return a.velocity + u

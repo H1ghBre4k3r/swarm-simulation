@@ -1,8 +1,9 @@
-from participant import Participant
-import numpy as np
 import sys
 
-tau = 2
+import numpy as np
+from participant import Participant
+
+tau = 250
 
 
 def r2d(rad: float) -> float:
@@ -92,7 +93,7 @@ def angle_diff(a, b):
 def orca(a: Participant, b: Participant) -> np.ndarray:
     x = b.position - a.position
     r = b.radius + a.radius
-    # r *= 2
+    r *= 2
     positionAngle = angle(x)
 
     # information about the cone
@@ -123,7 +124,7 @@ def orca(a: Participant, b: Participant) -> np.ndarray:
             u = (discRadius - vecDist)
             u_vec = (vec / vecDist) * u
             u_ang = angle(u_vec)
-            u_ang += 10
+            u_ang += 1
             u_vec = angle2Vec(u_ang)
             u_vec = u_vec * u
         elif norm(vel) > norm(discCenter):
