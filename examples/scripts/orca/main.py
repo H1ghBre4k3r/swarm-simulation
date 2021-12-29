@@ -26,8 +26,7 @@ def main():
             # move halfplanes outwart at equal speed
             new_halfplanes = []
             for l in halfplanes:
-                offset = normalize(l.u)
-                new_halfplanes.append(Halfplane(l.u - offset + 0.01, l.n))
+                new_halfplanes.append(Halfplane(l.u - l.n * 0.0001, l.n))
             halfplanes = new_halfplanes
         if norm(new_vel) > we.vmax:
             new_vel = normalize(new_vel) * we.vmax
