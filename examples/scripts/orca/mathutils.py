@@ -30,7 +30,7 @@ def vec2angle(vector: np.ndarray, deg=True) -> float:
     return ang
 
 
-def angle2Vec(angle: float) -> np.ndarray:
+def angle2vec(angle: float) -> np.ndarray:
     """
     Convert an angle to a vector.
     """

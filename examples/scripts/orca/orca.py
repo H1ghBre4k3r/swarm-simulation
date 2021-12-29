@@ -2,7 +2,7 @@ import sys
 
 import numpy as np
 from halfplane import Halfplane
-from mathutils import (angle2Vec, angle_diff, arcsin, closest_point_on_line,
+from mathutils import (angle2vec, angle_diff, arcsin, closest_point_on_line,
                        dist, norm, normalize, vec2angle)
 from participant import Participant
 
@@ -14,7 +14,7 @@ def out_of_disc(disc_center, disc_r, v):
     rel_vec = v - disc_center
     w_length = norm(rel_vec)
     # rotate vector by a certain degree, so we do not deadlock
-    rel_vec = angle2Vec(vec2angle(rel_vec) + 10)
+    rel_vec = angle2vec(vec2angle(rel_vec) + 10)
     # calculate u (the velocity that will get us out of collision)
     u_vec = rel_vec * (disc_r - w_length)
     return u_vec, rel_vec
@@ -41,15 +41,48 @@ def orca(a: Participant, b: Participant) -> np.ndarray:
             # we are colliding with truncating disc
             return out_of_disc(disc_center, disc_r, v)
         else:
-            # we are colliding with cone
-            side_len = np.sqrt(norm(x)**2 - r**2)
-            # # determine the side of the cone we have to project on
-            signed_radius = np.copysign(r, np.linalg.det([v, x]))
-            rot = np.array([[side_len, signed_radius],
-                            [-signed_radius, side_len]])
-            x_rot = rot.dot(x) / norm(x)**2
-            n = np.array([x_rot[1], -x_rot[0]]) * np.sign(signed_radius)
-            return x_rot * np.dot(v, x_rot) - v, n
+            # calculate angles of relative position and velocity
+            positionAngle = vec2angle(x)
+            velocityAngle = vec2angle(v)
+
+            # calculate angle between velocity and position vector
+            differenceAngle = angle_diff(positionAngle, velocityAngle)
+
+            # calculate angles of cone
+            sideAngle = arcsin(r, norm(x))
+            rightSideAngle = positionAngle - sideAngle
+            leftSideAngle = positionAngle + sideAngle
+
+            # calculate vectors for sides of code
+            rightSide = angle2vec(rightSideAngle)
+            leftSide = angle2vec(leftSideAngle)
+
+            # calculate closest points on both side
+            leftPoint = closest_point_on_line(
+                np.array([0, 0]), leftSide, v)
+            rightPoint = closest_point_on_line(
+                np.array([0, 0]), rightSide, v)
+
+            # calculate vectors for those closest points
+            left_u = leftPoint - v
+            right_u = rightPoint - v
+
+            # calculate distance to closest points on lines
+            leftDist = dist(leftPoint, v)
+            rightDist = dist(rightPoint, v)
+
+            # decide, which side is closer
+            if leftDist < rightDist:
+                u = left_u
+            else:
+                u = right_u
+
+            # calculate n (the normal vector at the closest point pointing OUTWARDS)
+            n = normalize(u)
+            if differenceAngle > sideAngle:
+                n *= -1
+
+            return u, n
 
 
 def halfplane_intersection(halfplanes_u: list[Halfplane], current_velocity: np.ndarray, optimal_point: np.ndarray) -> np.ndarray:
