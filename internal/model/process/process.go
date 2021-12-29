@@ -56,7 +56,9 @@ func (p *Process) Start() error {
 		for {
 			line, _, err := reader.ReadLine()
 			if err != nil {
-				panic(err)
+				// panic(err)
+				p.Stop()
+				break
 			}
 			println(string(line))
 		}

@@ -18,7 +18,7 @@ func main() {
 	noGui := flag.Bool("no-gui", false, "hide gui")
 	noGrid := flag.Bool("no-grid", false, "hide grid")
 	configurationPath := flag.String("c", "", "configuration file for the simulation")
-
+	noise := flag.Float64("n", 0, "noise for the data send to participants")
 	flag.Parse()
 
 	if *usage {
@@ -37,18 +37,23 @@ func main() {
 	}
 
 	configuration := parseConfiguration(*configurationPath)
+
+	if *noise != 0 {
+		configuration.Settings.Noise = *noise
+	}
+
 	sim := simulation.New(configuration, views)
 	if err := sim.Start(); err != nil {
 		panic(err)
 	}
-	defer sim.Stop()
+	// defer sim.Stop()
 
 	// detach simulation loop in background so it does not freeze the window
 	go sim.Loop()
 
 	// actually draw something
 draw_loop:
-	for {
+	for sim.IsRunning() {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:

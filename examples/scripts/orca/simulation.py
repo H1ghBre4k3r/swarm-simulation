@@ -3,7 +3,7 @@ import sys
 from threading import Thread
 
 import numpy as np
-from mathutils import normalize
+from mathutils import norm, normalize
 from participant import Participant
 from util import log
 
@@ -62,6 +62,12 @@ class Simulation(Thread):
             inp = json.loads(sys.stdin.readline())
             position = np.array([inp["position"]["x"], inp["position"]["y"]])
             self.we.update_position(position)
+
+            if norm(self.we.velocity) / self.fps < 10**-5:
+                # we are at the target
+                self.log("arrived")
+                self.stop()
+                return
 
             # read information about all other participants
             participansts = []

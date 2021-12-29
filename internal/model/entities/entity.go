@@ -162,21 +162,22 @@ func (e *Entity) loop() {
 		msg := <-e.process.Out
 		parsed := SimulationMessage{}
 		if err := json.Unmarshal([]byte(msg), &parsed); err != nil {
-			panic(err)
-		}
-
-		switch parsed.Action {
-		case "move":
-			message := MovementMessage{}
-			if err := json.Unmarshal([]byte(msg), &message); err != nil {
-				panic(err)
+			e.Stop()
+			// panic(err)
+		} else {
+			switch parsed.Action {
+			case "move":
+				message := MovementMessage{}
+				if err := json.Unmarshal([]byte(msg), &message); err != nil {
+					panic(err)
+				}
+				vel := &util.Vec2D{
+					X: message.Payload.X,
+					Y: message.Payload.Y,
+				}
+				// update current velocity
+				e.SetVelocity(vel.NoiseI(e.portal.Noise()))
 			}
-			vel := &util.Vec2D{
-				X: message.Payload.X,
-				Y: message.Payload.Y,
-			}
-			// update current velocity
-			e.SetVelocity(vel.NoiseI(e.portal.Noise()))
 		}
 		e.barrier.Resolve()
 	}
@@ -184,4 +185,8 @@ func (e *Entity) loop() {
 
 func (e *Entity) Stop() {
 	e.running = false
+}
+
+func (e *Entity) IsRunning() bool {
+	return e.running
 }

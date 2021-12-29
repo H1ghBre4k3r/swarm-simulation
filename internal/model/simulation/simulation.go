@@ -17,6 +17,7 @@ type Simulation struct {
 	spatial       *collision.SpatialHashmap
 	barrier       *util.Barrier
 	portal        *SimulationPortal
+	running       bool
 }
 
 func New(configuration *Configuration, views []View) *Simulation {
@@ -53,6 +54,7 @@ func (s *Simulation) init() {
 			panic(err)
 		}
 	}
+	s.running = true
 }
 
 func (s *Simulation) addEntity(entity *entities.Entity) {
@@ -66,11 +68,20 @@ func (s *Simulation) addEntity(entity *entities.Entity) {
 func (s *Simulation) Loop() {
 	// create a new ticker which ticks every X milliseconds
 	ticker := time.NewTicker(time.Duration(s.configuration.Settings.TickLength) * time.Millisecond)
-	for ; ; <-ticker.C {
+	for ; s.running; <-ticker.C {
 		s.portal.Update()
 		start := time.Now()
 		ents := s.entities.Get()
-		s.barrier.Tick(len(ents))
+		active := []*entities.Entity{}
+		for _, e := range ents {
+			if e.IsRunning() {
+				active = append(active, e)
+			}
+		}
+		if len(active) == 0 {
+			s.running = false
+		}
+		s.barrier.Tick(len(active))
 		elapsed := time.Since(start)
 		log.Printf("Tick took %s\n", elapsed)
 	}
@@ -92,4 +103,8 @@ func (s *Simulation) Stop() {
 	for _, e := range s.entities.Get() {
 		e.Stop()
 	}
+}
+
+func (s *Simulation) IsRunning() bool {
+	return s.running
 }
