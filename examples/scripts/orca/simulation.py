@@ -5,6 +5,7 @@ from threading import Thread
 import numpy as np
 from mathutils import normalize
 from participant import Participant
+from util import log
 
 FPS = 120
 
@@ -87,11 +88,7 @@ class Simulation(Thread):
         """
         Log a message to the simulation.
         """
-        val = {
-            "action": "log",
-            "payload": msg
-        }
-        print(json.dumps(val), file=sys.stderr)
+        log("log", msg)
 
     def stop(self):
         """

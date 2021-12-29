@@ -1,6 +1,10 @@
 package util
 
-import "math"
+import (
+	"math"
+	"math/rand"
+	"time"
+)
 
 // Utility for storing and manipulating 2D information
 type Vec2D struct {
@@ -47,4 +51,16 @@ func (v *Vec2D) NormalizeI() *Vec2D {
 
 func (v *Vec2D) Normalize() *Vec2D {
 	return v.Copy().NormalizeI()
+}
+
+func (v *Vec2D) NoiseI(scale float64) *Vec2D {
+	s := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(s)
+	v.X *= 1 + (r.Float64()-0.5)*scale
+	v.Y *= 1 + (r.Float64()-0.5)*scale
+	return v
+}
+
+func (v *Vec2D) Noise(scale float64) *Vec2D {
+	return v.Copy().NoiseI(scale)
 }

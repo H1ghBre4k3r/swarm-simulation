@@ -143,8 +143,8 @@ func (e *Entity) loop() {
 		for _, x := range participants {
 			if e.id != x.id {
 				information.Participants = append(information.Participants, ParticipantInformation{
-					Position: x.shape.Position,
-					Velocity: x.vel,
+					Position: *x.shape.Position.Noise(e.portal.Noise()),
+					Velocity: *x.vel.Noise(e.portal.Noise()),
 					Distance: e.shape.Position.Add(x.shape.Position.Scale(-1)).Length(),
 					Radius:   x.shape.Radius,
 				})
@@ -171,11 +171,12 @@ func (e *Entity) loop() {
 			if err := json.Unmarshal([]byte(msg), &message); err != nil {
 				panic(err)
 			}
-			// update current velocity
-			e.SetVelocity(&util.Vec2D{
+			vel := &util.Vec2D{
 				X: message.Payload.X,
 				Y: message.Payload.Y,
-			})
+			}
+			// update current velocity
+			e.SetVelocity(vel.NoiseI(e.portal.Noise()))
 		}
 		e.barrier.Resolve()
 	}

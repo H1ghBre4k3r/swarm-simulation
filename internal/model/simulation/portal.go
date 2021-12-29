@@ -9,12 +9,14 @@ type SimulationPortal struct {
 	spatial       *collision.SpatialHashmap
 	entityManager *entities.EntityManger
 	entities      []*entities.Entity
+	noise         float64
 }
 
-func CreateSimulationPortal(spatial *collision.SpatialHashmap, entities *entities.EntityManger) *SimulationPortal {
+func CreateSimulationPortal(spatial *collision.SpatialHashmap, entities *entities.EntityManger, noise float64) *SimulationPortal {
 	portal := &SimulationPortal{
 		spatial:       spatial,
 		entityManager: entities,
+		noise:         noise,
 	}
 	portal.Update()
 	return portal
@@ -40,4 +42,8 @@ func (p *SimulationPortal) Remove(entity *entities.Entity) {
 
 func (p *SimulationPortal) Participants() []*entities.Entity {
 	return p.entities
+}
+
+func (p *SimulationPortal) Noise() float64 {
+	return p.noise
 }

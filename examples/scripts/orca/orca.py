@@ -1,12 +1,11 @@
-import sys
-
 import numpy as np
 from halfplane import Halfplane
 from mathutils import (angle2vec, angle_diff, arcsin, closest_point_on_line,
                        dist, norm, normalize, vec2angle)
 from participant import Participant
+from util import log
 
-tau = 1000
+tau = 100
 
 
 def out_of_disc(disc_center, disc_r, v):
@@ -14,19 +13,25 @@ def out_of_disc(disc_center, disc_r, v):
     rel_vec = v - disc_center
     w_length = norm(rel_vec)
     # rotate vector by a certain degree, so we do not deadlock
-    rel_vec = angle2vec(vec2angle(rel_vec) + 10)
+    rel_vec = angle2vec(vec2angle(rel_vec) + 1)
     # calculate u (the velocity that will get us out of collision)
     u_vec = rel_vec * (disc_r - w_length)
     return u_vec, rel_vec
 
 
 def orca(a: Participant, b: Participant) -> np.ndarray:
+
+    radius_scale = 2
+
     x = b.position - a.position
     r = b.radius + a.radius
-    r *= 2
+    r *= radius_scale
     v = a.velocity - b.velocity
 
-    if norm(x) < r:
+    if norm(x) < r / radius_scale:
+        # TODO lome: Move this to simulation
+        log("error", "collision detected!")
+        # time.sleep(0.2)
         return out_of_disc(x, r, v)
     else:
         # calculate "tau-disc" center and radius
@@ -97,6 +102,7 @@ def halfplane_intersection(halfplanes_u: list[Halfplane], current_velocity: np.n
         if np.dot(new_point - plane.u, plane.n) < 0:
             left, right = intersect_halfplane_with_other_halfplanes(
                 plane, halfplanes[:i])
+            # check, if feasible solution was found
             if left is None or right is None:
                 return None
             new_point = closest_point_on_line(

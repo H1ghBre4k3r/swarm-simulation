@@ -8,6 +8,7 @@ type Portal interface {
 	Insert(*Entity)
 	Remove(*Entity)
 	Participants() []*Entity
+	Noise() float64
 }
 
 type Shape struct {

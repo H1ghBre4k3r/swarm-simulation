@@ -11,7 +11,8 @@ type ParticipantSetupInformation struct {
 }
 
 type Settings struct {
-	TickLength int64 `json:"tickLength"`
+	TickLength int64   `json:"tickLength"`
+	Noise      float64 `json:"noise"`
 }
 
 type Configuration struct {
