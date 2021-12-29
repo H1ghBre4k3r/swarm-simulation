@@ -1,72 +1,39 @@
 #!/usr/bin/env python3 -u
-import json
-import sys
 
 import numpy as np
 from halfplane import Halfplane
 from mathutils import norm, normalize
 from orca import halfplane_intersection, orca
-from participant import Participant
-
-# optional factor for changing "lookup range"
-FPS = 120
+from simulation import Simulation
 
 
 def main():
-    setup = json.loads(sys.stdin.readline())
-    position = np.array([setup["position"]["x"], setup["position"]["y"]])
-    radius = setup["radius"]
-    target = np.array([setup["target"]["x"], setup["target"]["y"]])
-    vmax = setup["vmax"] * FPS
 
-    while True:
-        inp = json.loads(sys.stdin.readline())
-        position = np.array([inp["position"]["x"], inp["position"]["y"]])
-        velocity = target - position
+    simulation = Simulation(120)
 
-        if np.linalg.norm(velocity) > vmax:
-            velocity = velocity / np.linalg.norm(velocity)
-            velocity = velocity * vmax
-
-        we = Participant(position, velocity, radius)
-
-        # get u for each other participant
+    def callback(we, participants):
+        # calculate halfplanes for each participant
         halfplanes = []
-        for p in inp["participants"]:
-            participant = Participant(np.array([p["position"]["x"], p["position"]["y"]]), np.array(
-                [p["velocity"]["x"], p["velocity"]["y"]]) * FPS, p["radius"])
-            u, n = orca(we, participant)
+        for p in participants:
+            u, n = orca(we, p)
             if norm(u) > 0:
                 halfplanes.append(Halfplane(u, n))
-
-        # get new "perfect" velocity from halfplane intersections
+        # try to find new velocity
         new_vel = None
         while new_vel is None:
             new_vel = halfplane_intersection(
                 halfplanes, we.velocity, we.velocity)
+            # move halfplanes outwart at equal speed
             new_halfplanes = []
             for l in halfplanes:
                 offset = normalize(l.u)
                 new_halfplanes.append(Halfplane(l.u - offset + 0.01, l.n))
             halfplanes = new_halfplanes
-        velocity = new_vel
+        if norm(new_vel) > we.vmax:
+            new_vel = normalize(new_vel) * we.vmax
+        return new_vel
 
-        # if it's too fast, slow it down
-        if np.linalg.norm(velocity) > vmax:
-            velocity = velocity / np.linalg.norm(velocity)
-            velocity = velocity * vmax
-
-        velocity /= FPS
-
-        val = {
-            "action": "move",
-            "payload": {
-                "x": velocity[0],
-                "y": velocity[1],
-            },
-            "debug": inp["participants"]
-        }
-        print(json.dumps(val))
+    simulation.start(callback)
 
 
 if __name__ == "__main__":
