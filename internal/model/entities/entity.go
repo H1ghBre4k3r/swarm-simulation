@@ -142,6 +142,10 @@ func (e *Entity) loop() {
 		participants := e.portal.Participants()
 		for _, x := range participants {
 			if e.id != x.id {
+				if x.shape.Position.Add(e.shape.Position.Scale(-1)).Length() < e.shape.Radius+x.shape.Radius {
+					fmt.Printf("%v collides with %v\n", e.id, x.id)
+					// TODO lome: Add collision counter to entity
+				}
 				information.Participants = append(information.Participants, ParticipantInformation{
 					Position: *x.shape.Position.Noise(e.portal.Noise()),
 					Velocity: *x.vel.Noise(e.portal.Noise()),

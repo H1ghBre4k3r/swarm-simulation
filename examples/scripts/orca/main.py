@@ -1,6 +1,7 @@
 #!/usr/bin/env python3 -u
 
-import numpy as np
+import warnings
+
 from halfplane import Halfplane
 from mathutils import norm, normalize
 from orca import halfplane_intersection, orca
@@ -11,6 +12,8 @@ FPS = 120
 
 def main():
 
+    # warnings.filterwarnings("error")
+
     simulation = Simulation(FPS)
 
     def callback(we, participants):
@@ -18,8 +21,7 @@ def main():
         halfplanes = []
         for p in participants:
             u, n = orca(we, p)
-            if norm(u) > 0:
-                halfplanes.append(Halfplane(u, n))
+            halfplanes.append(Halfplane(u, n))
         # try to find new velocity
         new_vel = None
         while new_vel is None:

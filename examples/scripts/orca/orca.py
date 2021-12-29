@@ -3,7 +3,6 @@ from halfplane import Halfplane
 from mathutils import (angle2vec, angle_diff, arcsin, closest_point_on_line,
                        dist, norm, normalize, vec2angle)
 from participant import Participant
-from util import log
 
 tau = 100
 
@@ -13,7 +12,7 @@ def out_of_disc(disc_center, disc_r, v):
     rel_vec = v - disc_center
     w_length = norm(rel_vec)
     # rotate vector by a certain degree, so we do not deadlock
-    rel_vec = angle2vec(vec2angle(rel_vec) + 1)
+    rel_vec = angle2vec(vec2angle(rel_vec) + 10)
     # calculate u (the velocity that will get us out of collision)
     u_vec = rel_vec * (disc_r - w_length)
     return u_vec, rel_vec
@@ -21,17 +20,12 @@ def out_of_disc(disc_center, disc_r, v):
 
 def orca(a: Participant, b: Participant) -> np.ndarray:
 
-    radius_scale = 2
-
     x = b.position - a.position
     r = b.radius + a.radius
-    r *= radius_scale
+    r *= 2
     v = a.velocity - b.velocity
 
-    if norm(x) < r / radius_scale:
-        # TODO lome: Move this to simulation
-        log("error", "collision detected!")
-        # time.sleep(0.2)
+    if norm(x) < r:
         return out_of_disc(x, r, v)
     else:
         # calculate "tau-disc" center and radius
