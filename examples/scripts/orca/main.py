@@ -23,7 +23,7 @@ def main():
         while new_vel is None:
             new_vel = halfplane_intersection(
                 halfplanes, we.velocity, we.velocity)
-            # move halfplanes outwart at equal speed
+            # move halfplanes outward at equal speed
             new_halfplanes = []
             for l in halfplanes:
                 new_halfplanes.append(Halfplane(l.u - l.n * 0.0001, l.n))
