@@ -46,7 +46,7 @@ func main() {
 	if err := sim.Start(); err != nil {
 		panic(err)
 	}
-	// defer sim.Stop()
+	defer sim.PrintSummary()
 
 	// detach simulation loop in background so it does not freeze the window
 	go sim.Loop()

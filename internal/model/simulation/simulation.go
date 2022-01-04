@@ -105,6 +105,36 @@ func (s *Simulation) Stop() {
 	}
 }
 
+func (s *Simulation) PrintSummary() {
+	most := int64(0)
+	least := int64(0)
+	total := int64(0)
+	participants := s.entities.Get()
+	for i, e := range participants {
+		collisions := e.GetCollisions()
+		total += collisions
+		if i == 0 {
+			least = collisions
+			most = collisions
+		} else {
+			if collisions > most {
+				most = collisions
+			} else if collisions < least {
+				least = collisions
+			}
+		}
+	}
+
+	fmt.Printf("\n-----------------------------\n")
+	fmt.Printf("           Summary           \n")
+	fmt.Printf("-----------------------------\n\n")
+	fmt.Printf("N° of Participants: \t%v\n", len(participants))
+	fmt.Printf("Total Collisions: \t%v\n", total)
+	fmt.Printf("Most Collisions: \t%v\n", most)
+	fmt.Printf("Least Collisions: \t%v\n", least)
+	fmt.Printf("Avg Collisions: \t%v\n\n", total/int64(len(participants)))
+}
+
 func (s *Simulation) IsRunning() bool {
 	return s.running
 }

@@ -11,16 +11,17 @@ import (
 
 // Basic entity type which can be renderred in SDL
 type Entity struct {
-	id      string
-	shape   Shape
-	target  util.Vec2D
-	vmax    float64
-	vel     util.Vec2D
-	color   randomcolor.RGBColor
-	portal  Portal
-	running bool
-	process *process.Process
-	barrier *util.Barrier
+	id         string
+	shape      Shape
+	target     util.Vec2D
+	vmax       float64
+	vel        util.Vec2D
+	color      randomcolor.RGBColor
+	portal     Portal
+	running    bool
+	process    *process.Process
+	barrier    *util.Barrier
+	collisions int64
 }
 
 func Create(id string, shape Shape, vmax float64, target util.Vec2D, portal Portal, script string, barrier *util.Barrier) *Entity {
@@ -30,30 +31,32 @@ func Create(id string, shape Shape, vmax float64, target util.Vec2D, portal Port
 		return nil
 	}
 	return &Entity{
-		id:      id,
-		color:   randomcolor.GetRandomColorInRgb(),
-		shape:   shape,
-		target:  target,
-		vmax:    vmax,
-		portal:  portal,
-		running: false,
-		process: p,
-		barrier: barrier,
+		id:         id,
+		color:      randomcolor.GetRandomColorInRgb(),
+		shape:      shape,
+		target:     target,
+		vmax:       vmax,
+		portal:     portal,
+		running:    false,
+		process:    p,
+		barrier:    barrier,
+		collisions: 0,
 	}
 }
 
 func (e *Entity) Copy() *Entity {
 	return &Entity{
-		id:      e.id,
-		shape:   e.shape,
-		target:  e.target,
-		vmax:    e.vmax,
-		vel:     e.vel,
-		color:   e.color,
-		portal:  e.portal,
-		running: e.running,
-		process: e.process,
-		barrier: e.barrier,
+		id:         e.id,
+		shape:      e.shape,
+		target:     e.target,
+		vmax:       e.vmax,
+		vel:        e.vel,
+		color:      e.color,
+		portal:     e.portal,
+		running:    e.running,
+		process:    e.process,
+		barrier:    e.barrier,
+		collisions: e.collisions,
 	}
 }
 
@@ -95,6 +98,10 @@ func (e *Entity) GetVelocity() util.Vec2D {
 
 func (e *Entity) SetVelocity(vel *util.Vec2D) {
 	e.vel = *vel
+}
+
+func (e *Entity) GetCollisions() int64 {
+	return e.collisions
 }
 
 func (e *Entity) Move() {
@@ -144,7 +151,7 @@ func (e *Entity) loop() {
 			if e.id != x.id {
 				if x.shape.Position.Add(e.shape.Position.Scale(-1)).Length() < e.shape.Radius+x.shape.Radius {
 					fmt.Printf("%v collides with %v\n", e.id, x.id)
-					// TODO lome: Add collision counter to entity
+					e.collisions++
 				}
 				information.Participants = append(information.Participants, ParticipantInformation{
 					Position: *x.shape.Position.Noise(e.portal.Noise()),

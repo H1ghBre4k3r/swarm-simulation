@@ -4,7 +4,7 @@ from mathutils import (angle2vec, angle_diff, arcsin, closest_point_on_line,
                        dist, norm, normalize, vec2angle)
 from participant import Participant
 
-tau = 100
+tau = 1000
 
 
 def out_of_disc(disc_center, disc_r, v):
