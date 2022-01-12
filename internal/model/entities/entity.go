@@ -49,10 +49,10 @@ func Create(id string, shape Shape, vmax float64, target util.Vec2D, portal Port
 func (e *Entity) Copy() *Entity {
 	return &Entity{
 		id:         e.id,
-		shape:      e.shape,
-		target:     e.target,
+		shape:      *e.shape.Copy(),
+		target:     *e.target.Copy(),
 		vmax:       e.vmax,
-		vel:        e.vel,
+		vel:        *e.vel.Copy(),
 		color:      e.color,
 		portal:     e.portal,
 		running:    e.running,
@@ -113,11 +113,12 @@ func (e *Entity) Move() {
 }
 
 func (e *Entity) sendSetupMessage() {
-	setupInformation := SetupMessage{}
-	setupInformation.Position = e.shape.Position
-	setupInformation.Radius = e.shape.Radius
-	setupInformation.Target = e.target
-	setupInformation.Vmax = e.vmax
+	setupInformation := SetupMessage{
+		Position: e.shape.Position,
+		Radius:   e.shape.Radius,
+		Target:   e.target,
+		Vmax:     e.vmax,
+	}
 	setupMessage, err := json.Marshal(&setupInformation)
 	if err != nil {
 		panic(err)
@@ -154,9 +155,10 @@ func (e *Entity) loop() {
 		e.Move()
 
 		// send sample message to process
-		information := InformationMessage{}
-		information.Position = e.shape.Position
-		information.Participants = []ParticipantInformation{}
+		information := InformationMessage{
+			Position:     e.shape.Position,
+			Participants: []ParticipantInformation{},
+		}
 
 		participants := e.portal.Participants()
 		for _, x := range participants {
@@ -184,6 +186,7 @@ func (e *Entity) loop() {
 		}
 		e.process.In <- string(outMsg)
 
+		// TODO lome: maybe use some kind of general message handler for the process, which decodes messages, adds them to different queues and, on demand, terminates the process
 		// receive answer message from process
 		msg := <-e.process.Out
 		parsed := SimulationMessage{}
