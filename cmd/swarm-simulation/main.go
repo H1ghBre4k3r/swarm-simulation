@@ -1,11 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
-	"fmt"
-	"os"
-	"path/filepath"
 
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/simulation"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/view/window"
@@ -36,7 +32,7 @@ func main() {
 		views = append(views, win)
 	}
 
-	configuration := parseConfiguration(*configurationPath)
+	configuration := simulation.ParseConfigurationFrom(*configurationPath)
 
 	if *noise != 0 {
 		configuration.Settings.Noise = *noise
@@ -62,25 +58,4 @@ draw_loop:
 		}
 		sim.Draw()
 	}
-}
-
-// Parse the simulation and print error messages, if the path or the format of the file are wrong
-func parseConfiguration(configurationPath string) *simulation.Configuration {
-	configuration := &simulation.Configuration{}
-	// try to read file
-	data, err := os.ReadFile(configurationPath)
-	if err != nil {
-		fmt.Printf("Not a valid path to a configuration file: '%v'\n", configurationPath)
-		os.Exit(-1)
-	}
-	// try to parse file
-	err = json.Unmarshal(data, &configuration)
-	if err != nil {
-		fmt.Printf("Configuration file does not have a valid format!\n")
-		os.Exit(-1)
-	}
-	for _, p := range configuration.Participants {
-		p.Script = filepath.Join(filepath.Dir(configurationPath), p.Script)
-	}
-	return configuration
 }
