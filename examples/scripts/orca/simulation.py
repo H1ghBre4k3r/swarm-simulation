@@ -65,7 +65,6 @@ class Simulation(Thread):
 
             if norm(self.we.velocity) / self.fps < 10**-5:
                 # we are at the target
-                self.log("arrived")
                 self.stop()
                 return
 
@@ -100,4 +99,10 @@ class Simulation(Thread):
         """
         Stop the simulation.
         """
+        # set flag and send stop message
         self.running = False
+        val = {
+            "action": "stop",
+            "payload": {}
+        }
+        print(json.dumps(val))

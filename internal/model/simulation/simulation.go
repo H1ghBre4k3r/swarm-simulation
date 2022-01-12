@@ -125,6 +125,7 @@ func (s *Simulation) PrintSummary() {
 		}
 	}
 
+	// TODO lome: Add total runtime & avg tick length to summary
 	fmt.Printf("\n-----------------------------\n")
 	fmt.Printf("           Summary           \n")
 	fmt.Printf("-----------------------------\n\n")

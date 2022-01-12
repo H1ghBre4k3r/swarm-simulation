@@ -3,6 +3,7 @@ package entities
 import (
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	"github.com/AvraamMavridis/randomcolor"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/process"
@@ -22,6 +23,7 @@ type Entity struct {
 	process    *process.Process
 	barrier    *util.Barrier
 	collisions int64
+	mutex      sync.Mutex
 }
 
 func Create(id string, shape Shape, vmax float64, target util.Vec2D, portal Portal, script string, barrier *util.Barrier) *Entity {
@@ -135,7 +137,17 @@ func (e *Entity) Start() error {
 }
 
 func (e *Entity) loop() {
-	for e.running {
+
+	// in case of an unpredicted exit of underlying process, we still want the barrier to move on
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Process for entity '%v' ended unexpectetly!\n", e.id)
+			e.Stop()
+			e.barrier.Resolve()
+		}
+	}()
+
+	for e.IsRunning() {
 		// wait for barrier to drop
 		e.barrier.Wait()
 		// perform movement with current velocity
@@ -149,10 +161,13 @@ func (e *Entity) loop() {
 		participants := e.portal.Participants()
 		for _, x := range participants {
 			if e.id != x.id {
+				// check for collision with other participant
 				if x.shape.Position.Add(e.shape.Position.Scale(-1)).Length() < e.shape.Radius+x.shape.Radius {
 					fmt.Printf("%v collides with %v\n", e.id, x.id)
 					e.collisions++
 				}
+
+				// create noised information about other participant
 				information.Participants = append(information.Participants, ParticipantInformation{
 					Position: *x.shape.Position.Noise(e.portal.Noise()),
 					Velocity: *x.vel.Noise(e.portal.Noise()),
@@ -162,11 +177,11 @@ func (e *Entity) loop() {
 			}
 		}
 
+		// send information to participant
 		outMsg, err := json.Marshal(&information)
 		if err != nil {
 			panic(err)
 		}
-		// TODO lome: this panics, if underlying process terminates
 		e.process.In <- string(outMsg)
 
 		// receive answer message from process
@@ -174,10 +189,10 @@ func (e *Entity) loop() {
 		parsed := SimulationMessage{}
 		if err := json.Unmarshal([]byte(msg), &parsed); err != nil {
 			e.Stop()
-			// panic(err)
 		} else {
 			switch parsed.Action {
 			case "move":
+				// a "simple" move action
 				message := MovementMessage{}
 				if err := json.Unmarshal([]byte(msg), &message); err != nil {
 					panic(err)
@@ -188,16 +203,31 @@ func (e *Entity) loop() {
 				}
 				// update current velocity
 				e.SetVelocity(vel.NoiseI(e.portal.Noise()))
+			case "stop":
+				// underlying process finished computation
+				e.Stop()
 			}
 		}
 		e.barrier.Resolve()
 	}
 }
 
+// Stop this entity and the underlying process.
 func (e *Entity) Stop() {
+	e.mutex.Lock()
+	defer e.mutex.Unlock()
 	e.running = false
+	e.process.Stop()
 }
 
+// Check, if this entity AND the underlying process are still running.
+// If the underlying process terminated, terminate this entity aswell.
 func (e *Entity) IsRunning() bool {
-	return e.running
+	e.mutex.Lock()
+	defer e.mutex.Unlock()
+	if e.process.IsRunning() {
+		return e.running
+	}
+	e.running = false
+	return false
 }

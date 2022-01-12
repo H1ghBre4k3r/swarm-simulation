@@ -4,6 +4,9 @@ import (
 	"bufio"
 	"io"
 	"os/exec"
+	"sync"
+
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
 )
 
 type Process struct {
@@ -16,6 +19,9 @@ type Process struct {
 
 	Out <-chan string
 	In  chan<- string
+
+	running bool
+	lock    sync.Mutex
 }
 
 func Spawn(command string, args ...string) (*Process, error) {
@@ -51,6 +57,11 @@ func (p *Process) Start() error {
 	if err != nil {
 		return err
 	}
+	p.running = true
+	go func() {
+		p.c.Wait()
+		p.running = false
+	}()
 	reader := bufio.NewReader(pipe)
 	go func() {
 		for {
@@ -103,24 +114,17 @@ func (p *Process) readStdOut() {
 }
 
 func (p *Process) Stop() error {
-	if !IsClosed(p.inputChannel) {
+	p.lock.Lock()
+	defer p.lock.Unlock()
+	if !util.IsChannelClosed(p.inputChannel) {
 		close(p.inputChannel)
 	}
-	if !IsClosed(p.outputChannel) {
+	if !util.IsChannelClosed(p.outputChannel) {
 		close(p.outputChannel)
 	}
 	return p.c.Process.Kill()
 }
 
-func IsClosed(ch chan string) bool {
-	select {
-	case <-ch:
-		return true
-	default:
-		return false
-	}
-}
-
 func (p *Process) IsRunning() bool {
-	return !p.c.ProcessState.Exited()
+	return p.running
 }
