@@ -11,10 +11,11 @@ type Window struct {
 	window   *sdl.Window
 	renderer *sdl.Renderer
 	lines    bool
+	fps      uint64
 }
 
 // Create a new window
-func New(title string, scale int32, lines bool) (*Window, error) {
+func New(title string, scale int32, lines bool, fps uint64) (*Window, error) {
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		return nil, err
 	}
@@ -37,6 +38,7 @@ func New(title string, scale int32, lines bool) (*Window, error) {
 		window,
 		renderer,
 		lines,
+		fps,
 	}, nil
 }
 
@@ -65,8 +67,7 @@ func (w *Window) Render(entities []simulation.Drawable) {
 	for _, e := range entities {
 		gfx.FilledCircleRGBA(w.renderer, int32(w.Scale(e.GetX())), int32(w.Scale(e.GetY())), int32(w.Scale(e.GetR())), uint8(e.GetColor().Red), uint8(e.GetColor().Green), uint8(e.GetColor().Blue), 255)
 		vel := e.GetVelocity()
-		vel = *vel.Copy()
-		vel.ScaleI(75)
+		vel = *vel.Scale(float64(w.fps))
 		gfx.ThickLineRGBA(w.renderer, int32(w.Scale(e.GetX())), int32(w.Scale(e.GetY())), int32(w.Scale(e.GetX()+vel.X)), int32(w.Scale(e.GetY()+vel.Y)), 2, 0, 255, 0, 255)
 
 		gfx.LineRGBA(w.renderer, int32(w.Scale(e.GetX())), int32(w.Scale(e.GetY())), int32(w.Scale(e.GetTarget().X)), int32(w.Scale(e.GetTarget().Y)), 0, 0, 0, 10)

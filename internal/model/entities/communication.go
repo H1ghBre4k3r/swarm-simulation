@@ -8,6 +8,7 @@ type SetupMessage struct {
 	Radius   float64    `json:"radius"`
 	Vmax     float64    `json:"vmax"`
 	Target   util.Vec2D `json:"target"`
+	FPS      uint64     `json:"FPS"`
 }
 
 type SimulationMessage struct {

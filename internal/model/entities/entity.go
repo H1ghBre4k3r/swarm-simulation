@@ -118,6 +118,7 @@ func (e *Entity) sendSetupMessage() {
 		Radius:   e.shape.Radius,
 		Target:   e.target,
 		Vmax:     e.vmax,
+		FPS:      e.portal.FPS(),
 	}
 	setupMessage, err := json.Marshal(&setupInformation)
 	if err != nil {

@@ -21,21 +21,19 @@ func main() {
 		flag.PrintDefaults()
 		return
 	}
+	configuration := simulation.ParseConfigurationFrom(*configurationPath)
+	if *noise != 0 {
+		configuration.Settings.Noise = *noise
+	}
 
 	views := []simulation.View{}
 
 	if !*noGui {
-		win, err := window.New("Swarm Simulation", 1024, !*noGrid)
+		win, err := window.New("Swarm Simulation", 1024, !*noGrid, configuration.Settings.FPS)
 		if err != nil {
 			panic(err)
 		}
 		views = append(views, win)
-	}
-
-	configuration := simulation.ParseConfigurationFrom(*configurationPath)
-
-	if *noise != 0 {
-		configuration.Settings.Noise = *noise
 	}
 
 	sim := simulation.New(configuration, views)

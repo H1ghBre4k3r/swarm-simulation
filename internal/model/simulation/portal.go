@@ -10,13 +10,15 @@ type SimulationPortal struct {
 	entityManager *entities.EntityManger
 	entities      []*entities.Entity
 	noise         float64
+	fps           uint64
 }
 
-func CreateSimulationPortal(spatial *collision.SpatialHashmap, entities *entities.EntityManger, noise float64) *SimulationPortal {
+func CreateSimulationPortal(spatial *collision.SpatialHashmap, entities *entities.EntityManger, noise float64, fps uint64) *SimulationPortal {
 	portal := &SimulationPortal{
 		spatial:       spatial,
 		entityManager: entities,
 		noise:         noise,
+		fps:           fps,
 	}
 	portal.Update()
 	return portal
@@ -46,4 +48,8 @@ func (p *SimulationPortal) Participants() []*entities.Entity {
 
 func (p *SimulationPortal) Noise() float64 {
 	return p.noise
+}
+
+func (p *SimulationPortal) FPS() uint64 {
+	return p.fps
 }

@@ -7,8 +7,6 @@ from mathutils import norm, normalize
 from participant import Participant
 from util import log
 
-FPS = 120
-
 
 class Simulation(Thread):
     """
@@ -17,7 +15,7 @@ class Simulation(Thread):
 
     running = False
 
-    def __init__(self, fps=FPS):
+    def __init__(self):
         """
         Constructor
 
@@ -25,7 +23,6 @@ class Simulation(Thread):
             fps: The frames per second of the simulation. This does not refer to the simulation ticks, but rather the "lookup range" for each participant.
         """
         super().__init__()
-        self.fps = fps
         self.__setup()
 
     def __setup(self):
@@ -34,6 +31,7 @@ class Simulation(Thread):
         position = np.array([setup["position"]["x"], setup["position"]["y"]])
         radius = setup["radius"]
         target = np.array([setup["target"]["x"], setup["target"]["y"]])
+        self.fps = setup["FPS"]
         vmax = setup["vmax"] * self.fps
         # create participant for this unit
         self.we = Participant(position, normalize(

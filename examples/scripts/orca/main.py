@@ -7,14 +7,12 @@ from mathutils import norm, normalize
 from orca import halfplane_intersection, orca
 from simulation import Simulation
 
-FPS = 120
-
 
 def main():
 
     # warnings.filterwarnings("error")
 
-    simulation = Simulation(FPS)
+    simulation = Simulation()
 
     def callback(we, participants):
         # calculate halfplanes for each participant

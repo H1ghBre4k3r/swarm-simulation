@@ -1,6 +1,7 @@
 {
   "settings": {
-    "tickLength": 10
+    "tickLength": 10,
+    "fps": 120
   },
   "participants": [
     {
