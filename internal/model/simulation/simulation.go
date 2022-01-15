@@ -18,6 +18,9 @@ type Simulation struct {
 	barrier       *util.Barrier
 	portal        *SimulationPortal
 	running       bool
+	finished      bool
+	duration      time.Duration
+	ticks         uint64
 }
 
 func New(configuration *Configuration, views []View) *Simulation {
@@ -66,27 +69,30 @@ func (s *Simulation) addEntity(entity *entities.Entity) {
 
 // Main loop for the simulation.
 func (s *Simulation) Loop() {
+	start := time.Now()
 	// create a new ticker which ticks every X milliseconds
 	ticker := time.NewTicker(time.Duration(s.configuration.Settings.TickLength) * time.Millisecond)
 	for ; s.running; <-ticker.C {
-		s.portal.Update()
-		start := time.Now()
-		ents := s.entities.Get()
-		active := []*entities.Entity{}
-		for _, e := range ents {
-			if e.IsRunning() {
-				active = append(active, e)
-			}
-		}
-		if len(active) == 0 {
-			s.running = false
-		}
-		s.barrier.Tick(len(active))
-		elapsed := time.Since(start)
-		log.Printf("Tick took %s\n", elapsed)
+		s.tick()
 	}
+	s.duration = time.Since(start)
+	s.finished = true
 }
 
+func (s *Simulation) tick() {
+	s.portal.Update()
+	start := time.Now()
+	active := s.entities.GetRunning()
+	if len(active) == 0 {
+		s.running = false
+	}
+	s.barrier.Tick(len(active))
+	elapsed := time.Since(start)
+	log.Printf("Tick took %s\n", elapsed)
+	s.ticks++
+}
+
+// Draw current state of simulation
 func (s *Simulation) Draw() {
 	// draw all entities to the screen
 	ents := s.entities.Get()
@@ -105,6 +111,7 @@ func (s *Simulation) Stop() {
 	}
 }
 
+// Print the summary about the simulation
 func (s *Simulation) PrintSummary() {
 	most := int64(0)
 	least := int64(0)
@@ -134,8 +141,16 @@ func (s *Simulation) PrintSummary() {
 	fmt.Printf("Most Collisions: \t%v\n", most)
 	fmt.Printf("Least Collisions: \t%v\n", least)
 	fmt.Printf("Avg Collisions: \t%v\n\n", total/int64(len(participants)))
+
+	fmt.Printf("Total ticks: \t\t%v\n", s.ticks)
+	fmt.Printf("Duration: \t\t%v\n", s.duration)
+	fmt.Printf("Avg Tick Length: \t%v\n\n", time.Duration(s.duration/time.Duration(s.ticks)))
 }
 
 func (s *Simulation) IsRunning() bool {
 	return s.running
+}
+
+func (s *Simulation) IsFinished() bool {
+	return s.finished
 }

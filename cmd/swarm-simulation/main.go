@@ -47,7 +47,7 @@ func main() {
 
 	// actually draw something
 draw_loop:
-	for sim.IsRunning() {
+	for !sim.IsFinished() {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
