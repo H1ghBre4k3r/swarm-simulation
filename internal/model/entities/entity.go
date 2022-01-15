@@ -152,67 +152,86 @@ func (e *Entity) loop() {
 	for e.IsRunning() {
 		// wait for barrier to drop
 		e.barrier.Wait()
-		// perform movement with current velocity
-		e.Move()
-
-		// send sample message to process
-		information := InformationMessage{
-			Position:     e.shape.Position,
-			Participants: []ParticipantInformation{},
-		}
-
-		participants := e.portal.Participants()
-		for _, x := range participants {
-			if e.id != x.id {
-				// check for collision with other participant
-				if x.shape.Position.Add(e.shape.Position.Scale(-1)).Length() < e.shape.Radius+x.shape.Radius {
-					fmt.Printf("%v collides with %v\n", e.id, x.id)
-					e.collisions++
-				}
-
-				// create noised information about other participant
-				information.Participants = append(information.Participants, ParticipantInformation{
-					Position: *x.shape.Position.Noise(e.portal.Noise()),
-					Velocity: *x.vel.Noise(e.portal.Noise()),
-					Distance: e.shape.Position.Add(x.shape.Position.Scale(-1)).Length(),
-					Radius:   x.shape.Radius,
-				})
-			}
-		}
-
-		// send information to participant
-		outMsg, err := json.Marshal(&information)
-		if err != nil {
-			panic(err)
-		}
-		e.process.In <- string(outMsg)
-
-		// TODO lome: maybe use some kind of general message handler for the process, which decodes messages, adds them to different queues and, on demand, terminates the process
-		// receive answer message from process
-		msg := <-e.process.Out
-		parsed := SimulationMessage{}
-		if err := json.Unmarshal([]byte(msg), &parsed); err != nil {
-			e.Stop()
-		} else {
-			switch parsed.Action {
-			case "move":
-				// a "simple" move action
-				message := MovementMessage{}
-				if err := json.Unmarshal([]byte(msg), &message); err != nil {
-					panic(err)
-				}
-				vel := &util.Vec2D{
-					X: message.Payload.X,
-					Y: message.Payload.Y,
-				}
-				// update current velocity
-				e.SetVelocity(vel.NoiseI(e.portal.Noise()))
-			case "stop":
-				// underlying process finished computation
-				e.Stop()
-			}
-		}
+		e.tick()
 		e.barrier.Resolve()
+	}
+}
+
+func (e *Entity) tick() {
+	// perform movement with current velocity
+	e.Move()
+
+	// check, if this entity is close enough to target
+	if e.shape.Position.Scale(-1).Add(&e.target).Length() < 1e-4 {
+		e.Stop()
+		return
+	}
+
+	e.sendInformationMessage()
+	e.evaluteProcessMessage()
+}
+
+// Send information about current system state to this participant
+func (e *Entity) sendInformationMessage() {
+	// send sample message to process
+	information := InformationMessage{
+		Position:     e.shape.Position,
+		Participants: []ParticipantInformation{},
+	}
+
+	participants := e.portal.Participants()
+	for _, x := range participants {
+		if e.id != x.id {
+			// check for collision with other participant
+			if x.shape.Position.Add(e.shape.Position.Scale(-1)).Length() < e.shape.Radius+x.shape.Radius {
+				fmt.Printf("%v collides with %v\n", e.id, x.id)
+				e.collisions++
+			}
+
+			// create noised information about other participant
+			information.Participants = append(information.Participants, ParticipantInformation{
+				Position: *x.shape.Position.Noise(e.portal.Noise()),
+				Velocity: *x.vel.Noise(e.portal.Noise()),
+				Distance: e.shape.Position.Add(x.shape.Position.Scale(-1)).Length(),
+				Radius:   x.shape.Radius,
+			})
+		}
+	}
+
+	// send information to participant
+	outMsg, err := json.Marshal(&information)
+	if err != nil {
+		panic(err)
+	}
+	e.process.In <- string(outMsg)
+}
+
+// Decode and evaluate the message received from process
+func (e *Entity) evaluteProcessMessage() {
+	// TODO lome: maybe use some kind of general message handler for the process, which decodes messages, adds them to different queues and, on demand, terminates the process
+	// receive answer message from process
+	msg := <-e.process.Out
+	parsed := SimulationMessage{}
+	if err := json.Unmarshal([]byte(msg), &parsed); err != nil {
+		e.Stop()
+	} else {
+		switch parsed.Action {
+		case "move":
+			// a "simple" move action
+			message := MovementMessage{}
+			if err := json.Unmarshal([]byte(msg), &message); err != nil {
+				panic(err)
+			}
+			vel := &util.Vec2D{
+				X: message.Payload.X,
+				Y: message.Payload.Y,
+			}
+			// update current velocity
+			e.SetVelocity(vel.NoiseI(e.portal.Noise()))
+		case "stop":
+			// underlying process finished computation
+			e.Stop()
+		}
 	}
 }
 
