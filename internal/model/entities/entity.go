@@ -12,37 +12,42 @@ import (
 
 // Basic entity type which can be renderred in SDL
 type Entity struct {
-	id         string
-	shape      Shape
-	target     util.Vec2D
-	vmax       float64
-	vel        util.Vec2D
-	color      randomcolor.RGBColor
-	portal     Portal
-	running    bool
-	process    *process.Process
-	barrier    *util.Barrier
-	collisions int64
-	mutex      sync.Mutex
+	id           string
+	shape        Shape
+	target       util.Vec2D
+	vmax         float64
+	vel          util.Vec2D
+	color        randomcolor.RGBColor
+	portal       Portal
+	running      bool
+	process      *process.Process
+	barrier      *util.Barrier
+	collisions   int64
+	mutex        sync.Mutex
+	ignoreFinish bool
 }
 
-func Create(id string, shape Shape, vmax float64, target util.Vec2D, portal Portal, script string, barrier *util.Barrier) *Entity {
-	p, err := process.Spawn(script)
+func Create(id string, configuration *ParticipantSetupInformation, portal Portal, barrier *util.Barrier) *Entity {
+	p, err := process.Spawn(configuration.Script)
 	if err != nil {
 		fmt.Printf("Cannot start process for entity '%v': %v\n", id, err.Error())
 		return nil
 	}
 	return &Entity{
-		id:         id,
-		color:      randomcolor.GetRandomColorInRgb(),
-		shape:      shape,
-		target:     target,
-		vmax:       vmax,
-		portal:     portal,
-		running:    false,
-		process:    p,
-		barrier:    barrier,
-		collisions: 0,
+		id:    id,
+		color: randomcolor.GetRandomColorInRgb(),
+		shape: Shape{
+			Position: configuration.Start,
+			Radius:   configuration.Radius,
+		},
+		target:       configuration.Target,
+		vmax:         configuration.VMax,
+		portal:       portal,
+		running:      false,
+		process:      p,
+		barrier:      barrier,
+		collisions:   0,
+		ignoreFinish: configuration.IgnoreFinish,
 	}
 }
 
@@ -162,7 +167,7 @@ func (e *Entity) tick() {
 	e.Move()
 
 	// check, if this entity is close enough to target
-	if e.shape.Position.Scale(-1).Add(&e.target).Length() < 1e-4 {
+	if !e.ignoreFinish && e.shape.Position.Scale(-1).Add(&e.target).Length() < 1e-4 {
 		e.Stop()
 		return
 	}

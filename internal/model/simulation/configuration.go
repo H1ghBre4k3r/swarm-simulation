@@ -6,16 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/entities"
 )
-
-type ParticipantSetupInformation struct {
-	Start  util.Vec2D `json:"start"`
-	Radius float64    `json:"radius"`
-	VMax   float64    `json:"vmax"`
-	Target util.Vec2D `json:"target"`
-	Script string     `json:"script"`
-}
 
 type Settings struct {
 	TickLength int64   `json:"tickLength"`
@@ -25,7 +17,7 @@ type Settings struct {
 
 type Configuration struct {
 	Settings     Settings
-	Participants []*ParticipantSetupInformation `json:"participants"`
+	Participants []*entities.ParticipantSetupInformation `json:"participants"`
 }
 
 // Parse the simulation and print error messages, if the path or the format of the file are wrong

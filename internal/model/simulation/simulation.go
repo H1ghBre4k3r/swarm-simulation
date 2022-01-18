@@ -45,10 +45,7 @@ func (s *Simulation) init() {
 
 	// initialize all participants mentioned in the configuration
 	for i, p := range s.configuration.Participants {
-		s.addEntity(entities.Create(fmt.Sprintf("id_%v", i), entities.Shape{
-			Position: p.Start,
-			Radius:   p.Radius,
-		}, p.VMax, p.Target, s.portal, p.Script, s.barrier))
+		s.addEntity(entities.Create(fmt.Sprintf("id_%v", i), p, s.portal, s.barrier))
 	}
 
 	for _, e := range s.entities.Get() {
@@ -82,11 +79,11 @@ func (s *Simulation) Loop() {
 func (s *Simulation) tick() {
 	s.portal.Update()
 	start := time.Now()
-	active := s.entities.GetRunning()
+	active, obstacles := s.entities.GetRunning()
 	if len(active) == 0 {
 		s.running = false
 	}
-	s.barrier.Tick(len(active))
+	s.barrier.Tick(len(active) + len(obstacles))
 	elapsed := time.Since(start)
 	log.Printf("Tick took %s\n", elapsed)
 	s.ticks++

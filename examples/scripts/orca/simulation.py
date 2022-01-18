@@ -61,11 +61,6 @@ class Simulation(Thread):
             position = np.array([inp["position"]["x"], inp["position"]["y"]])
             self.we.update_position(position)
 
-            # if norm(self.we.velocity) / self.fps < 10**-5:
-            #     # we are at the target
-            #     self.stop()
-            #     return
-
             # read information about all other participants
             participansts = []
             for p in inp["participants"]:
