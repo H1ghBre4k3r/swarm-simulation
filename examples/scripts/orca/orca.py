@@ -86,8 +86,8 @@ def orca(a: Participant, b: Participant) -> np.ndarray:
             # if norm(a.velocity) + norm(b.velocity) != 0:
             #     perc = 1 - (norm(a.velocity) /
             #                 (norm(a.velocity) + norm(b.velocity)))
-            perc = 1 - (a.radius / r)
-            return u * perc, n
+            # perc = 1 - (a.radius / r)
+            return u, n
 
 
 def halfplane_intersection(halfplanes_u: list[Halfplane], current_velocity: np.ndarray, optimal_point: np.ndarray) -> np.ndarray:
