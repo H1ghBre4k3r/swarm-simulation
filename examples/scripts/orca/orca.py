@@ -81,7 +81,13 @@ def orca(a: Participant, b: Participant) -> np.ndarray:
             if differenceAngle > sideAngle:
                 n *= -1
 
-            return u, n
+            # adjust u in relation to percentage of own radius
+            # perc = 1
+            # if norm(a.velocity) + norm(b.velocity) != 0:
+            #     perc = 1 - (norm(a.velocity) /
+            #                 (norm(a.velocity) + norm(b.velocity)))
+            perc = 1 - (a.radius / r)
+            return u * perc, n
 
 
 def halfplane_intersection(halfplanes_u: list[Halfplane], current_velocity: np.ndarray, optimal_point: np.ndarray) -> np.ndarray:
@@ -110,7 +116,7 @@ def intersect_halfplane_with_other_halfplanes(plane: Halfplane, other_planes: li
 
     direction = np.array([plane.n[1], -plane.n[0]])
 
-    # see https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect/565282#565282 for refernce
+    # see https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect/565282#565282 for reference
     for other_plane in other_planes:
         other_dir = np.array([other_plane.n[1], -other_plane.n[0]])
         num = np.cross(other_plane.u - plane.u, other_dir)

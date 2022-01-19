@@ -1,7 +1,5 @@
 #!/usr/bin/env python3 -u
 
-import warnings
-
 from halfplane import Halfplane
 from mathutils import norm, normalize
 from orca import halfplane_intersection, orca

@@ -21,7 +21,11 @@ def vec2angle(vector: np.ndarray, deg=True) -> float:
     """
     ref = np.array([1, 0])
     ref_unit = ref / np.linalg.norm(ref)
-    x_unit = vector / np.linalg.norm(vector)
+    vec_len = np.linalg.norm(vector)
+    if vec_len == 0:
+        x_unit = np.array([0, 0])
+    else:
+        x_unit = vector / np.linalg.norm(vector)
     ang = np.arccos(np.dot(ref_unit, x_unit))
     if deg:
         ang = r2d(ang)
@@ -86,4 +90,7 @@ def closest_point_on_line(l0: np.ndarray, l1: np.ndarray, tar: np.ndarray, left=
 
 
 def normalize(n):
-    return n / np.linalg.norm(n)
+    length = np.linalg.norm(n)
+    if length == 0:
+        return np.array([0, 0])
+    return n / length

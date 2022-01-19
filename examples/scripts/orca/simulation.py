@@ -62,14 +62,14 @@ class Simulation(Thread):
             self.we.update_position(position)
 
             # read information about all other participants
-            participansts = []
+            participants = []
             for p in inp["participants"]:
                 participant = Participant(np.array([p["position"]["x"], p["position"]["y"]]), np.array(
                     [p["velocity"]["x"], p["velocity"]["y"]]) * self.fps, p["radius"])
-                participansts.append(participant)
+                participants.append(participant)
 
             # call the callback function
-            velocity = cb(self.we, participansts)
+            velocity = cb(self.we, participants)
             velocity /= self.fps
             # send the new velocity to the simulation
             val = {
