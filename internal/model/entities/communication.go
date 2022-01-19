@@ -6,6 +6,7 @@ import "github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
 type SetupMessage struct {
 	Position util.Vec2D `json:"position"`
 	Radius   float64    `json:"radius"`
+	SafeZone float64    `json:"safezone"`
 	Vmax     float64    `json:"vmax"`
 	Target   util.Vec2D `json:"target"`
 	FPS      uint64     `json:"FPS"`
@@ -39,4 +40,5 @@ type ParticipantInformation struct {
 	Velocity util.Vec2D `json:"velocity"`
 	Distance float64    `json:"distance"`
 	Radius   float64    `json:"radius"`
+	SafeZone float64    `json:"safezone"`
 }

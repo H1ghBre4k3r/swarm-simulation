@@ -30,12 +30,13 @@ class Simulation(Thread):
         setup = json.loads(sys.stdin.readline())
         position = np.array([setup["position"]["x"], setup["position"]["y"]])
         radius = setup["radius"]
+        safezone = setup["safezone"]
         target = np.array([setup["target"]["x"], setup["target"]["y"]])
         self.fps = setup["FPS"]
         vmax = setup["vmax"] * self.fps
         # create participant for this unit
         self.we = Participant(position, normalize(
-            target - position) * vmax, radius, vmax, target)
+            target - position) * vmax, radius, safezone, vmax, target)
 
     def start(self, cb):
         """
@@ -65,7 +66,7 @@ class Simulation(Thread):
             participants = []
             for p in inp["participants"]:
                 participant = Participant(np.array([p["position"]["x"], p["position"]["y"]]), np.array(
-                    [p["velocity"]["x"], p["velocity"]["y"]]) * self.fps, p["radius"])
+                    [p["velocity"]["x"], p["velocity"]["y"]]) * self.fps, p["radius"], p["safezone"])
                 participants.append(participant)
 
             # call the callback function

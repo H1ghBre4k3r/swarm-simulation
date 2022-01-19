@@ -3,11 +3,12 @@ from mathutils import normalize
 
 
 class Participant(object):
-    def __init__(self, position: np.ndarray, velocity: np.ndarray, radius: np.float64, vmax=None, target=None) -> None:
+    def __init__(self, position: np.ndarray, velocity: np.ndarray, radius: np.float64, safezone: np.float64, vmax=None, target=None) -> None:
         super().__init__()
         self.position = position
         self.velocity = velocity
         self.radius = radius
+        self.safezone = safezone
         self.vmax = vmax
         self.target = target
 

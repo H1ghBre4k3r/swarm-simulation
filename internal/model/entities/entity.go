@@ -14,6 +14,7 @@ import (
 type Entity struct {
 	id           string
 	shape        Shape
+	safeZone     float64
 	target       util.Vec2D
 	vmax         float64
 	vel          util.Vec2D
@@ -40,6 +41,7 @@ func Create(id string, configuration *ParticipantSetupInformation, portal Portal
 			Position: configuration.Start,
 			Radius:   configuration.Radius,
 		},
+		safeZone:     configuration.SafeZone,
 		target:       configuration.Target,
 		vmax:         configuration.VMax,
 		portal:       portal,
@@ -199,6 +201,7 @@ func (e *Entity) sendInformationMessage() {
 				Velocity: *x.vel.Noise(e.portal.Noise()),
 				Distance: e.shape.Position.Add(x.shape.Position.Scale(-1)).Length(),
 				Radius:   x.shape.Radius,
+				SafeZone: x.safeZone,
 			})
 		}
 	}

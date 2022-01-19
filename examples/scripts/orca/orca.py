@@ -21,8 +21,8 @@ def out_of_disc(disc_center, disc_r, v):
 def orca(a: Participant, b: Participant) -> np.ndarray:
 
     x = b.position - a.position
-    r = b.radius + a.radius
-    r *= 2
+    r = a.radius + a.safezone + b.radius + b.safezone
+    # r *= 2
     v = a.velocity - b.velocity
 
     if norm(x) < r:
