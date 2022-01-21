@@ -153,8 +153,7 @@ At startup, the simulation sends some initial information to each participant:
 		// coordinates of the target of this participant
 		"x": 0.8,
 		"y": 0.5
-	},
-	"fps": 120 // "look ahead range" of the simulation
+	}
 }
 ```
 

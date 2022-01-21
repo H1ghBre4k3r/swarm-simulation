@@ -32,8 +32,7 @@ class Simulation(Thread):
         radius = setup["radius"]
         safezone = setup["safezone"]
         target = np.array([setup["target"]["x"], setup["target"]["y"]])
-        self.fps = setup["FPS"]
-        vmax = setup["vmax"] * self.fps
+        vmax = setup["vmax"]
         # create participant for this unit
         self.we = Participant(position, normalize(
             target - position) * vmax, radius, safezone, vmax, target)
@@ -66,12 +65,11 @@ class Simulation(Thread):
             participants = []
             for p in inp["participants"]:
                 participant = Participant(np.array([p["position"]["x"], p["position"]["y"]]), np.array(
-                    [p["velocity"]["x"], p["velocity"]["y"]]) * self.fps, p["radius"], p["safezone"])
+                    [p["velocity"]["x"], p["velocity"]["y"]]), p["radius"], p["safezone"])
                 participants.append(participant)
 
             # call the callback function
             velocity = cb(self.we, participants)
-            velocity /= self.fps
             # send the new velocity to the simulation
             val = {
                 "action": "move",
