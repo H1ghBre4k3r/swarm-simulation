@@ -10,7 +10,7 @@ import (
 )
 
 type Settings struct {
-	TickLength int64   `json:"tickLength"`
+	TickLength uint64  `json:"tickLength"`
 	Noise      float64 `json:"noise"`
 	FPS        uint64  `json:"fps"`
 }
@@ -39,7 +39,11 @@ func ParseConfigurationFrom(path string) *Configuration {
 		p.Script = filepath.Join(filepath.Dir(path), p.Script)
 	}
 
-	if configuration.Settings.FPS == 0 {
+	if configuration.Settings.TickLength <= 0 {
+		configuration.Settings.TickLength = 1
+	}
+
+	if configuration.Settings.FPS <= 0 {
 		configuration.Settings.FPS = 1
 	}
 	return configuration

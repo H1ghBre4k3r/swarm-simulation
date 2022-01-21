@@ -49,6 +49,12 @@ The file has to have the following format:
 
 ```json
 {
+	"settings": {
+		// optional settings for the simulation
+		"tickLength": 10, // [OPTIONAL, default=1] minimum length of a tick in the simulation
+		"fps": 120, // [OPTIONAL, default=1] 'look ahead range' for participants
+		"noise": 0.01 // [OPTIONAL, default=0] noise for the simulation (between 0 and 1 - everything else is not useful)
+	},
 	"participants": [
 		// array of participants of the simulation
 		{
@@ -58,18 +64,30 @@ The file has to have the following format:
 				"y": 0.5 // number between 0 and 1
 			},
 			"radius": 0.05, // the radius of this participant (also between 0 and 1)
+			"safezone": 0.005, // [OPTIONAL, default=0] optional safe zone around this participant (to handle inaccuracies)
 			"vmax": 0.001, // the maximum velocity of this participant (between 0 and 1)
 			"target": {
 				// coordinates of the target for this participant
 				"x": 0.9, // between 0 and 1
 				"y": 0.5 // betweedn 0 and 1
 			},
-			"script": "scripts/test.py" // path to the script for this participant, RELATIVE to the location of this configuration file
+			"script": "scripts/test.py", // path to the script for this participant, RELATIVE to the location of this configuration file
+			"ignoreFinish": true // [OPTIONAL, default=false] flag for indicating, if the simulation shall ignore the movement (and process) of this participant
 		}
 		//...
 	]
 }
 ```
+
+Additionally, the simulation supports a number of command line flags:
+
+- `-h`: Show usage of the simulation
+- `-no-gui`: Don't start a GUI
+- `-no-grid`: Hide the grid within the simulation
+- `-c`: Path to the configuration file
+- `-n`: Noise for the simulation (this overwrites the value in the configuration file)
+
+The headless executable (only terminal - see **Headless**) supports only a part of the flags.
 
 ## Development
 
@@ -82,6 +100,8 @@ $ make run
 ```
 
 ### Running Tests
+
+> There are currently no tests :^)
 
 ```sh
 $ make test
@@ -97,4 +117,82 @@ $ make build
 
 ```sh
 $ make release
+```
+
+### Headless
+
+If you want to build a headless version (i.e., without GUI support and SDL2), you can compile a specific, console-only version of the simulation.
+
+```sh
+$ make terminal
+```
+
+## Communication
+
+The simulation starts a new process for each participant and communicates with it via `stdin`, `stdou`, and `stderr`:
+
+- `stdin` is used to pass information from the simulation to the participants
+- `stdout` is used to receive information from the participants
+- `stderr` _can_ be used to log arbitrary information to the output of the simulation
+
+### Procedure
+
+At startup, the simulation sends some initial information to each participant:
+
+```json
+{
+	"position": {
+		// coordinates of the position of this participant
+		"x": 0.2,
+		"y": 0.5
+	},
+	"radius": 0.015, // radius of this participant
+	"safezone": 0.005, // radius of the safezone around this participant
+	"vmax": 0.0005, // maximum velocity of this participant
+	"target": {
+		// coordinates of the target of this participant
+		"x": 0.8,
+		"y": 0.5
+	},
+	"fps": 120 // "look ahead range" of the simulation
+}
+```
+
+During each tick of the simulation, it sends its current position and information about all other participants to each participant:
+
+```json
+{
+	"position": {
+		// coordinates of the position of this participant
+		// ...
+	},
+	"participants": [
+		{
+			"position": {
+				// position of the participant
+			},
+			"velocity": {
+				// current velocity of this participant
+				"x": 0.0012,
+				"y": 0.000004
+			},
+			"distance": 0.412, // relative distance to this participant
+			"radius": 0.015, // radius of this participant
+			"safezone": 0.0025 // safezone for this participant
+		}
+	]
+}
+```
+
+After this, it expects an answer of each participant:
+
+```json
+{
+	"action": "move",
+	"payload": {
+		// new velocity of this participant
+		"x": 0.00123,
+		"y": 0.002
+	}
+}
 ```
