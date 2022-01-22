@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/entities"
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/obstacles"
 )
 
 type Settings struct {
@@ -18,6 +19,7 @@ type Settings struct {
 type Configuration struct {
 	Settings     Settings
 	Participants []*entities.ParticipantSetupInformation `json:"participants"`
+	Obstacles    []*obstacles.Obstacle                   `json:"obstacles"`
 }
 
 // Parse the simulation and print error messages, if the path or the format of the file are wrong

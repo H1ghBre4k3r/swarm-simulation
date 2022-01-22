@@ -30,5 +30,11 @@
       },
       "script": "scripts/orca/main.py"
     }
+  ],
+  "obstacles": [
+    [
+      { "x": 0.7, "y": 0.3 },
+      { "x": 0.7, "y": 0.7 }
+    ]
   ]
 }
