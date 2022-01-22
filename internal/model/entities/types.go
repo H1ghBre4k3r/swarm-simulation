@@ -1,6 +1,9 @@
 package entities
 
-import "github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
+import (
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/obstacles"
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
+)
 
 type UpdateFn func(*Entity)
 
@@ -8,6 +11,7 @@ type Portal interface {
 	Insert(*Entity)
 	Remove(*Entity)
 	Participants() []*Entity
+	Obstacles() []*obstacles.Obstacle
 	Noise() float64
 	FPS() uint64
 }

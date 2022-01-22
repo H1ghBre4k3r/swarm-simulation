@@ -48,5 +48,8 @@ func ParseConfigurationFrom(path string) *Configuration {
 	if configuration.Settings.FPS <= 0 {
 		configuration.Settings.FPS = 1
 	}
+	if len(configuration.Obstacles) == 0 {
+		configuration.Obstacles = []*obstacles.Obstacle{}
+	}
 	return configuration
 }

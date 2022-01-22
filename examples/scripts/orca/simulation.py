@@ -3,7 +3,8 @@ import sys
 from threading import Thread
 
 import numpy as np
-from mathutils import norm, normalize
+from mathutils import normalize
+from obstacle import Obstacle
 from participant import Participant
 from util import log
 
@@ -67,9 +68,12 @@ class Simulation(Thread):
                 participant = Participant(np.array([p["position"]["x"], p["position"]["y"]]), np.array(
                     [p["velocity"]["x"], p["velocity"]["y"]]), p["radius"], p["safezone"])
                 participants.append(participant)
+            obstacles = []
+            for o in inp["obstacles"]:
+                obstacles.append(Obstacle(o))
 
             # call the callback function
-            velocity = cb(self.we, participants)
+            velocity = cb(self.we, participants, obstacles)
             # send the new velocity to the simulation
             val = {
                 "action": "move",

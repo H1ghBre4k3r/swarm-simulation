@@ -41,7 +41,7 @@ func (s *Simulation) Start() error {
 }
 
 func (s *Simulation) init() {
-	s.portal = CreateSimulationPortal(s.spatial, s.entities, s.configuration.Settings.Noise, s.configuration.Settings.FPS)
+	s.portal = CreateSimulationPortal(s.spatial, s.entities, s.configuration.Settings.Noise, s.configuration.Settings.FPS, s.configuration.Obstacles)
 
 	// initialize all participants mentioned in the configuration
 	for i, p := range s.configuration.Participants {

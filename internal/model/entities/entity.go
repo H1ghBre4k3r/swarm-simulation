@@ -183,6 +183,7 @@ func (e *Entity) sendInformationMessage() {
 	information := InformationMessage{
 		Position:     e.shape.Position,
 		Participants: []ParticipantInformation{},
+		Obstacles:    e.portal.Obstacles(),
 	}
 
 	participants := e.portal.Participants()

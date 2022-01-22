@@ -1,6 +1,9 @@
 package entities
 
-import "github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
+import (
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/obstacles"
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
+)
 
 // Message to send when starting the entities
 type SetupMessage struct {
@@ -26,6 +29,7 @@ type MovementMessage struct {
 type InformationMessage struct {
 	Position     util.Vec2D               `json:"position"`
 	Participants []ParticipantInformation `json:"participants"`
+	Obstacles    []*obstacles.Obstacle    `json:"obstacles"`
 }
 
 type ParticipantInformation struct {
