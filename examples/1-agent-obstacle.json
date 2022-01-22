@@ -16,19 +16,12 @@
         "y": 0.5
       },
       "script": "scripts/orca/main.py"
-    },
-    {
-      "start": {
-        "x": 0.8,
-        "y": 0.5
-      },
-      "radius": 0.015,
-      "vmax": 0.0005,
-      "target": {
-        "x": 0.2,
-        "y": 0.5
-      },
-      "script": "scripts/orca/main.py"
     }
+  ],
+  "obstacles": [
+    [
+      { "x": 0.5, "y": 0.45 },
+      { "x": 0.5, "y": 0.55 }
+    ]
   ]
 }

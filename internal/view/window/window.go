@@ -1,6 +1,7 @@
 package window
 
 import (
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/obstacles"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/simulation"
 	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
@@ -53,7 +54,7 @@ func (w *Window) Destroy() {
 }
 
 // Render content to the screen/window
-func (w *Window) Render(entities []simulation.Drawable) {
+func (w *Window) Render(entities []simulation.Drawable, obstacles []*obstacles.Obstacle) {
 	w.renderer.SetDrawColor(255, 255, 255, 255)
 	w.renderer.Clear()
 	if w.lines {
@@ -64,6 +65,16 @@ func (w *Window) Render(entities []simulation.Drawable) {
 
 		}
 	}
+
+	for _, o := range obstacles {
+		for i, c := range *o {
+			if i+1 < len(*o) {
+				other := (*o)[i+1]
+				gfx.ThickLineRGBA(w.renderer, int32(w.Scale(c.X)), int32(w.Scale(c.Y)), int32(w.Scale(other.X)), int32(w.Scale(other.Y)), 2, 0, 0, 0, 255)
+			}
+		}
+	}
+
 	for _, e := range entities {
 		gfx.FilledCircleRGBA(w.renderer, int32(w.Scale(e.GetX())), int32(w.Scale(e.GetY())), int32(w.Scale(e.GetR())), uint8(e.GetColor().Red), uint8(e.GetColor().Green), uint8(e.GetColor().Blue), 255)
 		vel := e.GetVelocity()

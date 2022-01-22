@@ -98,7 +98,7 @@ func (s *Simulation) Draw() {
 		ns = append(ns, e)
 	}
 	for _, v := range s.views {
-		v.Render(ns)
+		v.Render(ns, s.configuration.Obstacles)
 	}
 }
 

@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"github.com/AvraamMavridis/randomcolor"
+	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/obstacles"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
 )
 
@@ -15,5 +16,5 @@ type Drawable interface {
 }
 
 type View interface {
-	Render([]Drawable)
+	Render([]Drawable, []*obstacles.Obstacle)
 }
