@@ -24,7 +24,7 @@ def main():
             halfplanes.append(Halfplane(u, n))
 
         for o in obstacles:
-            sys.stderr.write(f"{o.coords}\n")
+            sys.stderr.write(f"{o.start} {o.end}\n")
         # try to find new velocity
         new_vel = None
         while new_vel is None:

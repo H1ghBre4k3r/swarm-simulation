@@ -67,12 +67,7 @@ func (w *Window) Render(entities []simulation.Drawable, obstacles []*obstacles.O
 	}
 
 	for _, o := range obstacles {
-		for i, c := range *o {
-			if i+1 < len(*o) {
-				other := (*o)[i+1]
-				gfx.ThickLineRGBA(w.renderer, int32(w.Scale(c.X)), int32(w.Scale(c.Y)), int32(w.Scale(other.X)), int32(w.Scale(other.Y)), 2, 0, 0, 0, 255)
-			}
-		}
+		gfx.ThickLineRGBA(w.renderer, int32(w.Scale(o.Start.X)), int32(w.Scale(o.Start.Y)), int32(w.Scale(o.End.X)), int32(w.Scale(o.End.Y)), 2, 0, 0, 0, 255)
 	}
 
 	for _, e := range entities {

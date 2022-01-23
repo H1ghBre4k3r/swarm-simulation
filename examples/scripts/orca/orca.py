@@ -18,8 +18,7 @@ def out_of_disc(disc_center, disc_r, v):
     return u_vec, rel_vec
 
 
-def orca(a: Participant, b: Participant) -> np.ndarray:
-
+def orca(a: Participant, b: Participant) -> tuple[np.ndarray, np.ndarray]:
     x = b.position - a.position
     r = a.radius + a.safezone + b.radius + b.safezone
     # r *= 2
