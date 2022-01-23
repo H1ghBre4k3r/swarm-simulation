@@ -5,5 +5,5 @@ import numpy as np
 
 class Obstacle(object):
     def __init__(self, coords):
-        self.start = coords["start"]
-        self.end = coords["end"]
+        self.start = np.array([coords["start"]["x"], coords["start"]["y"]])
+        self.end = np.array([coords["end"]["x"], coords["end"]["y"]])

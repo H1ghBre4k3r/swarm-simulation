@@ -5,7 +5,7 @@ import sys
 from halfplane import Halfplane
 from mathutils import norm, normalize
 from obstacle import Obstacle
-from orca import halfplane_intersection, orca
+from orca import halfplane_intersection, obstacle_collision, orca
 from participant import Participant
 from simulation import Simulation
 
@@ -23,13 +23,15 @@ def main():
             u, n = orca(we, p)
             halfplanes.append(Halfplane(u, n))
 
+        obstacle_planes = []
         for o in obstacles:
-            sys.stderr.write(f"{o.start} {o.end}\n")
+            u, n = obstacle_collision(we, o)
+            obstacle_planes.append(Halfplane(u, n))
         # try to find new velocity
         new_vel = None
         while new_vel is None:
             new_vel = halfplane_intersection(
-                halfplanes, we.velocity, we.velocity)
+                halfplanes + obstacle_planes, we.velocity, we.velocity)
             # move halfplanes outward at equal speed
             new_halfplanes = []
             for l in halfplanes:

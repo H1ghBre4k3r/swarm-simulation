@@ -1,10 +1,44 @@
+import sys
+
 import numpy as np
 from halfplane import Halfplane
 from mathutils import (angle2vec, angle_diff, arcsin, closest_point_on_line,
                        dist, norm, normalize, vec2angle)
+from obstacle import Obstacle
 from participant import Participant
 
 tau = 4
+
+
+def obstacle_collision(a: Participant, obstacle: Obstacle) -> tuple[np.ndarray, np.ndarray]:
+    r_vec = normalize(a.velocity) * (a.radius + a.safezone)
+    start = obstacle.start - (a.position + r_vec)
+    end = obstacle.end - (a.position + r_vec)
+
+    v = a.velocity
+    v_norm = norm(v)
+
+    start_tau = start / tau
+    end_tau = end / tau
+
+    # determine the side to project on
+    closest_front = closest_point_on_line(start_tau, end_tau, a.velocity)
+    closest_side_start = closest_point_on_line(
+        start_tau, normalize(start_tau) * v_norm, a.velocity)
+    closest_side_end = closest_point_on_line(
+        end_tau, normalize(end_tau) * v_norm, a.velocity)
+    closest = closest_front
+    if dist(closest_side_start, a.velocity) < dist(closest, a.velocity):
+        closest = closest_side_start
+    if dist(closest_side_end, a.velocity) < dist(closest, a.velocity):
+        closest = closest_side_end
+
+    w = closest - v
+    u = w
+    n = normalize(w)
+    if np.dot(v - closest, closest) < 0:
+        n *= -1
+    return u, n
 
 
 def out_of_disc(disc_center, disc_r, v):
