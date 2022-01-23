@@ -125,6 +125,7 @@ func (e *Entity) sendSetupMessage() {
 		Radius:   e.shape.Radius,
 		Target:   e.target,
 		Vmax:     e.vmax * float64(e.portal.FPS()),
+		SafeZone: e.safeZone,
 	}
 	setupMessage, err := json.Marshal(&setupInformation)
 	if err != nil {

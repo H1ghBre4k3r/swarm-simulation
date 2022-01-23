@@ -15,7 +15,8 @@
         "x": 0.8,
         "y": 0.5
       },
-      "script": "scripts/orca/main.py"
+      "script": "scripts/orca/main.py",
+      "safezone": 0.01
     }
   ],
   "obstacles": [
