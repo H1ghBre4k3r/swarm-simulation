@@ -11,26 +11,25 @@ tau = 4
 
 
 def obstacle_collision(a: Participant, obstacle: Obstacle) -> tuple[np.ndarray, np.ndarray]:
-    r_vec = normalize(a.velocity) * (a.radius + a.safezone)
+    # TODO lome: rotate to take obstacle radius into account
+    r_vec = normalize(a.velocity) * (a.radius + a.safezone + obstacle.radius)
     start = obstacle.start - (a.position + r_vec)
     end = obstacle.end - (a.position + r_vec)
 
     dist_vec = closest_point_on_line(
         obstacle.start, obstacle.end, a.position) - a.position
     # check, if we are colliding with the obstacle
-    if norm(dist_vec) < a.radius + a.safezone:
+    if norm(dist_vec) < a.radius + a.safezone + obstacle.radius:
         u = -dist_vec - a.velocity
         n = normalize(-dist_vec)
     else:
         # check, if we are colliding with VO of obstacle
         start_tau = start / tau
         end_tau = end / tau
-
         closest = closest_point_on_line(start_tau, end_tau, np.array([0, 0]))
         w = closest
         u = w - a.velocity
         n = -normalize(w)
-        sys.stderr.write(f"u: {u} n: {n}\n")
     return u, n
 
 

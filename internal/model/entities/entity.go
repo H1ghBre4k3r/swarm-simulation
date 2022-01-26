@@ -251,6 +251,7 @@ func (e *Entity) Stop() {
 	defer e.mutex.Unlock()
 	e.running = false
 	e.process.Stop()
+	e.SetVelocity(&util.Vec2D{X: 0, Y: 0})
 }
 
 // Check, if this entity AND the underlying process are still running.

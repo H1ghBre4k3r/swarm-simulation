@@ -11,6 +11,7 @@ class Participant(object):
         self.safezone = safezone
         self.vmax = vmax
         self.target = target
+        self.is_obstacle = False
 
     def update_position(self, position: np.ndarray) -> None:
         self.position = position

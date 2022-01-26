@@ -83,6 +83,9 @@ def closest_point_on_line(l0: np.ndarray, l1: np.ndarray, tar: np.ndarray, left=
     """
     c = tar - l0
     v = l1 - l0
+    distance = np.linalg.norm(v)
+    if distance == 0:
+        return l0
     v = v / np.linalg.norm(v)
     d = norm(l0 - l1)
     t = np.dot(c, v) / d
