@@ -19,8 +19,8 @@ def obstacle_collision(a: Participant, obstacle: Obstacle) -> tuple[np.ndarray, 
         obstacle.start, obstacle.end, a.position) - a.position
     # check, if we are colliding with the obstacle
     if norm(dist_vec) < a.radius + a.safezone:
-        u = -dist_vec
-        n = normalize(u)
+        u = -dist_vec - a.velocity
+        n = normalize(-dist_vec)
     else:
         # check, if we are colliding with VO of obstacle
         start_tau = start / tau
