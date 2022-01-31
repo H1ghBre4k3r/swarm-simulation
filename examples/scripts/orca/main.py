@@ -1,10 +1,10 @@
 #!/usr/bin/env python3 -u
 
 import sys
-from mathutils import dist
+from typing import List
 
 from halfplane import Halfplane
-from mathutils import norm, normalize
+from mathutils import dist, norm, normalize
 from obstacle import Obstacle
 from orca import halfplane_intersection, obstacle_collision, orca
 from participant import Participant
@@ -21,7 +21,7 @@ def main():
 
     simulation = Simulation()
 
-    def callback(we: Participant, participants: list[Participant], obstacles: list[Obstacle]) -> None:
+    def callback(we: Participant, participants: List[Participant], obstacles: List[Obstacle]) -> None:
         # calculate halfplanes for each participant
         obstacle_planes = []
         halfplanes = []

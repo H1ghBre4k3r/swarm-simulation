@@ -1,4 +1,5 @@
 import sys
+from typing import List, Tuple
 
 import numpy as np
 from halfplane import Halfplane
@@ -10,7 +11,7 @@ from participant import Participant
 tau = 4
 
 
-def obstacle_collision(a: Participant, obstacle: Obstacle) -> tuple[np.ndarray, np.ndarray]:
+def obstacle_collision(a: Participant, obstacle: Obstacle) -> Tuple[np.ndarray, np.ndarray]:
     # TODO lome: rotate to take obstacle radius into account
     r_vec = normalize(a.velocity) * (a.radius + a.safezone + obstacle.radius)
     start = obstacle.start - (a.position + r_vec)
@@ -44,7 +45,7 @@ def out_of_disc(disc_center, disc_r, v):
     return u_vec, rel_vec
 
 
-def orca(a: Participant, b: Participant) -> tuple[np.ndarray, np.ndarray]:
+def orca(a: Participant, b: Participant) -> Tuple[np.ndarray, np.ndarray]:
     x = b.position - a.position
     r = a.radius + a.safezone + b.radius + b.safezone
     # r *= 2
@@ -115,7 +116,7 @@ def orca(a: Participant, b: Participant) -> tuple[np.ndarray, np.ndarray]:
             return u, n
 
 
-def halfplane_intersection(halfplanes_u: list[Halfplane], current_velocity: np.ndarray, optimal_point: np.ndarray) -> np.ndarray:
+def halfplane_intersection(halfplanes_u: List[Halfplane], current_velocity: np.ndarray, optimal_point: np.ndarray) -> np.ndarray:
     halfplanes = []
     for halfplane in halfplanes_u:
         halfplanes.append(
@@ -135,7 +136,7 @@ def halfplane_intersection(halfplanes_u: list[Halfplane], current_velocity: np.n
     return new_point
 
 
-def intersect_halfplane_with_other_halfplanes(plane: Halfplane, other_planes: list[Halfplane]) -> tuple[np.float64, np.float64]:
+def intersect_halfplane_with_other_halfplanes(plane: Halfplane, other_planes: List[Halfplane]) -> Tuple[np.float64, np.float64]:
     left = float('-inf')
     right = float('inf')
 

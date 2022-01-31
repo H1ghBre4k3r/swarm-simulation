@@ -4,6 +4,16 @@
 
 Swarm simulation written in Go.
 
+## Roadmap
+
+- [x] sub-process per entity
+- [x] rendering using SDL2
+- [x] participant configuration
+- [x] simulation configuration
+- [x] terminal only version (without SDL2 dependency)
+- [ ] GLFW + OpenGL/BGFX for rendering
+- [ ] support for 3D
+
 ## Requirements
 
 1. Go installed.
