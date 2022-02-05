@@ -3,7 +3,7 @@ name: Evaluate
 on: [push]
 
 jobs:
-  test:
+  eval:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,3 +16,5 @@ jobs:
         run: sudo apt update
       - name: Build Application
         run: make terminal
+      - name: Run Application
+        run: ./bin/linux_amd64/swarm-simulation-terminal -c examples/2-agents.json
