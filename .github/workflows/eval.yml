@@ -17,8 +17,6 @@ jobs:
       - name: Build Application
         run: make terminal
       - name: Test
-        run: python3 --version
-      - name: Another Test
-        run: whereis python3
+        run: /usr/bin/env
       - name: Run Application
         run: ./bin/linux_amd64/swarm-simulation-terminal -c examples/2-agents.json
