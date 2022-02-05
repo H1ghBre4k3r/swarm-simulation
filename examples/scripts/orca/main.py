@@ -1,8 +1,8 @@
 #!/usr/bin/env python3 -u
 
-import sys
-from typing import List
+from typing import List, Tuple
 
+import numpy as np
 from halfplane import Halfplane
 from mathutils import dist, norm, normalize
 from obstacle import Obstacle
@@ -21,8 +21,7 @@ def main():
 
     simulation = Simulation()
 
-    def callback(we: Participant, participants: List[Participant], obstacles: List[Obstacle]) -> None:
-        # calculate halfplanes for each participant
+    def generate_halfplanes(we: Participant, participants: List[Participant], obstacles: List[Obstacle]) -> Tuple[Halfplane, Halfplane]:
         obstacle_planes = []
         halfplanes = []
         for i, p in enumerate(participants):
@@ -57,6 +56,13 @@ def main():
         for o in obstacles:
             u, n = obstacle_collision(we, o)
             obstacle_planes.append(Halfplane(u, n))
+        
+        return halfplanes, obstacle_planes
+
+    def callback(we: Participant, participants: List[Participant], obstacles: List[Obstacle]) -> np.ndarray:
+        # calculate halfplanes for each participant and all obstacles
+        halfplanes, obstacle_planes = generate_halfplanes(we, participants, obstacles)
+
         # try to find new velocity
         new_vel = None
         while new_vel is None:

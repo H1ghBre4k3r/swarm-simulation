@@ -52,7 +52,7 @@ class Simulation(Thread):
     def run(self):
         self.__loop(self.cb)
 
-    def __loop(self, cb):
+    def __loop(self, callback):
         """
         The main loop of the simulation
         """
@@ -73,7 +73,7 @@ class Simulation(Thread):
                 obstacles.append(Obstacle(o))
 
             # call the callback function
-            velocity = cb(self.we, participants, obstacles)
+            velocity = callback(self.we, participants, obstacles)
             # send the new velocity to the simulation
             val = {
                 "action": "move",
