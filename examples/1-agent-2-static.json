@@ -15,7 +15,7 @@
         "x": 0.8,
         "y": 0.5
       },
-      "script": "scripts/orca/main.py",
+      "script": "scripts/python-orca/main.py",
       "safezone": 0.01
     },
     {
@@ -29,7 +29,7 @@
         "x": 0.48,
         "y": 0.48
       },
-      "script": "scripts/orca/main.py",
+      "script": "scripts/python-orca/main.py",
       "ignoreFinish": true
     },
     {
@@ -43,7 +43,7 @@
         "x": 0.52,
         "y": 0.52
       },
-      "script": "scripts/orca/main.py",
+      "script": "scripts/python-orca/main.py",
       "ignoreFinish": true
     }
   ]

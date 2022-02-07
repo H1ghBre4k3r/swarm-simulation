@@ -113,7 +113,7 @@ def orca(a: Participant, b: Participant) -> Tuple[np.ndarray, np.ndarray]:
             #     perc = 1 - (norm(a.velocity) /
             #                 (norm(a.velocity) + norm(b.velocity)))
             # perc = 1 - (a.radius / r)
-            return u, n
+            return u * 2, n
 
 
 def halfplane_intersection(halfplanes_u: List[Halfplane], current_velocity: np.ndarray, optimal_point: np.ndarray) -> np.ndarray:

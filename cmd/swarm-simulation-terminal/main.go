@@ -30,11 +30,5 @@ func main() {
 	}
 	defer sim.PrintSummary()
 
-	// detach simulation loop in background so it does not freeze the window
-	go sim.Loop()
-
-	// actually draw something
-	for !sim.IsFinished() {
-		sim.Draw()
-	}
+	sim.Loop()
 }
