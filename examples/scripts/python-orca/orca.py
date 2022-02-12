@@ -106,6 +106,9 @@ def orca(a: Participant, b: Participant) -> Tuple[np.ndarray, np.ndarray]:
             n = normalize(u)
             if differenceAngle > sideAngle:
                 n *= -1
+                u /= 2
+            else:
+                u *= 2
 
             # adjust u in relation to percentage of own radius
             # perc = 1
@@ -113,7 +116,7 @@ def orca(a: Participant, b: Participant) -> Tuple[np.ndarray, np.ndarray]:
             #     perc = 1 - (norm(a.velocity) /
             #                 (norm(a.velocity) + norm(b.velocity)))
             # perc = 1 - (a.radius / r)
-            return u * 2, n
+            return u, n
 
 
 def halfplane_intersection(halfplanes_u: List[Halfplane], current_velocity: np.ndarray, optimal_point: np.ndarray) -> np.ndarray:
