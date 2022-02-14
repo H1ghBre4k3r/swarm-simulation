@@ -22,7 +22,7 @@ pub fn vec2angle(vector: &ndarray::Array1<f64>) -> f64 {
         x_unit = vector / vec_len;
     }
     let mut ang = r2d(re_unit.dot(&x_unit).acos());
-    if vector[0] < 0.0 {
+    if vector[1] < 0.0 {
         ang *= -1.0
     }
     return ang;
@@ -39,11 +39,10 @@ pub fn arcsin(gegen_kat: f64, hypo: f64) -> f64 {
 pub fn angle_diff(a: f64, b: f64) -> f64 {
     let x = (a + 360.0) % 360.0;
     let y = (b + 360.0) % 360.0;
-    let vals = vec![(x - y).abs(), (x - y - 360.0).abs(), (x - y + 360.0)];
-    return vals
-        .into_iter()
-        .min_by(|a, b| a.partial_cmp(b).unwrap())
-        .expect("angle_diff error...");
+    return (x - y)
+        .abs()
+        .min((x - y - 360.0).abs())
+        .min((x - y + 360.0).abs());
 }
 
 pub fn dist(x: &ndarray::Array1<f64>, y: &ndarray::Array1<f64>) -> f64 {
@@ -55,7 +54,7 @@ pub fn mix(
     b: &ndarray::Array1<f64>,
     amount: f64,
 ) -> ndarray::Array1<f64> {
-    return a.clone() + amount * (b - a);
+    return a.clone() + (b - a) * amount;
 }
 
 pub fn closest_point_on_line(
@@ -87,14 +86,6 @@ pub fn normalize(vec: &ndarray::Array1<f64>) -> ndarray::Array1<f64> {
 
 pub fn cross(a: &Array1<f64>, b: &Array1<f64>) -> f64 {
     return a[0] * b[1] - a[1] * b[0];
-}
-
-pub fn min(a: f64, b: f64) -> f64 {
-    if a < b {
-        a
-    } else {
-        b
-    }
 }
 
 pub fn max(a: f64, b: f64) -> f64 {

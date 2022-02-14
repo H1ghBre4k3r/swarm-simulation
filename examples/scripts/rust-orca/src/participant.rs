@@ -10,7 +10,7 @@ pub struct Participant {
 }
 
 impl Participant {
-    fn update_position(&mut self, position: &ndarray::Array1<f64>) {
+    pub fn update_position(&mut self, position: &ndarray::Array1<f64>) {
         self.position = position.clone();
         self.velocity = &self.target - &self.position;
         if math::norm(&self.velocity) > self.vmax {

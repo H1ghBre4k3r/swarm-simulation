@@ -15,7 +15,7 @@
         "x": 0.8,
         "y": 0.5
       },
-      "script": "scripts/python-orca/main.py"
+      "script": "scripts/rust-orca/target/release/rust-orca"
     },
     {
       "start": {
@@ -28,7 +28,7 @@
         "x": 0.2,
         "y": 0.5
       },
-      "script": "scripts/python-orca/main.py"
+      "script": "scripts/rust-orca/target/release/rust-orca"
     }
   ]
 }

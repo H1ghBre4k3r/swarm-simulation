@@ -3,8 +3,7 @@ use ndarray::{arr1, Array1};
 use crate::{
     halfplane::Halfplane,
     math::{
-        angle2vec, angle_diff, arcsin, closest_point_on_line, cross, dist, min, norm, normalize,
-        vec2angle,
+        angle2vec, angle_diff, arcsin, closest_point_on_line, cross, norm, normalize, vec2angle,
     },
     obstacle::Obstacle,
     participant::Participant,
@@ -52,7 +51,7 @@ fn out_of_disk(
 
 pub fn orca(a: &Participant, b: &Participant) -> (Array1<f64>, Array1<f64>) {
     let x = &b.position - &a.position;
-    let r = &a.radius - &a.safezone + &b.radius + &b.safezone;
+    let r = &a.radius + &a.safezone + &b.radius + &b.safezone;
     let v = &a.velocity - &b.velocity;
 
     // check, if we are currently colliding
@@ -86,8 +85,10 @@ pub fn orca(a: &Participant, b: &Participant) -> (Array1<f64>, Array1<f64>) {
     let left_u = &left_point - &v;
     let right_u = &right_point - &v;
 
-    let left_dist = dist(&left_point, &v);
-    let right_dist = dist(&right_point, &v);
+    // let left_dist = dist(&left_point, &v);
+    // let right_dist = dist(&right_point, &v);
+    let left_dist = norm(&left_u);
+    let right_dist = norm(&right_u);
 
     let u: Array1<f64>;
     if left_dist < right_dist {
@@ -160,9 +161,9 @@ fn intersect_halfplane_with_other_halfplanes(
 
         let t = &num / &den;
         if den > 0.0 {
-            right = min(right, t);
+            right = right.min(t);
         } else {
-            left = min(left, t);
+            left = left.max(t);
         }
 
         if left > right {

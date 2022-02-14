@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 ndarray = "0.14"
-# ndarray-linalg = { version = "0.13", features = ["openblas-static"] }
+serde_json = "1.0"

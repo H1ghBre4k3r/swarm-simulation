@@ -15,7 +15,7 @@
         "x": 0.8,
         "y": 0.5
       },
-      "script": "scripts/python-orca/main.py",
+      "script": "scripts/rust-orca/target/release/rust-orca",
       "safezone": 0.01
     }
   ],
