@@ -16,7 +16,7 @@
         "x": 0.8,
         "y": 0.5
       },
-      "script": "scripts/orca/main.py"
+      "script": "scripts/python-orca/main.py"
     },
     {
       "start": {
@@ -30,7 +30,7 @@
         "x": 0.2,
         "y": 0.5
       },
-      "script": "scripts/orca/main.py"
+      "script": "scripts/python-orca/main.py"
     }
   ]
 }

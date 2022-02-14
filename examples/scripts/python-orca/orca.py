@@ -34,14 +34,14 @@ def obstacle_collision(a: Participant, obstacle: Obstacle) -> Tuple[np.ndarray, 
     return u, n
 
 
-def out_of_disc(disc_center, disc_r, v):
-    # calculate vector & distance from center of disc to our velocity
-    rel_vec = v - disc_center
+def out_of_disk(disk_center, disk_r, v):
+    # calculate vector & distance from center of disk to our velocity
+    rel_vec = v - disk_center
     w_length = norm(rel_vec)
     # rotate vector by a certain degree, so we do not deadlock
     rel_vec = angle2vec(vec2angle(rel_vec) + 10)
     # calculate u (the velocity that will get us out of collision)
-    u_vec = rel_vec * (disc_r - w_length)
+    u_vec = rel_vec * (disk_r - w_length)
     return u_vec, rel_vec
 
 
@@ -52,19 +52,19 @@ def orca(a: Participant, b: Participant) -> Tuple[np.ndarray, np.ndarray]:
     v = a.velocity - b.velocity
 
     if norm(x) < r:
-        return out_of_disc(x, r, v)
+        return out_of_disk(x, r, v)
     else:
-        # calculate "tau-disc" center and radius
-        disc_center = x / tau
-        disc_r = r / tau
+        # calculate "tau-disk" center and radius
+        disk_center = x / tau
+        disk_r = r / tau
 
-        # center of disc needs to be adjusted, sinec sides of the cone are not parallel
-        adjusted_disc_center = disc_center * (1 - (r / norm(x))**2)
+        # center of disk needs to be adjusted, sinec sides of the cone are not parallel
+        adjusted_disk_center = disk_center * (1 - (r / norm(x))**2)
 
-        # check, if we are colliding with the truncating disc
-        if norm(v) < norm(adjusted_disc_center) and norm(v - adjusted_disc_center) < r:
-            # we are colliding with truncating disc
-            return out_of_disc(disc_center, disc_r, v)
+        # check, if we are colliding with the truncating disk
+        if norm(v) < norm(adjusted_disk_center) and norm(v - adjusted_disk_center) < r:
+            # we are colliding with truncating disk
+            return out_of_disk(disk_center, disk_r, v)
         else:
             # calculate angles of relative position and velocity
             positionAngle = vec2angle(x)
@@ -106,6 +106,9 @@ def orca(a: Participant, b: Participant) -> Tuple[np.ndarray, np.ndarray]:
             n = normalize(u)
             if differenceAngle > sideAngle:
                 n *= -1
+                u /= 2
+            else:
+                u *= 2
 
             # adjust u in relation to percentage of own radius
             # perc = 1

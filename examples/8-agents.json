@@ -1,6 +1,6 @@
 {
   "settings": {
-    "tickLength": 10,
+    "tickLength": 1,
     "fps": 120
   },
   "participants": [
@@ -15,7 +15,7 @@
         "x": 0.8,
         "y": 0.5
       },
-      "script": "scripts/orca/main.py",
+      "script": "scripts/rust-orca/target/release/rust-orca",
       "safezone": 0.01
     },
     {
@@ -29,7 +29,7 @@
         "x": 0.2,
         "y": 0.5
       },
-      "script": "scripts/orca/main.py",
+      "script": "scripts/rust-orca/target/release/rust-orca",
       "safezone": 0.01
     },
     {
@@ -43,7 +43,7 @@
         "x": 0.5,
         "y": 0.2
       },
-      "script": "scripts/orca/main.py",
+      "script": "scripts/rust-orca/target/release/rust-orca",
       "safezone": 0.01
     },
     {
@@ -57,7 +57,7 @@
         "x": 0.5,
         "y": 0.8
       },
-      "script": "scripts/orca/main.py",
+      "script": "scripts/rust-orca/target/release/rust-orca",
       "safezone": 0.01
     },
     {
@@ -71,7 +71,7 @@
         "x": 0.712132034356,
         "y": 0.712132034356
       },
-      "script": "scripts/orca/main.py",
+      "script": "scripts/rust-orca/target/release/rust-orca",
       "safezone": 0.01
     },
     {
@@ -85,7 +85,7 @@
         "x": 0.287867965644,
         "y": 0.287867965644
       },
-      "script": "scripts/orca/main.py",
+      "script": "scripts/rust-orca/target/release/rust-orca",
       "safezone": 0.01
     },
     {
@@ -99,7 +99,7 @@
         "x": 0.287867965644,
         "y": 0.712132034356
       },
-      "script": "scripts/orca/main.py",
+      "script": "scripts/rust-orca/target/release/rust-orca",
       "safezone": 0.01
     },
     {
@@ -113,7 +113,7 @@
         "x": 0.712132034356,
         "y": 0.287867965644
       },
-      "script": "scripts/orca/main.py",
+      "script": "scripts/rust-orca/target/release/rust-orca",
       "safezone": 0.01
     }
   ]

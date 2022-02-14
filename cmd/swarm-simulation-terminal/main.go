@@ -4,7 +4,6 @@ import (
 	"flag"
 
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/simulation"
-	"github.com/veandco/go-sdl2/sdl"
 )
 
 func main() {
@@ -31,18 +30,5 @@ func main() {
 	}
 	defer sim.PrintSummary()
 
-	// detach simulation loop in background so it does not freeze the window
-	go sim.Loop()
-
-	// actually draw something
-draw_loop:
-	for !sim.IsFinished() {
-		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch event.(type) {
-			case *sdl.QuitEvent:
-				break draw_loop
-			}
-		}
-		sim.Draw()
-	}
+	sim.Loop()
 }
