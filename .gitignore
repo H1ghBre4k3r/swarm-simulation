@@ -24,3 +24,4 @@ bin/
 
 __pycache__/
 target/
+output/

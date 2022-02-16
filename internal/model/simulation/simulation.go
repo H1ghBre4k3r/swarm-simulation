@@ -1,8 +1,11 @@
 package simulation
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/collision"
@@ -111,8 +114,48 @@ func (s *Simulation) Stop() {
 // Print the summary about the simulation
 func (s *Simulation) GenerateSummary(outputPath string) {
 	summary := GenerateSummary(s)
-
 	fmt.Printf("%v\n", summary)
+
+	// check, if we actually want to save to summary to a file
+	if outputPath == "" {
+		return
+	}
+
+	// use "${outputPath}/${exampleName}/" as folder for summary
+	// this structures the output in a reasonable way
+	base := filepath.Base(s.configuration.Path)
+	exampleName := base[:len(base)-len(filepath.Ext(base))]
+	outputFolder := filepath.Join(outputPath, exampleName)
+
+	// create output folder
+	if _, err := os.Stat(outputFolder); os.IsNotExist(err) {
+		if err := os.MkdirAll(outputFolder, os.ModePerm); err != nil {
+			fmt.Printf("Could not create directory '%v' to output summary!\n", outputFolder)
+			os.Exit(-1)
+		}
+	}
+
+	// serialize summary
+	out, err := json.Marshal(summary)
+	if err != nil {
+		fmt.Printf("Error during serialization of summary. \nError: %v\n", err.Error())
+		os.Exit(-1)
+	}
+
+	// create output file
+	summaryPath := filepath.Join(outputFolder, fmt.Sprintf("%v.json", time.Now().UnixMilli()))
+	file, err := os.Create(summaryPath)
+	if err != nil {
+		fmt.Printf("Could not create file '%v' for summary. \nError: %v\n", summaryPath, err.Error())
+		os.Exit(-1)
+	}
+	defer file.Close()
+
+	// write to output file
+	if _, err := file.Write(out); err != nil {
+		fmt.Printf("Could not write summary to file '%v'. \nError: %v", summaryPath, err.Error())
+		os.Exit(-1)
+	}
 }
 
 func (s *Simulation) IsRunning() bool {
