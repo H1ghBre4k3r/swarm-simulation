@@ -190,8 +190,8 @@ func (e *Entity) sendInformationMessage() {
 
 	participants := e.portal.Participants()
 	for _, x := range participants {
-		if e.id != x.id {
-			// check for collision with other participant
+		// check for collision with other participant
+		if e.id != x.id && e.shape.Position.Add(x.shape.Position.Scale(-1)).Length() < (e.vmax+x.vmax)*e.portal.TAU() {
 			if x.shape.Position.Add(e.shape.Position.Scale(-1)).Length() < e.shape.Radius+x.shape.Radius {
 				fmt.Printf("%v collides with %v\n", e.id, x.id)
 				e.collisions++
