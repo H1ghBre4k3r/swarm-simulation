@@ -13,7 +13,10 @@ import (
 type Settings struct {
 	TickLength float64 `json:"tickLength"`
 	Noise      float64 `json:"noise"`
-	FPS        uint64  `json:"fps"`
+	//* TODO lome: change that to TAU and pass it to participants
+	//* then use it to determine all participants within the reachable range of others
+	//* This reduces the amount of participants that need to be checked of
+	FPS uint64 `json:"fps"`
 }
 
 type Configuration struct {

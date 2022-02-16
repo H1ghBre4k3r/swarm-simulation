@@ -9,6 +9,7 @@ use crate::{
     participant::Participant,
 };
 
+// TODO lome: Accept this value from simulation
 const TAU: f64 = 1000.0;
 
 pub fn obstacle_collision(a: &Participant, obstacle: &Obstacle) -> (Array1<f64>, Array1<f64>) {

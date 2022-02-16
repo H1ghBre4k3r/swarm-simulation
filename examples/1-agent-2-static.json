@@ -1,7 +1,7 @@
 {
   "settings": {
     "tickLength": 10,
-    "fps": 60
+    "fps": 1
   },
   "participants": [
     {
@@ -15,7 +15,7 @@
         "x": 0.8,
         "y": 0.5
       },
-      "script": "scripts/python-orca/main.py",
+      "script": "scripts/rust-orca/target/release/rust-orca",
       "safezone": 0.01
     },
     {
@@ -29,7 +29,7 @@
         "x": 0.48,
         "y": 0.48
       },
-      "script": "scripts/python-orca/main.py",
+      "script": "scripts/rust-orca/target/release/rust-orca",
       "ignoreFinish": true
     },
     {
@@ -43,7 +43,7 @@
         "x": 0.52,
         "y": 0.52
       },
-      "script": "scripts/python-orca/main.py",
+      "script": "scripts/rust-orca/target/release/rust-orca",
       "ignoreFinish": true
     }
   ]
