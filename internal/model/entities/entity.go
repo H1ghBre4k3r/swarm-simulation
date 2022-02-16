@@ -200,7 +200,7 @@ func (e *Entity) sendInformationMessage() {
 			// create noised information about other participant
 			information.Participants = append(information.Participants, ParticipantInformation{
 				Position: *x.shape.Position.Noise(e.portal.Noise()),
-				Velocity: *x.vel.Noise(e.portal.Noise()).Scale(float64(e.portal.TAU())),
+				Velocity: *x.vel.Noise(e.portal.Noise()),
 				Distance: e.shape.Position.Add(x.shape.Position.Scale(-1)).Length(),
 				Radius:   x.shape.Radius,
 				SafeZone: x.safeZone,
@@ -232,7 +232,6 @@ func (e *Entity) evaluteProcessMessage() {
 			if err := json.Unmarshal([]byte(msg), &message); err != nil {
 				panic(err)
 			}
-			message.Payload.ScaleI(1 / float64(e.portal.TAU()))
 			vel := &util.Vec2D{
 				X: message.Payload.X,
 				Y: message.Payload.Y,

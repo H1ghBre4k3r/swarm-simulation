@@ -29,6 +29,8 @@ fn main() {
         setup["target"]["y"].as_f64().unwrap(),
     ]);
     let vmax = setup["vmax"].as_f64().unwrap();
+    let tau = setup["tau"].as_f64().unwrap();
+    // dbg!(tau);
 
     let mut we = Participant {
         velocity: normalize(&(&target - &position)) * vmax,
