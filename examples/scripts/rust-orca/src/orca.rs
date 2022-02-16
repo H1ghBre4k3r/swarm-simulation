@@ -9,7 +9,7 @@ use crate::{
     participant::Participant,
 };
 
-const TAU: f64 = 4.0;
+const TAU: f64 = 1000.0;
 
 pub fn obstacle_collision(a: &Participant, obstacle: &Obstacle) -> (Array1<f64>, Array1<f64>) {
     let r_vec = normalize(&a.velocity) * (a.radius + a.safezone + obstacle.radius);
@@ -90,7 +90,7 @@ pub fn orca(a: &Participant, b: &Participant) -> (Array1<f64>, Array1<f64>) {
     let left_dist = norm(&left_u);
     let right_dist = norm(&right_u);
 
-    let u: Array1<f64>;
+    let mut u: Array1<f64>;
     if left_dist < right_dist {
         u = left_u;
     } else {
@@ -99,7 +99,10 @@ pub fn orca(a: &Participant, b: &Participant) -> (Array1<f64>, Array1<f64>) {
 
     let mut n = normalize(&u);
     if difference_angle > side_angle {
-        n *= -1.0
+        n *= -1.0;
+        u /= 2.0;
+    } else {
+        u *= 2.0;
     }
 
     return (u, n);

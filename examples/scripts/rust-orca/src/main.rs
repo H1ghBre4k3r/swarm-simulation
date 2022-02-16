@@ -18,7 +18,6 @@ fn main() {
     io::stdin()
         .read_line(&mut buffer)
         .expect("Error reading stdio");
-    dbg!(&buffer);
 
     let setup: Value = serde_json::from_str(buffer.as_str()).expect("Error decoding setup message");
     let position = arr1(&[
@@ -100,7 +99,7 @@ fn main() {
 }
 
 fn is_static(p: &Participant) -> bool {
-    return norm(&p.velocity) < 1e-3;
+    return norm(&p.velocity) < 1e-10;
 }
 
 fn callback(
