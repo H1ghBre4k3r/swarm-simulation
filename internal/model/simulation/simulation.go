@@ -68,7 +68,7 @@ func (s *Simulation) addEntity(entity *entities.Entity) {
 func (s *Simulation) Loop() {
 	start := time.Now()
 	// create a new ticker which ticks every X milliseconds
-	ticker := time.NewTicker(time.Duration(s.configuration.Settings.TickLength) * time.Millisecond)
+	ticker := time.NewTicker(time.Duration(s.configuration.Settings.TickLength * float64(time.Millisecond)))
 	for ; s.running; <-ticker.C {
 		s.tick()
 	}

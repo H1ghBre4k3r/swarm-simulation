@@ -11,7 +11,7 @@ import (
 )
 
 type Settings struct {
-	TickLength uint64  `json:"tickLength"`
+	TickLength float64 `json:"tickLength"`
 	Noise      float64 `json:"noise"`
 	FPS        uint64  `json:"fps"`
 }
