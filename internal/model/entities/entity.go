@@ -23,7 +23,7 @@ type Entity struct {
 	running      bool
 	process      *process.Process
 	barrier      *util.Barrier
-	collisions   int64
+	collisions   uint64
 	mutex        sync.Mutex
 	ignoreFinish bool
 }
@@ -109,7 +109,7 @@ func (e *Entity) SetVelocity(vel *util.Vec2D) {
 	e.vel = *vel
 }
 
-func (e *Entity) GetCollisions() int64 {
+func (e *Entity) GetCollisions() uint64 {
 	return e.collisions
 }
 

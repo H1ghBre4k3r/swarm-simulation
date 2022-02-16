@@ -11,6 +11,7 @@ func main() {
 	usage := flag.Bool("h", false, "Show this information")
 	configurationPath := flag.String("c", "", "configuration file for the simulation")
 	noise := flag.Float64("n", 0, "noise for the data send to participants")
+	output := flag.String("o", "", "path to folder for outputting summary of simulation")
 	flag.Parse()
 
 	if *usage {
@@ -28,7 +29,7 @@ func main() {
 	if err := sim.Start(); err != nil {
 		panic(err)
 	}
-	defer sim.PrintSummary()
+	defer sim.GenerateSummary(*output)
 
 	sim.Loop()
 }

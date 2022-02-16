@@ -109,39 +109,10 @@ func (s *Simulation) Stop() {
 }
 
 // Print the summary about the simulation
-func (s *Simulation) PrintSummary() {
-	most := int64(0)
-	least := int64(0)
-	total := int64(0)
-	participants := s.entities.Get()
-	for i, e := range participants {
-		collisions := e.GetCollisions()
-		total += collisions
-		if i == 0 {
-			least = collisions
-			most = collisions
-		} else {
-			if collisions > most {
-				most = collisions
-			} else if collisions < least {
-				least = collisions
-			}
-		}
-	}
+func (s *Simulation) GenerateSummary(outputPath string) {
+	summary := GenerateSummary(s)
 
-	// TODO lome: Add total runtime & avg tick length to summary
-	fmt.Printf("\n-----------------------------\n")
-	fmt.Printf("           Summary           \n")
-	fmt.Printf("-----------------------------\n\n")
-	fmt.Printf("N° of Participants: \t%v\n", len(participants))
-	fmt.Printf("Total Collisions: \t%v\n", total)
-	fmt.Printf("Most Collisions: \t%v\n", most)
-	fmt.Printf("Least Collisions: \t%v\n", least)
-	fmt.Printf("Avg Collisions: \t%v\n\n", total/int64(len(participants)))
-
-	fmt.Printf("Total ticks: \t\t%v\n", s.ticks)
-	fmt.Printf("Duration: \t\t%v\n", s.duration)
-	fmt.Printf("Avg Tick Length: \t%v\n\n", time.Duration(s.duration/time.Duration(s.ticks)))
+	fmt.Printf("%v\n", summary)
 }
 
 func (s *Simulation) IsRunning() bool {

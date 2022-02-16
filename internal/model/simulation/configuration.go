@@ -17,6 +17,7 @@ type Settings struct {
 }
 
 type Configuration struct {
+	Path         string
 	Settings     Settings
 	Participants []*entities.ParticipantSetupInformation `json:"participants"`
 	Obstacles    []*obstacles.Obstacle                   `json:"obstacles"`
@@ -37,6 +38,9 @@ func ParseConfigurationFrom(path string) *Configuration {
 		fmt.Printf("Configuration file does not have a valid format!\n")
 		os.Exit(-1)
 	}
+
+	configuration.Path = path
+
 	for _, p := range configuration.Participants {
 		p.Script = filepath.Join(filepath.Dir(path), p.Script)
 	}
