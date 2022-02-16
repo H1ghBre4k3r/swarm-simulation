@@ -9,10 +9,11 @@ use crate::{
     participant::Participant,
 };
 
-// TODO lome: Accept this value from simulation
-const TAU: f64 = 1000.0;
-
-pub fn obstacle_collision(a: &Participant, obstacle: &Obstacle) -> (Array1<f64>, Array1<f64>) {
+pub fn obstacle_collision(
+    a: &Participant,
+    obstacle: &Obstacle,
+    tau: f64,
+) -> (Array1<f64>, Array1<f64>) {
     let r_vec = normalize(&a.velocity) * (a.radius + a.safezone + obstacle.radius);
     let start = &obstacle.start - &(&a.position + &r_vec);
     let end = &obstacle.end - &(&a.position - &r_vec);
@@ -27,8 +28,8 @@ pub fn obstacle_collision(a: &Participant, obstacle: &Obstacle) -> (Array1<f64>,
         u = -&dist_vec - &a.velocity;
         n = normalize(&-dist_vec)
     } else {
-        let start_tau = &start / TAU;
-        let end_tau = &end / TAU;
+        let start_tau = &start / tau;
+        let end_tau = &end / tau;
         let closest = closest_point_on_line(&start_tau, &end_tau, &arr1(&[0.0, 0.0]), 0.0, 1.0);
         let w = closest;
         u = &w - &a.velocity;
@@ -50,7 +51,7 @@ fn out_of_disk(
     return (u, n);
 }
 
-pub fn orca(a: &Participant, b: &Participant) -> (Array1<f64>, Array1<f64>) {
+pub fn orca(a: &Participant, b: &Participant, tau: f64) -> (Array1<f64>, Array1<f64>) {
     let x = &b.position - &a.position;
     let r = &a.radius + &a.safezone + &b.radius + &b.safezone;
     let v = &a.velocity - &b.velocity;
@@ -60,8 +61,8 @@ pub fn orca(a: &Participant, b: &Participant) -> (Array1<f64>, Array1<f64>) {
         return out_of_disk(&x, r, &v);
     }
 
-    let disk_center = &x / TAU;
-    let disk_r = r / TAU;
+    let disk_center = &x / tau;
+    let disk_r = r / tau;
     let adjusted_disk_center = &disk_center * (1.0 - (r / norm(&x)).powi(2));
     // check, if we will collide with front disk
     if norm(&v) < norm(&adjusted_disk_center) && norm(&(&v - &adjusted_disk_center)) < r {

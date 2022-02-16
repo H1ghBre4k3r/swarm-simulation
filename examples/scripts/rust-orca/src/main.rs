@@ -30,7 +30,6 @@ fn main() {
     ]);
     let vmax = setup["vmax"].as_f64().unwrap();
     let tau = setup["tau"].as_f64().unwrap();
-    // dbg!(tau);
 
     let mut we = Participant {
         velocity: normalize(&(&target - &position)) * vmax,
@@ -88,7 +87,7 @@ fn main() {
             });
         }
 
-        let vel = callback(&we, &mut participants, &obstacles);
+        let vel = callback(&we, &mut participants, &obstacles, tau);
         let val = json!({
             "action": "move",
             "payload": {
@@ -108,8 +107,9 @@ fn callback(
     we: &Participant,
     participants: &mut [Participant],
     obstacles: &[Obstacle],
+    tau: f64,
 ) -> Array1<f64> {
-    let (mut halfplanes, obstacle_planes) = generate_halfplanes(we, participants, obstacles);
+    let (mut halfplanes, obstacle_planes) = generate_halfplanes(we, participants, obstacles, tau);
 
     let mut new_vel: Option<Array1<f64>> = None;
     while new_vel.is_none() {
@@ -137,6 +137,7 @@ fn generate_halfplanes(
     we: &Participant,
     participants: &[Participant],
     obstacles: &[Obstacle],
+    tau: f64,
 ) -> (Vec<Halfplane>, Vec<Halfplane>) {
     let mut obstacle_planes = Vec::new();
     let mut halfplanes = Vec::new();
@@ -162,6 +163,7 @@ fn generate_halfplanes(
                             end: other.position.clone(),
                             radius: max(p.radius + p.safezone, other.radius + other.safezone),
                         },
+                        tau,
                     );
                     obstacle_planes.push(Halfplane { u, n });
                     in_obstacle = true;
@@ -175,17 +177,18 @@ fn generate_halfplanes(
                         end: p.position.clone(),
                         radius: p.radius,
                     },
+                    tau,
                 );
                 obstacle_planes.push(Halfplane { u, n });
             }
         } else {
-            let (u, n) = orca(we, p);
+            let (u, n) = orca(we, p, tau);
             halfplanes.push(Halfplane { u, n });
         }
     }
 
     for o in obstacles {
-        let (u, n) = obstacle_collision(we, o);
+        let (u, n) = obstacle_collision(we, o, tau);
         obstacle_planes.push(Halfplane { u, n });
     }
 
