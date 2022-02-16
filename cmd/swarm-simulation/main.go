@@ -30,7 +30,7 @@ func main() {
 	views := []simulation.View{}
 
 	if !*noGui {
-		win, err := window.New("Swarm Simulation", 1024, !*noGrid, configuration.Settings.FPS)
+		win, err := window.New("Swarm Simulation", 1024, !*noGrid)
 		if err != nil {
 			panic(err)
 		}

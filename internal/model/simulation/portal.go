@@ -12,15 +12,15 @@ type SimulationPortal struct {
 	entities      []*entities.Entity
 	obstacles     []*obstacles.Obstacle
 	noise         float64
-	fps           uint64
+	tau           float64
 }
 
-func CreateSimulationPortal(spatial *collision.SpatialHashmap, entities *entities.EntityManger, noise float64, fps uint64, obstacles []*obstacles.Obstacle) *SimulationPortal {
+func CreateSimulationPortal(spatial *collision.SpatialHashmap, entities *entities.EntityManger, noise float64, tau float64, obstacles []*obstacles.Obstacle) *SimulationPortal {
 	portal := &SimulationPortal{
 		spatial:       spatial,
 		entityManager: entities,
 		noise:         noise,
-		fps:           fps,
+		tau:           tau,
 		obstacles:     obstacles,
 	}
 	portal.Update()
@@ -53,8 +53,8 @@ func (p *SimulationPortal) Noise() float64 {
 	return p.noise
 }
 
-func (p *SimulationPortal) FPS() uint64 {
-	return p.fps
+func (p *SimulationPortal) TAU() float64 {
+	return p.tau
 }
 
 func (p *SimulationPortal) Obstacles() []*obstacles.Obstacle {

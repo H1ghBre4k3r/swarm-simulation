@@ -13,7 +13,7 @@ type Portal interface {
 	Participants() []*Entity
 	Obstacles() []*obstacles.Obstacle
 	Noise() float64
-	FPS() uint64
+	TAU() float64
 }
 
 type Shape struct {

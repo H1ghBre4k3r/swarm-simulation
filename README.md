@@ -62,7 +62,7 @@ The file has to have the following format:
 	"settings": {
 		// optional settings for the simulation
 		"tickLength": 10, // [OPTIONAL, default=1] minimum length of a tick in the simulation
-		"fps": 120, // [OPTIONAL, default=1] 'look ahead range' for participants
+		"tau": 120, // [OPTIONAL, default=1] 'look ahead range' for participants
 		"noise": 0.01 // [OPTIONAL, default=0] noise for the simulation (between 0 and 1 - everything else is not useful)
 	},
 	"participants": [

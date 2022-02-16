@@ -50,7 +50,7 @@ for i in range(args.n):
 
 settings = {
     "tickLength": 0.1,
-    "fps": 1
+    "tau": 1
 }
 
 configuration = {

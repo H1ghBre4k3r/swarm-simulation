@@ -12,6 +12,7 @@ type SetupMessage struct {
 	SafeZone float64    `json:"safezone"`
 	Vmax     float64    `json:"vmax"`
 	Target   util.Vec2D `json:"target"`
+	TAU      float64    `json:"tau"`
 }
 
 type SimulationMessage struct {

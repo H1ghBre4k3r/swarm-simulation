@@ -16,7 +16,7 @@ type Settings struct {
 	//* TODO lome: change that to TAU and pass it to participants
 	//* then use it to determine all participants within the reachable range of others
 	//* This reduces the amount of participants that need to be checked of
-	FPS uint64 `json:"fps"`
+	TAU float64 `json:"tau"`
 }
 
 type Configuration struct {
@@ -52,8 +52,8 @@ func ParseConfigurationFrom(path string) *Configuration {
 		configuration.Settings.TickLength = 1
 	}
 
-	if configuration.Settings.FPS <= 0 {
-		configuration.Settings.FPS = 1
+	if configuration.Settings.TAU <= 0 {
+		configuration.Settings.TAU = 1
 	}
 	if len(configuration.Obstacles) == 0 {
 		configuration.Obstacles = []*obstacles.Obstacle{}
