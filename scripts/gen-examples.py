@@ -66,6 +66,7 @@ for i in range(args.n):
     })
 
 settings = {
+    # TODO lome: add flag for tick length
     "tickLength": 0.1,
     "tau": args.t
 }
