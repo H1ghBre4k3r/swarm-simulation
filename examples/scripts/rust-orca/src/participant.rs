@@ -1,5 +1,5 @@
 use crate::math;
-
+#[derive(Debug, Clone)]
 pub struct Participant {
     pub position: ndarray::Array1<f64>,
     pub velocity: ndarray::Array1<f64>,
@@ -7,6 +7,7 @@ pub struct Participant {
     pub safezone: f64,
     pub vmax: f64,
     pub target: ndarray::Array1<f64>,
+    pub in_obstacle: bool,
 }
 
 impl Participant {
@@ -16,5 +17,9 @@ impl Participant {
         if math::norm(&self.velocity) > self.vmax {
             self.velocity = math::normalize(&self.velocity) * self.vmax
         }
+    }
+
+    pub fn in_obstacle(&mut self) {
+        self.in_obstacle = true;
     }
 }

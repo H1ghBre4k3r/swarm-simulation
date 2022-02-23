@@ -53,14 +53,14 @@ func (v *Vec2D) Normalize() *Vec2D {
 	return v.Copy().NormalizeI()
 }
 
-func (v *Vec2D) NoiseI(scale float64) *Vec2D {
+func (v *Vec2D) NoiseI(stddev float64) *Vec2D {
 	s := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(s)
-	v.X *= 1 + (r.Float64()-0.5)*scale
-	v.Y *= 1 + (r.Float64()-0.5)*scale
+	v.X += r.NormFloat64() * stddev
+	v.Y += r.NormFloat64() * stddev
 	return v
 }
 
-func (v *Vec2D) Noise(scale float64) *Vec2D {
-	return v.Copy().NoiseI(scale)
+func (v *Vec2D) Noise(stddev float64) *Vec2D {
+	return v.Copy().NoiseI(stddev)
 }

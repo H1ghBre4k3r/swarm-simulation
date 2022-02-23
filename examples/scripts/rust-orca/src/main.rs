@@ -38,6 +38,7 @@ fn main() {
         vmax,
         radius: setup["radius"].as_f64().unwrap(),
         safezone: setup["safezone"].as_f64().unwrap(),
+        in_obstacle: false,
     };
 
     loop {
@@ -69,6 +70,7 @@ fn main() {
                 safezone: p["safezone"].as_f64().unwrap(),
                 target: arr1(&[0.0, 0.0]),
                 vmax: 0.0,
+                in_obstacle: false,
             });
         }
 
@@ -103,6 +105,7 @@ fn is_static(p: &Participant) -> bool {
     return norm(&p.velocity) < 1e-10;
 }
 
+/// Callback for "orca"
 fn callback(
     we: &Participant,
     participants: &mut [Participant],
@@ -113,10 +116,13 @@ fn callback(
 
     let mut new_vel: Option<Array1<f64>> = None;
     while new_vel.is_none() {
+        // combine halfplanes
         let mut hp = halfplanes.to_vec();
         let mut op = obstacle_planes.to_vec();
         hp.append(&mut op);
+        // calculate new velocity
         new_vel = halfplane_intersection(&hp, &we.velocity, &we.velocity);
+        // adjust halfplanes (move them outward)
         let mut new_halfplanes: Vec<Halfplane> = Vec::new();
         for l in halfplanes {
             new_halfplanes.push(Halfplane {
@@ -133,21 +139,32 @@ fn callback(
     return vel;
 }
 
+/// Generate the halfplanes for other participants and static obstacles.
+///
+/// Participants, which are too close to each other will be combined into a static obstacle aswell.
 fn generate_halfplanes(
     we: &Participant,
-    participants: &[Participant],
+    participants: &mut [Participant],
     obstacles: &[Obstacle],
     tau: f64,
 ) -> (Vec<Halfplane>, Vec<Halfplane>) {
     let mut obstacle_planes = Vec::new();
     let mut halfplanes = Vec::new();
-    for (i, p) in participants.iter().enumerate() {
+    // some cloning, since rust does not like multiple mutable borrows
+    let parts = participants.to_vec().clone();
+    for (i, p) in parts.iter().enumerate() {
         let mut in_obstacle = false;
         if is_static(p) {
-            for (j, other) in participants.iter().enumerate() {
+            for (j, other) in participants.iter_mut().enumerate() {
+                // check, if "p" is already part of an obstacle
+                if i == j {
+                    in_obstacle = other.in_obstacle
+                }
+                // ignore all participants before "other"
                 if j < i + 1 {
                     continue;
                 }
+                // check, if "other" is static _and_ too close
                 if is_static(other)
                     && dist(&p.position, &other.position)
                         < p.radius
@@ -167,19 +184,13 @@ fn generate_halfplanes(
                     );
                     obstacle_planes.push(Halfplane { u, n });
                     in_obstacle = true;
+                    other.in_obstacle();
                 }
             }
+            // if this participant is not part of a static obstacle, we treat it like a "normal" participant
             if !in_obstacle {
-                let (u, n) = obstacle_collision(
-                    we,
-                    &Obstacle {
-                        start: p.position.clone(),
-                        end: p.position.clone(),
-                        radius: p.radius,
-                    },
-                    tau,
-                );
-                obstacle_planes.push(Halfplane { u, n });
+                let (u, n) = orca(we, p, tau);
+                halfplanes.push(Halfplane { u, n });
             }
         } else {
             let (u, n) = orca(we, p, tau);

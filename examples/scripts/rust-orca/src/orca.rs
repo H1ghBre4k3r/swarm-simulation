@@ -87,8 +87,6 @@ pub fn orca(a: &Participant, b: &Participant, tau: f64) -> (Array1<f64>, Array1<
     let left_u = &left_point - &v;
     let right_u = &right_point - &v;
 
-    // let left_dist = dist(&left_point, &v);
-    // let right_dist = dist(&right_point, &v);
     let left_dist = norm(&left_u);
     let right_dist = norm(&right_u);
 
