@@ -20,6 +20,12 @@ def d2r(deg: float) -> float:
     """
     return np.deg2rad(deg)
 
+def dist(p1: np.ndarray, p2: np.ndarray) -> float:
+    """
+    Calculate the distance between two points.
+    """
+    return np.linalg.norm(p2 - p1)
+
 class Mode(Enum):
     circle="circle"
     random="random"
@@ -39,6 +45,9 @@ parser.add_argument("-m", type=Mode, default=Mode.circle, choices=list(Mode), he
 
 args = parser.parse_args()
 
+def some(list_, pred):
+    return any(pred(i) for i in list_) #booleanize the values, and pass them to any
+
 participants = []
 for i in range(args.n):
     if args.m == Mode.circle:
@@ -47,7 +56,11 @@ for i in range(args.n):
     elif args.m == Mode.random:
         # TODO lome: check, if start and target are "safe"
         start = np.random.uniform(0, 1, 2)
+        while some(participants, lambda p: dist(np.array([p["start"]["x"], p["start"]["y"]]), start) < args.r * 2):
+            start = np.random.uniform(0, 1, 2)
         target = np.random.uniform(0, 1, 2)
+        while some(participants, lambda p: dist(np.array([p["target"]["x"], p["target"]["y"]]), target) < args.r * 2):
+            target = np.random.uniform(0, 1, 2)
     else:
         raise Exception("Unknown mode")
     participants.append({
