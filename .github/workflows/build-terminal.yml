@@ -1,9 +1,9 @@
-name: Build Terminal 
+name: Build Terminal
 
 on: [push]
 
-jobs: 
-  build:
+jobs:
+  build_terminal_version:
     runs-on: ubuntu-latest
 
     steps:

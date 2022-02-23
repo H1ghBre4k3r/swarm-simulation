@@ -3,7 +3,7 @@ name: Build Rust Agent
 on: [push]
 
 jobs:
-  build:
+  build_rust_agent:
     runs-on: ubuntu-latest
 
     steps:
