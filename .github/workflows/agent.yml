@@ -11,8 +11,4 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - uses: actions-rs/cargo@v1
-        working-directory: ./examples/scripts/rust-orca/
-        with:
-          command: build
-          args: --release
+      - run: make agent
