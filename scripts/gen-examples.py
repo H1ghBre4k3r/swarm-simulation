@@ -55,10 +55,10 @@ for i in range(args.n):
         target = start + (np.array([0.5, 0.5]) - start) * 2
     elif args.m == Mode.random:
         start = np.random.uniform(0, 1, 2)
-        while some(participants, lambda p: dist(np.array([p["start"]["x"], p["start"]["y"]]), start) < args.r * 2):
+        while some(participants, lambda p: dist(np.array([p["start"]["x"], p["start"]["y"]]), start) < args.r * 3):
             start = np.random.uniform(0, 1, 2)
         target = np.random.uniform(0, 1, 2)
-        while some(participants, lambda p: dist(np.array([p["target"]["x"], p["target"]["y"]]), target) < args.r * 2):
+        while some(participants, lambda p: dist(np.array([p["target"]["x"], p["target"]["y"]]), target) < args.r * 3):
             target = np.random.uniform(0, 1, 2)
     else:
         raise Exception("Unknown mode")

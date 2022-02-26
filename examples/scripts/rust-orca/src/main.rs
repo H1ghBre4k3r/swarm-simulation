@@ -13,7 +13,8 @@ use participant::Participant;
 use serde_json::{json, Value};
 use std::io;
 
-const CONF: f64 = 3.0;
+// TODO lome: maybe use different confidence intervals depending on the distance to other participant
+const CONF: f64 = 2.0;
 
 fn main() {
     let mut buffer = String::new();
