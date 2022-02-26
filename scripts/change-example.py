@@ -9,6 +9,7 @@ parser.add_argument("-r", type=float, help="Radius of the participants")
 parser.add_argument("-v", type=float, help="Velocity of the participants")
 parser.add_argument("-z", type=float, help="Safezone for participants")
 
+parser.add_argument("-l", type=float, help="Tick length")
 parser.add_argument("-t", type=float, help="TAU for simulation")
 parser.add_argument("-s", type=str, required=True, help="Path to script")
 
@@ -17,6 +18,8 @@ configuration = json.load(open(args.s, "r"));
 
 if args.t:
     configuration["settings"]["tau"] = args.t
+if args.l:
+    configuration["settings"]["tickLength"] = args.l
 
 for p in configuration["participants"]:
     if args.r:

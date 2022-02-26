@@ -41,6 +41,7 @@ parser.add_argument("-z", type=float, default=0, help="Safezone for participants
 parser.add_argument("-t", type=float, default=1, help="TAU for simulation")
 parser.add_argument("-s", type=str, required=True, help="Path to script")
 parser.add_argument("-o", type=str, default="", help="Path to output")
+parser.add_argument("-l", type=float, default=0.1, help="tick length")
 parser.add_argument("-m", type=Mode, default=Mode.circle, choices=list(Mode), help="mode")
 
 args = parser.parse_args()
@@ -54,12 +55,11 @@ for i in range(args.n):
         start = angle2vec((360 / args.n) * i) * 0.4 + np.array([0.5, 0.5])
         target = start + (np.array([0.5, 0.5]) - start) * 2
     elif args.m == Mode.random:
-        # TODO lome: check, if start and target are "safe"
         start = np.random.uniform(0, 1, 2)
-        while some(participants, lambda p: dist(np.array([p["start"]["x"], p["start"]["y"]]), start) < args.r * 2):
+        while some(participants, lambda p: dist(np.array([p["start"]["x"], p["start"]["y"]]), start) < (args.r + args.z) * 2):
             start = np.random.uniform(0, 1, 2)
         target = np.random.uniform(0, 1, 2)
-        while some(participants, lambda p: dist(np.array([p["target"]["x"], p["target"]["y"]]), target) < args.r * 2):
+        while some(participants, lambda p: dist(np.array([p["target"]["x"], p["target"]["y"]]), target) < (args.r + args.z) * 2):
             target = np.random.uniform(0, 1, 2)
     else:
         raise Exception("Unknown mode")
@@ -79,8 +79,7 @@ for i in range(args.n):
     })
 
 settings = {
-    # TODO lome: add flag for tick length
-    "tickLength": 0.1,
+    "tickLength": args.l,
     "tau": args.t
 }
 

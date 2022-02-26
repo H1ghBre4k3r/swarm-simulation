@@ -1,6 +1,6 @@
 {
   "settings": {
-    "tickLength": 0.1,
+    "tickLength": 10,
     "tau": 100.0
   },
   "participants": [
