@@ -74,7 +74,6 @@ The file has to have the following format:
 				"y": 0.5 // number between 0 and 1
 			},
 			"radius": 0.05, // the radius of this participant (also between 0 and 1)
-			"stddev": 0.005, // [OPTIONAL, default=0] optional safe zone around this participant (to handle inaccuracies)
 			"vmax": 0.001, // the maximum velocity of this participant (between 0 and 1)
 			"target": {
 				// coordinates of the target for this participant
@@ -157,7 +156,7 @@ At startup, the simulation sends some initial information to each participant:
 		"y": 0.5
 	},
 	"radius": 0.015, // radius of this participant
-	"stddev": 0.005, // radius of the stddev around this participant
+	, // radius of the stddev around this participant
 	"vmax": 0.0005, // maximum velocity of this participant
 	"target": {
 		// coordinates of the target of this participant
@@ -187,7 +186,7 @@ During each tick of the simulation, it sends its current position and informatio
 			},
 			"distance": 0.412, // relative distance to this participant
 			"radius": 0.015, // radius of this participant
-			"stddev": 0.0025 // stddev for this participant
+			5 // stddev for this participant
 		}
 	]
 }

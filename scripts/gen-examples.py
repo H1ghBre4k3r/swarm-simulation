@@ -86,5 +86,4 @@ configuration = {
     "participants": participants,
 }
 
-
 json.dump(configuration, open(os.path.join(args.o, f"{args.n}-participants-{args.m}.json"), "w"), indent=2)

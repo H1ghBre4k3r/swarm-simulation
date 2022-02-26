@@ -15,8 +15,7 @@
         "x": 0.8,
         "y": 0.5
       },
-      "script": "scripts/rust-orca/target/release/rust-orca",
-      "stddev": 0.01
+      "script": "scripts/rust-orca/target/release/rust-orca"
     },
     {
       "start": {
