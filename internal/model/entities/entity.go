@@ -28,6 +28,7 @@ type Entity struct {
 	mutex        sync.Mutex
 	ignoreFinish bool
 	r            *rand.Rand
+	stddev       float64
 }
 
 func Create(id string, configuration *ParticipantSetupInformation, portal Portal, barrier *util.Barrier) *Entity {
@@ -270,4 +271,9 @@ func (e *Entity) IsRunning() bool {
 	}
 	e.running = false
 	return false
+}
+
+func (e *Entity) NoisePosition(stddev float64) {
+	e.shape.NoisedPoisition = *e.shape.Position.Noise(stddev)
+	e.stddev = stddev
 }

@@ -1,6 +1,9 @@
 package simulation
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/collision"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/entities"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/obstacles"
@@ -30,9 +33,11 @@ func CreateSimulationPortal(spatial *collision.SpatialHashmap, entities *entitie
 func (p *SimulationPortal) Update() {
 	ents := p.entityManager.Get()
 	p.entities = []*entities.Entity{}
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for _, e := range ents {
 		newE := e.Copy()
 		newE.Move()
+		newE.NoisePosition(r.NormFloat64() * p.noise)
 		p.entities = append(p.entities, e)
 	}
 }

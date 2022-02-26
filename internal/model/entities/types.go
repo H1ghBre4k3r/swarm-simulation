@@ -17,14 +17,16 @@ type Portal interface {
 }
 
 type Shape struct {
-	Position util.Vec2D `json:"position"`
-	Radius   float64    `json:"radius"`
+	Position        util.Vec2D `json:"position"`
+	NoisedPoisition util.Vec2D
+	Radius          float64 `json:"radius"`
 }
 
 func (s *Shape) Copy() *Shape {
 	return &Shape{
-		Position: *s.Position.Copy(),
-		Radius:   s.Radius,
+		Position:        *s.Position.Copy(),
+		NoisedPoisition: *s.NoisedPoisition.Copy(),
+		Radius:          s.Radius,
 	}
 }
 
