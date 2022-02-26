@@ -14,7 +14,7 @@ pub fn obstacle_collision(
     obstacle: &Obstacle,
     tau: f64,
 ) -> (Array1<f64>, Array1<f64>) {
-    let r_vec = normalize(&a.velocity) * (a.radius + a.safezone + obstacle.radius);
+    let r_vec = normalize(&a.velocity) * (a.radius + a.confidence + obstacle.radius);
     let start = &obstacle.start - &(&a.position + &r_vec);
     let end = &obstacle.end - &(&a.position - &r_vec);
 
@@ -24,7 +24,7 @@ pub fn obstacle_collision(
     let u: Array1<f64>;
     let n: Array1<f64>;
 
-    if norm(&dist_vec) < &a.radius + &a.safezone + &obstacle.radius {
+    if norm(&dist_vec) < &a.radius + &a.confidence + &obstacle.radius {
         u = -&dist_vec - &a.velocity;
         n = normalize(&-dist_vec)
     } else {
@@ -53,7 +53,7 @@ fn out_of_disk(
 
 pub fn orca(a: &Participant, b: &Participant, tau: f64) -> (Array1<f64>, Array1<f64>) {
     let x = &b.position - &a.position;
-    let r = &a.radius + &a.safezone + &b.radius + &b.safezone;
+    let r = &a.radius + &a.confidence + &b.radius + &b.confidence;
     let v = &a.velocity - &b.velocity;
 
     // check, if we are currently colliding

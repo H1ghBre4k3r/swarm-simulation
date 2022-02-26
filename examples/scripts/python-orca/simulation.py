@@ -31,12 +31,12 @@ class Simulation(Thread):
         setup = json.loads(sys.stdin.readline())
         position = np.array([setup["position"]["x"], setup["position"]["y"]])
         radius = setup["radius"]
-        safezone = setup["safezone"]
+        stddev = setup["stddev"]
         target = np.array([setup["target"]["x"], setup["target"]["y"]])
         vmax = setup["vmax"]
         # create participant for this unit
         self.we = Participant(position, normalize(
-            target - position) * vmax, radius, safezone, vmax, target)
+            target - position) * vmax, radius, stddev, vmax, target)
 
     def start(self, cb):
         """
@@ -66,7 +66,7 @@ class Simulation(Thread):
             participants = []
             for p in inp["participants"]:
                 participant = Participant(np.array([p["position"]["x"], p["position"]["y"]]), np.array(
-                    [p["velocity"]["x"], p["velocity"]["y"]]), p["radius"], p["safezone"])
+                    [p["velocity"]["x"], p["velocity"]["y"]]), p["radius"], p["stddev"])
                 participants.append(participant)
             obstacles = []
             for o in inp["obstacles"]:

@@ -13,14 +13,14 @@ tau = 4
 
 def obstacle_collision(a: Participant, obstacle: Obstacle) -> Tuple[np.ndarray, np.ndarray]:
     # TODO lome: rotate to take obstacle radius into account
-    r_vec = normalize(a.velocity) * (a.radius + a.safezone + obstacle.radius)
+    r_vec = normalize(a.velocity) * (a.radius + a.stddev + obstacle.radius)
     start = obstacle.start - (a.position + r_vec)
     end = obstacle.end - (a.position + r_vec)
 
     dist_vec = closest_point_on_line(
         obstacle.start, obstacle.end, a.position) - a.position
     # check, if we are colliding with the obstacle
-    if norm(dist_vec) < a.radius + a.safezone + obstacle.radius:
+    if norm(dist_vec) < a.radius + a.stddev + obstacle.radius:
         u = -dist_vec - a.velocity
         n = normalize(-dist_vec)
     else:
@@ -47,7 +47,7 @@ def out_of_disk(disk_center, disk_r, v):
 
 def orca(a: Participant, b: Participant) -> Tuple[np.ndarray, np.ndarray]:
     x = b.position - a.position
-    r = a.radius + a.safezone + b.radius + b.safezone
+    r = a.radius + a.stddev + b.radius + b.stddev
     # r *= 2
     v = a.velocity - b.velocity
 

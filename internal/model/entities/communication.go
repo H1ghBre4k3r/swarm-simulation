@@ -9,7 +9,7 @@ import (
 type SetupMessage struct {
 	Position util.Vec2D `json:"position"`
 	Radius   float64    `json:"radius"`
-	SafeZone float64    `json:"safezone"`
+	StdDev   float64    `json:"stddev"`
 	Vmax     float64    `json:"vmax"`
 	Target   util.Vec2D `json:"target"`
 	TAU      float64    `json:"tau"`
@@ -31,6 +31,7 @@ type InformationMessage struct {
 	Position     util.Vec2D               `json:"position"`
 	Participants []ParticipantInformation `json:"participants"`
 	Obstacles    []*obstacles.Obstacle    `json:"obstacles"`
+	StdDev       float64                  `json:"stddev"`
 }
 
 type ParticipantInformation struct {
@@ -38,5 +39,5 @@ type ParticipantInformation struct {
 	Velocity util.Vec2D `json:"velocity"`
 	Distance float64    `json:"distance"`
 	Radius   float64    `json:"radius"`
-	SafeZone float64    `json:"safezone"`
+	StdDev   float64    `json:"stddev"`
 }

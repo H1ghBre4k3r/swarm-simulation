@@ -13,6 +13,8 @@ use participant::Participant;
 use serde_json::{json, Value};
 use std::io;
 
+const CONF: f64 = 3.0;
+
 fn main() {
     let mut buffer = String::new();
     io::stdin()
@@ -37,7 +39,7 @@ fn main() {
         target,
         vmax,
         radius: setup["radius"].as_f64().unwrap(),
-        safezone: setup["safezone"].as_f64().unwrap(),
+        confidence: setup["stddev"].as_f64().unwrap() * CONF,
         in_obstacle: false,
     };
 
@@ -54,6 +56,7 @@ fn main() {
             inp["position"]["y"].as_f64().unwrap(),
         ]);
         we.update_position(&position);
+        we.confidence = inp["stddev"].as_f64().unwrap() * CONF;
 
         let mut participants: Vec<Participant> = Vec::new();
         for p in inp["participants"].as_array().unwrap() {
@@ -67,7 +70,7 @@ fn main() {
                     p["velocity"]["y"].as_f64().unwrap(),
                 ]),
                 radius: p["radius"].as_f64().unwrap(),
-                safezone: p["safezone"].as_f64().unwrap(),
+                confidence: p["stddev"].as_f64().unwrap() * CONF,
                 target: arr1(&[0.0, 0.0]),
                 vmax: 0.0,
                 in_obstacle: false,
@@ -169,16 +172,16 @@ fn generate_halfplanes(
                     && dist(&p.position, &other.position)
                         < p.radius
                             + other.radius
-                            + p.safezone
-                            + other.safezone
-                            + (we.safezone + we.radius) * 2.0
+                            + p.confidence
+                            + other.confidence
+                            + (we.confidence + we.radius) * 2.0
                 {
                     let (u, n) = obstacle_collision(
                         we,
                         &Obstacle {
                             start: p.position.clone(),
                             end: other.position.clone(),
-                            radius: max(p.radius + p.safezone, other.radius + other.safezone),
+                            radius: max(p.radius + p.confidence, other.radius + other.confidence),
                         },
                         tau,
                     );

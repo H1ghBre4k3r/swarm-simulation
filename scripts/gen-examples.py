@@ -75,7 +75,7 @@ for i in range(args.n):
         "vmax": args.v,
         "radius": args.r,
         "script": args.s,
-        "safezone": args.z
+        "stddev": args.z
     })
 
 settings = {

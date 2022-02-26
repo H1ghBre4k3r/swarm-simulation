@@ -16,7 +16,7 @@
         "y": 0.5
       },
       "script": "scripts/python-orca/main.py",
-      "safezone": 0.01
+      "stddev": 0.01
     },
     {
       "start": {
@@ -30,7 +30,7 @@
         "y": 0.48
       },
       "script": "scripts/python-orca/main.py",
-      "safezone": 0.01
+      "stddev": 0.01
     },
     {
       "start": {
@@ -44,7 +44,7 @@
         "y": 0.52
       },
       "script": "scripts/python-orca/main.py",
-      "safezone": 0.01
+      "stddev": 0.01
     }
   ]
 }

@@ -16,7 +16,7 @@
         "y": 0.5
       },
       "script": "scripts/rust-orca/target/release/rust-orca",
-      "safezone": 0.01
+      "stddev": 0.01
     }
   ],
   "obstacles": [

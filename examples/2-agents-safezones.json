@@ -10,7 +10,7 @@
         "y": 0.5
       },
       "radius": 0.015,
-      "safezone": 0.005,
+      "stddev": 0.005,
       "vmax": 0.0005,
       "target": {
         "x": 0.8,
@@ -24,7 +24,7 @@
         "y": 0.5
       },
       "radius": 0.015,
-      "safezone": 0.005,
+      "stddev": 0.005,
       "vmax": 0.0005,
       "target": {
         "x": 0.2,

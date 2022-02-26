@@ -31,12 +31,12 @@ def main():
                 # TODO lome: maybe move out of if-statement
                 for other in participants[i + 1:]:
                     # if they are too
-                    if is_static(other) and dist(p.position, other.position) < p.radius + other.radius + p.safezone + other.safezone + (we.safezone + we.radius) * 2:
-                        # if dist(p.position, other.position) < p.radius + other.radius + p.safezone + other.safezone + (we.safezone + we.radius) * 2:
+                    if is_static(other) and dist(p.position, other.position) < p.radius + other.radius + p.stddev + other.stddev + (we.stddev + we.radius) * 2:
+                        # if dist(p.position, other.position) < p.radius + other.radius + p.stddev + other.stddev + (we.stddev + we.radius) * 2:
                         obstacle_coords = {"start": {"x": p.position[0], "y": p.position[1]}, "end": {
                             "x": other.position[0], "y": other.position[1]}}
                         u, n = obstacle_collision(we, Obstacle(obstacle_coords, max(
-                            p.radius + p.safezone, other.radius + other.safezone)))
+                            p.radius + p.stddev, other.radius + other.stddev)))
                         obstacle_planes.append(Halfplane(u, n))
                         other.is_obstacle = True
                         in_obstacle = True
@@ -46,7 +46,7 @@ def main():
                 obstacle_coords = {"start": {"x": p.position[0], "y": p.position[1]}, "end": {
                     "x": p.position[0], "y": p.position[1]}}
                 u, n = obstacle_collision(we, Obstacle(
-                    obstacle_coords, p.radius + p.safezone))
+                    obstacle_coords, p.radius + p.stddev))
                 obstacle_planes.append(Halfplane(u, n))
             # if it is not used in an obstacle, we calculate half-planes like it is a participant
             if not p.is_obstacle:

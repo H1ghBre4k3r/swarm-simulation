@@ -3,7 +3,9 @@ package entities
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"sync"
+	"time"
 
 	"github.com/AvraamMavridis/randomcolor"
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/process"
@@ -14,7 +16,7 @@ import (
 type Entity struct {
 	id           string
 	shape        Shape
-	safeZone     float64
+	stdDev       float64
 	target       util.Vec2D
 	vmax         float64
 	vel          util.Vec2D
@@ -26,6 +28,7 @@ type Entity struct {
 	collisions   uint64
 	mutex        sync.Mutex
 	ignoreFinish bool
+	r            *rand.Rand
 }
 
 func Create(id string, configuration *ParticipantSetupInformation, portal Portal, barrier *util.Barrier) *Entity {
@@ -34,6 +37,7 @@ func Create(id string, configuration *ParticipantSetupInformation, portal Portal
 		fmt.Printf("Cannot start process for entity '%v': %v\n", id, err.Error())
 		return nil
 	}
+	s := rand.NewSource(time.Now().UnixNano())
 	return &Entity{
 		id:    id,
 		color: randomcolor.GetRandomColorInRgb(),
@@ -41,7 +45,7 @@ func Create(id string, configuration *ParticipantSetupInformation, portal Portal
 			Position: configuration.Start,
 			Radius:   configuration.Radius,
 		},
-		safeZone:     configuration.SafeZone,
+		stdDev:       configuration.StdDev,
 		target:       configuration.Target,
 		vmax:         configuration.VMax,
 		portal:       portal,
@@ -50,6 +54,7 @@ func Create(id string, configuration *ParticipantSetupInformation, portal Portal
 		barrier:      barrier,
 		collisions:   0,
 		ignoreFinish: configuration.IgnoreFinish,
+		r:            rand.New(s),
 	}
 }
 
@@ -66,6 +71,7 @@ func (e *Entity) Copy() *Entity {
 		process:    e.process,
 		barrier:    e.barrier,
 		collisions: e.collisions,
+		r:          e.r,
 	}
 }
 
@@ -125,7 +131,7 @@ func (e *Entity) sendSetupMessage() {
 		Radius:   e.shape.Radius,
 		Target:   e.target,
 		Vmax:     e.vmax,
-		SafeZone: e.safeZone,
+		StdDev:   e.stdDev,
 		TAU:      e.portal.TAU(),
 	}
 	setupMessage, err := json.Marshal(&setupInformation)
@@ -182,16 +188,19 @@ func (e *Entity) tick() {
 // Send information about current system state to this participant
 func (e *Entity) sendInformationMessage() {
 	// send sample message to process
+	stddev := e.r.NormFloat64() * e.portal.Noise()
 	information := InformationMessage{
-		Position:     e.shape.Position,
+		Position:     *e.shape.Position.Noise(stddev),
 		Participants: []ParticipantInformation{},
 		Obstacles:    e.portal.Obstacles(),
+		StdDev:       stddev + 0.0005,
 	}
 
 	participants := e.portal.Participants()
 	for _, x := range participants {
 		// check for collision with other participant
 		if e.id != x.id && e.shape.Position.Add(x.shape.Position.Scale(-1)).Length()-(x.shape.Radius+e.shape.Radius) < (e.vmax+x.vmax)*e.portal.TAU() {
+			stddev = e.r.NormFloat64() * e.portal.Noise()
 			if x.shape.Position.Add(e.shape.Position.Scale(-1)).Length() < e.shape.Radius+x.shape.Radius {
 				fmt.Printf("%v collides with %v\n", e.id, x.id)
 				e.collisions++
@@ -199,11 +208,11 @@ func (e *Entity) sendInformationMessage() {
 
 			// create noised information about other participant
 			information.Participants = append(information.Participants, ParticipantInformation{
-				Position: *x.shape.Position.Noise(e.portal.Noise()),
-				Velocity: *x.vel.Noise(e.portal.Noise()),
+				Position: *x.shape.Position.Noise(stddev),
+				Velocity: *x.vel.Noise(stddev),
 				Distance: e.shape.Position.Add(x.shape.Position.Scale(-1)).Length(),
 				Radius:   x.shape.Radius,
-				SafeZone: x.safeZone,
+				StdDev:   stddev + 0.0005,
 			})
 		}
 	}
@@ -237,7 +246,7 @@ func (e *Entity) evaluteProcessMessage() {
 				Y: message.Payload.Y,
 			}
 			// update current velocity
-			e.SetVelocity(vel.NoiseI(e.portal.Noise()))
+			e.SetVelocity(vel)
 		case "stop":
 			// underlying process finished computation
 			e.Stop()

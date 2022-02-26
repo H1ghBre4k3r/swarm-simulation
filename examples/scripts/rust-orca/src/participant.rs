@@ -4,7 +4,7 @@ pub struct Participant {
     pub position: ndarray::Array1<f64>,
     pub velocity: ndarray::Array1<f64>,
     pub radius: f64,
-    pub safezone: f64,
+    pub confidence: f64,
     pub vmax: f64,
     pub target: ndarray::Array1<f64>,
     pub in_obstacle: bool,

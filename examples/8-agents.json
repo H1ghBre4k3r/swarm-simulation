@@ -16,7 +16,7 @@
         "y": 0.5
       },
       "script": "scripts/rust-orca/target/release/rust-orca",
-      "safezone": 0.01
+      "stddev": 0.01
     },
     {
       "start": {
@@ -30,7 +30,7 @@
         "y": 0.5
       },
       "script": "scripts/rust-orca/target/release/rust-orca",
-      "safezone": 0.01
+      "stddev": 0.01
     },
     {
       "start": {
@@ -44,7 +44,7 @@
         "y": 0.2
       },
       "script": "scripts/rust-orca/target/release/rust-orca",
-      "safezone": 0.01
+      "stddev": 0.01
     },
     {
       "start": {
@@ -58,7 +58,7 @@
         "y": 0.8
       },
       "script": "scripts/rust-orca/target/release/rust-orca",
-      "safezone": 0.01
+      "stddev": 0.01
     },
     {
       "start": {
@@ -72,7 +72,7 @@
         "y": 0.712132034356
       },
       "script": "scripts/rust-orca/target/release/rust-orca",
-      "safezone": 0.01
+      "stddev": 0.01
     },
     {
       "start": {
@@ -86,7 +86,7 @@
         "y": 0.287867965644
       },
       "script": "scripts/rust-orca/target/release/rust-orca",
-      "safezone": 0.01
+      "stddev": 0.01
     },
     {
       "start": {
@@ -100,7 +100,7 @@
         "y": 0.712132034356
       },
       "script": "scripts/rust-orca/target/release/rust-orca",
-      "safezone": 0.01
+      "stddev": 0.01
     },
     {
       "start": {
@@ -114,7 +114,7 @@
         "y": 0.287867965644
       },
       "script": "scripts/rust-orca/target/release/rust-orca",
-      "safezone": 0.01
+      "stddev": 0.01
     }
   ]
 }

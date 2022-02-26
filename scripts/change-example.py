@@ -27,6 +27,6 @@ for p in configuration["participants"]:
     if args.v:
         p["vmax"] = args.v
     if args.z:
-        p["safezone"] = args.z
+        p["stddev"] = args.z
 
 json.dump(configuration, open(args.s, "w"), indent=2)

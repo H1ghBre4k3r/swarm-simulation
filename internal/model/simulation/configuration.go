@@ -13,10 +13,7 @@ import (
 type Settings struct {
 	TickLength float64 `json:"tickLength"`
 	Noise      float64 `json:"noise"`
-	//* TODO lome: change that to TAU and pass it to participants
-	//* then use it to determine all participants within the reachable range of others
-	//* This reduces the amount of participants that need to be checked of
-	TAU float64 `json:"tau"`
+	TAU        float64 `json:"tau"`
 }
 
 type Configuration struct {
