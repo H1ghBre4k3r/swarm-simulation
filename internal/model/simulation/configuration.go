@@ -14,6 +14,7 @@ type Settings struct {
 	TickLength float64 `json:"tickLength"`
 	Noise      float64 `json:"noise"`
 	TAU        float64 `json:"tau"`
+	Consensus  bool
 }
 
 type Configuration struct {

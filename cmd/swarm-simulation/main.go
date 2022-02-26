@@ -15,6 +15,7 @@ func main() {
 	noGrid := flag.Bool("no-grid", false, "hide grid")
 	configurationPath := flag.String("c", "", "configuration file for the simulation")
 	noise := flag.Float64("n", 0, "noise for the data send to participants")
+	consensus := flag.Bool("consensus", false, "flag for indicating consensus between all participants regardning the noises values")
 	output := flag.String("o", "", "path to folder for outputting summary of simulation")
 	flag.Parse()
 
@@ -26,6 +27,7 @@ func main() {
 	if *noise != 0 {
 		configuration.Settings.Noise = *noise
 	}
+	configuration.Settings.Consensus = *consensus
 
 	views := []simulation.View{}
 

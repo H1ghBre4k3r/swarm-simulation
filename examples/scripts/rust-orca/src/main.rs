@@ -56,7 +56,7 @@ fn main() {
             inp["position"]["y"].as_f64().unwrap(),
         ]);
         we.update_position(&position);
-        we.confidence = inp["stddev"].as_f64().unwrap() * CONF;
+        we.confidence = inp["stddev"].as_f64().unwrap() * CONF + 0.001;
 
         let mut participants: Vec<Participant> = Vec::new();
         for p in inp["participants"].as_array().unwrap() {
@@ -70,7 +70,7 @@ fn main() {
                     p["velocity"]["y"].as_f64().unwrap(),
                 ]),
                 radius: p["radius"].as_f64().unwrap(),
-                confidence: p["stddev"].as_f64().unwrap() * CONF,
+                confidence: p["stddev"].as_f64().unwrap() * CONF + 0.001,
                 target: arr1(&[0.0, 0.0]),
                 vmax: 0.0,
                 in_obstacle: false,
@@ -105,7 +105,7 @@ fn main() {
 }
 
 fn is_static(p: &Participant) -> bool {
-    return norm(&p.velocity) < 1e-10;
+    return norm(&p.velocity) == 0.0;
 }
 
 /// Callback for "orca"

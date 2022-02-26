@@ -56,6 +56,7 @@ func (v *Vec2D) Normalize() *Vec2D {
 func (v *Vec2D) NoiseI(stddev float64) *Vec2D {
 	s := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(s)
+	stddev = math.Abs(stddev)
 	v.X += r.NormFloat64() * stddev
 	v.Y += r.NormFloat64() * stddev
 	return v

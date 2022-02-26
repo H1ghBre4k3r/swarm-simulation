@@ -3,6 +3,7 @@ package entities
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"math/rand"
 	"sync"
 	"time"
@@ -186,32 +187,51 @@ func (e *Entity) tick() {
 // Send information about current system state to this participant
 func (e *Entity) sendInformationMessage() {
 	// send sample message to process
-	stddev := e.r.NormFloat64() * e.portal.Noise()
+	stddev := math.Abs(e.r.NormFloat64() * e.portal.Noise())
 	information := InformationMessage{
-		Position:     *e.shape.Position.Noise(stddev),
 		Participants: []ParticipantInformation{},
 		Obstacles:    e.portal.Obstacles(),
-		StdDev:       stddev + 0.0005,
 	}
 
 	participants := e.portal.Participants()
 	for _, x := range participants {
-		// check for collision with other participant
-		if e.id != x.id && e.shape.Position.Add(x.shape.Position.Scale(-1)).Length()-(x.shape.Radius+e.shape.Radius) < (e.vmax+x.vmax)*e.portal.TAU() {
+		// check if other participant is "in sight"
+		otherIsInSight := e.shape.Position.Add(x.shape.Position.Scale(-1)).Length()-(x.shape.Radius+e.shape.Radius) < (e.vmax+x.vmax)*e.portal.TAU()
+		// get information about the "this" participant (needed like this, since only the portal has the 'consensus' of noised position)
+		if e.id == x.id {
+			if e.portal.Consensus() {
+				information.Position = *x.shape.NoisedPoisition.Copy()
+				information.StdDev = x.stddev
+			} else {
+				// if there is no consesus, we simply noise it ourself
+				information.Position = *x.shape.Position.Noise(stddev)
+				information.StdDev = stddev
+			}
+		} else if otherIsInSight {
 			stddev = e.r.NormFloat64() * e.portal.Noise()
+			// check for collision with other participant
 			if x.shape.Position.Add(e.shape.Position.Scale(-1)).Length() < e.shape.Radius+x.shape.Radius {
 				fmt.Printf("%v collides with %v\n", e.id, x.id)
 				e.collisions++
 			}
 
 			// create noised information about other participant
-			information.Participants = append(information.Participants, ParticipantInformation{
-				Position: *x.shape.Position.Noise(stddev),
-				Velocity: *x.vel.Noise(stddev),
+			participantInformation := ParticipantInformation{
+				// TODO lome: noise velocity aswell?
+				Velocity: x.vel,
 				Distance: e.shape.Position.Add(x.shape.Position.Scale(-1)).Length(),
 				Radius:   x.shape.Radius,
-				StdDev:   stddev + 0.0005,
-			})
+			}
+
+			if e.portal.Consensus() {
+				participantInformation.Position = *x.shape.NoisedPoisition.Copy()
+				participantInformation.StdDev = x.stddev
+			} else {
+				participantInformation.Position = *x.shape.Position.Noise(stddev)
+				participantInformation.StdDev = stddev
+			}
+
+			information.Participants = append(information.Participants, participantInformation)
 		}
 	}
 
@@ -274,6 +294,7 @@ func (e *Entity) IsRunning() bool {
 }
 
 func (e *Entity) NoisePosition(stddev float64) {
+	stddev = math.Abs(stddev)
 	e.shape.NoisedPoisition = *e.shape.Position.Noise(stddev)
 	e.stddev = stddev
 }

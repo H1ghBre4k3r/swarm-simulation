@@ -14,6 +14,7 @@ type Portal interface {
 	Obstacles() []*obstacles.Obstacle
 	Noise() float64
 	TAU() float64
+	Consensus() bool
 }
 
 type Shape struct {
