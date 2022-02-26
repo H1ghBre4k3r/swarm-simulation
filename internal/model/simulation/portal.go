@@ -37,8 +37,9 @@ func (p *SimulationPortal) Update() {
 	for _, e := range ents {
 		newE := e.Copy()
 		newE.Move()
+		// Noise positions of all participants, so everyone has a "common" state
 		newE.NoisePosition(r.NormFloat64() * p.noise)
-		p.entities = append(p.entities, e)
+		p.entities = append(p.entities, newE)
 	}
 }
 
