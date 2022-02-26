@@ -7,7 +7,6 @@ parser = argparse.ArgumentParser(description='Change examples')
 
 parser.add_argument("-r", type=float, help="Radius of the participants")
 parser.add_argument("-v", type=float, help="Velocity of the participants")
-parser.add_argument("-z", type=float, help="Safezone for participants")
 
 parser.add_argument("-l", type=float, help="Tick length")
 parser.add_argument("-t", type=float, help="TAU for simulation")
@@ -26,7 +25,5 @@ for p in configuration["participants"]:
         p["radius"] = args.r
     if args.v:
         p["vmax"] = args.v
-    if args.z:
-        p["stddev"] = args.z
 
 json.dump(configuration, open(args.s, "w"), indent=2)

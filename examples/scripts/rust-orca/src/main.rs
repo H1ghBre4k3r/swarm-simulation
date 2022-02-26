@@ -39,7 +39,7 @@ fn main() {
         target,
         vmax,
         radius: setup["radius"].as_f64().unwrap(),
-        confidence: setup["stddev"].as_f64().unwrap() * CONF,
+        confidence: 0.0,
         in_obstacle: false,
     };
 

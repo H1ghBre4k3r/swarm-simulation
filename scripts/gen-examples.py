@@ -37,7 +37,6 @@ parser = argparse.ArgumentParser(description='Generate examples')
 parser.add_argument("-n", type=int, required=True, help="Number of participants")
 parser.add_argument("-r", type=float, required=True, help="Radius of the participants")
 parser.add_argument("-v", type=float, required=True, help="Velocity of the participants")
-parser.add_argument("-z", type=float, default=0, help="Safezone for participants")
 parser.add_argument("-t", type=float, default=1, help="TAU for simulation")
 parser.add_argument("-s", type=str, required=True, help="Path to script")
 parser.add_argument("-o", type=str, default="", help="Path to output")
@@ -74,8 +73,7 @@ for i in range(args.n):
         },
         "vmax": args.v,
         "radius": args.r,
-        "script": args.s,
-        "stddev": args.z
+        "script": args.s
     })
 
 settings = {

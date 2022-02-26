@@ -31,7 +31,6 @@ func (s *Shape) Copy() *Shape {
 type ParticipantSetupInformation struct {
 	Start  util.Vec2D `json:"start"`
 	Radius float64    `json:"radius"`
-	StdDev float64    `json:"stddev"`
 	VMax   float64    `json:"vmax"`
 	Target util.Vec2D `json:"target"`
 	Script string     `json:"script"`

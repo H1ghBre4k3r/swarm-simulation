@@ -16,7 +16,6 @@ import (
 type Entity struct {
 	id           string
 	shape        Shape
-	stdDev       float64
 	target       util.Vec2D
 	vmax         float64
 	vel          util.Vec2D
@@ -45,7 +44,6 @@ func Create(id string, configuration *ParticipantSetupInformation, portal Portal
 			Position: configuration.Start,
 			Radius:   configuration.Radius,
 		},
-		stdDev:       configuration.StdDev,
 		target:       configuration.Target,
 		vmax:         configuration.VMax,
 		portal:       portal,
@@ -131,7 +129,6 @@ func (e *Entity) sendSetupMessage() {
 		Radius:   e.shape.Radius,
 		Target:   e.target,
 		Vmax:     e.vmax,
-		StdDev:   e.stdDev,
 		TAU:      e.portal.TAU(),
 	}
 	setupMessage, err := json.Marshal(&setupInformation)

@@ -9,7 +9,6 @@ import (
 type SetupMessage struct {
 	Position util.Vec2D `json:"position"`
 	Radius   float64    `json:"radius"`
-	StdDev   float64    `json:"stddev"`
 	Vmax     float64    `json:"vmax"`
 	Target   util.Vec2D `json:"target"`
 	TAU      float64    `json:"tau"`
