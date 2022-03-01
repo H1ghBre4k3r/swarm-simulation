@@ -14,7 +14,15 @@ type Settings struct {
 	TickLength float64 `json:"tickLength"`
 	Noise      float64 `json:"noise"`
 	TAU        float64 `json:"tau"`
-	Consensus  bool
+	Consensus  bool    `json:"consensus"`
+}
+
+func (s Settings) String() string {
+	return fmt.Sprintf(`
+Tick Length:			%v
+Noise: 				%v
+TAU: 				%v
+Consensus: 			%v`, s.TickLength, s.Noise, s.TAU, s.Consensus)
 }
 
 type Configuration struct {

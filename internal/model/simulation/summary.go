@@ -9,6 +9,7 @@ type Summary struct {
 	Participants uint64           `json:"participants"`
 	Collisions   CollisionSummary `json:"collisions"`
 	Runtime      RuntimeSummary   `json:"runtime"`
+	Settings     Settings         `json:"settings"`
 }
 
 func (s Summary) String() string {
@@ -19,8 +20,9 @@ func (s Summary) String() string {
 N° of Participants:		%v
 %v
 %v
+%v
 `
-	return fmt.Sprintf(summary, s.Participants, s.Collisions, s.Runtime)
+	return fmt.Sprintf(summary, s.Participants, s.Collisions, s.Runtime, s.Settings)
 }
 
 type CollisionSummary struct {
@@ -84,5 +86,6 @@ func GenerateSummary(s *Simulation) Summary {
 			Duration:          s.duration,
 			AverageTickLength: time.Duration(s.duration / time.Duration(s.ticks)),
 		},
+		Settings: s.configuration.Settings,
 	}
 }
