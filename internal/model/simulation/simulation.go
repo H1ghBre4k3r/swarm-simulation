@@ -124,7 +124,7 @@ func (s *Simulation) GenerateSummary(outputPath string) {
 	// use "${outputPath}/${exampleName}/" as folder for summary
 	// this structures the output in a reasonable way
 	base := filepath.Base(s.configuration.Path)
-	exampleName := base[:len(base)-len(filepath.Ext(base))]
+	exampleName := fmt.Sprintf("%v-%v-%v-%v", base[:len(base)-len(filepath.Ext(base))], s.configuration.Settings.TAU, s.configuration.Settings.Noise, s.configuration.Settings.Consensus)
 	outputFolder := filepath.Join(outputPath, exampleName)
 
 	// create output folder
