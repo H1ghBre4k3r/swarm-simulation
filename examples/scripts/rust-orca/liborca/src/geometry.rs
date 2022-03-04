@@ -9,6 +9,7 @@ use crate::{
     participant::Participant,
 };
 
+/// Calculate u and n for a static obstacle.
 pub fn obstacle_collision(
     a: &Participant,
     obstacle: &Obstacle,
@@ -39,6 +40,7 @@ pub fn obstacle_collision(
     return (u, n);
 }
 
+/// Calculate the fastest way out of a disk.
 fn out_of_disk(
     disk_center: &Array1<f64>,
     disk_r: f64,
@@ -46,12 +48,19 @@ fn out_of_disk(
 ) -> (Array1<f64>, Array1<f64>) {
     let rel_vec = velocity - disk_center;
     let w_length = norm(&rel_vec);
+    // rotate vector to outside of disk by 10 degrees
     let n = angle2vec(vec2angle(&rel_vec) + 10.0);
+    // calculate length of "u" (i.e., the way out of the disk)
     let u = &n * (disk_r - w_length);
     return (u, n);
 }
 
-pub fn orca(a: &Participant, b: &Participant, tau: f64) -> (Array1<f64>, Array1<f64>) {
+/// Get adjustment velocities (u and n) with respect to another participant.
+pub fn get_adjustment_velocities(
+    a: &Participant,
+    b: &Participant,
+    tau: f64,
+) -> (Array1<f64>, Array1<f64>) {
     let x = &b.position - &a.position;
     let r = &a.radius + &a.confidence + &b.radius + &b.confidence;
     let v = &a.velocity - &b.velocity;
@@ -69,27 +78,34 @@ pub fn orca(a: &Participant, b: &Participant, tau: f64) -> (Array1<f64>, Array1<
         return out_of_disk(&disk_center, disk_r, &v);
     }
 
+    // get angles for relative positions and velocities
     let position_angle = vec2angle(&x);
     let velocity_angle = vec2angle(&v);
 
     let difference_angle = angle_diff(position_angle, velocity_angle);
 
+    // calculate the angles of the left and right side of the cone
     let side_angle = arcsin(r, norm(&x));
     let right_side_angle = position_angle - side_angle;
     let left_side_angle = position_angle + side_angle;
 
+    // calculate the vectors for left and right side of the cone
     let right_side = angle2vec(right_side_angle);
     let left_side = angle2vec(left_side_angle);
 
+    // calculate closest points on sides of the cone, respectively
     let left_point = closest_point_on_line(&arr1(&[0.0, 0.0]), &left_side, &v, 0.0, 1.0);
     let right_point = closest_point_on_line(&arr1(&[0.0, 0.0]), &right_side, &v, 0.0, 1.0);
 
+    // calculate vectors from current velocity to closest points in left and right sides
     let left_u = &left_point - &v;
     let right_u = &right_point - &v;
 
+    // calculate length of vectors to closest points
     let left_dist = norm(&left_u);
     let right_dist = norm(&right_u);
 
+    // decide, which side is closer and pick that u
     let mut u: Array1<f64>;
     if left_dist < right_dist {
         u = left_u;
@@ -97,6 +113,8 @@ pub fn orca(a: &Participant, b: &Participant, tau: f64) -> (Array1<f64>, Array1<
         u = right_u;
     }
 
+    // "n" is usually just a normalized version of "u".
+    // but if we are outside of the cone, we need to use the inverse
     let mut n = normalize(&u);
     if difference_angle > side_angle {
         n *= -1.0;

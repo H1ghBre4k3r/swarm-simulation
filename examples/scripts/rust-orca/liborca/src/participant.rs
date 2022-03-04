@@ -1,4 +1,6 @@
 use crate::math;
+
+/// Struct for representing a participant in the ORCA algorithm.
 #[derive(Debug, Clone)]
 pub struct Participant {
     pub position: ndarray::Array1<f64>,
