@@ -80,7 +80,7 @@ func (s *Simulation) Loop() {
 	// create a new ticker which ticks every X milliseconds
 	ticker := time.NewTicker(time.Duration(s.configuration.Settings.TickLength * float64(time.Millisecond)))
 
-	// this is our timeout handling
+	// this is our timeout handling (for crashing processes)
 	go func() {
 		timeout := time.NewTicker(time.Duration(5 * time.Second))
 		last := s.ticks
@@ -91,6 +91,21 @@ func (s *Simulation) Loop() {
 				break
 			}
 			last = s.ticks
+		}
+	}()
+
+	go func() {
+		timeout := time.NewTicker(time.Duration(5 * time.Minute))
+		active, _ := s.entities.GetRunning()
+		last := len(active)
+		<-timeout.C
+		for ; !s.finished; <-timeout.C {
+			active, _ := s.entities.GetRunning()
+			if last == len(active) {
+				s.Stop(TIMEOUT)
+				break
+			}
+			last = len(active)
 		}
 	}()
 
