@@ -5,9 +5,6 @@ import json
 from os import listdir, walk
 from os.path import isfile, join
 
-import matplotlib.pyplot as plt
-import numpy as np
-
 parser = argparse.ArgumentParser(description='Perform stuff')
 parser.add_argument("-d", type=str, required=True, help="Path to directory")
 parser.add_argument("-o", type=str, required=True, help="Path to output file")
@@ -59,13 +56,3 @@ json.dump(summaryByPartsByNoise, open(args.o, "w"))
 
 
 
-
-
-
-
-# x = np.linspace(0, 2 * np.pi, 200)
-# y = np.sin(x)
-
-# fig, ax = plt.subplots()
-# ax.plot(x, y)
-# plt.savefig('sin.svg', format="svg", transparent=True)
