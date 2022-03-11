@@ -23,6 +23,7 @@ parser.add_argument("-n", nargs="+", required=True, help="Noise")
 parser.add_argument("-c", action=argparse.BooleanOptionalAction, default=False, help="Consensus")
 parser.add_argument("-m", type=Mode, required=True, choices=list(Mode), help="Mode: runtime or collisions")
 parser.add_argument("-d", type=str, required=True, help="Name of detail")
+parser.add_argument("-l", type=str, default="", help="Label for legend")
 
 args = parser.parse_args()
 
@@ -64,7 +65,7 @@ for n in x:
             ys[noise].append(summaries[n][noise]["mean"])
 
 for (n, y) in ys.items():
-    plt.plot(x, y, label=n)
+    plt.plot(x, y, label=f"{n} {args.l}")
 
 plt.legend()
 
