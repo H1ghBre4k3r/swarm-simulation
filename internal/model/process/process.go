@@ -102,6 +102,11 @@ func (p *Process) writeStdIn() {
 
 func (p *Process) readStdOut() {
 	defer p.so.Close()
+	defer func() {
+		// we need to recover in case of a timeout, where writing to a closed channel will panic
+		recover()
+	}()
+
 	reader := bufio.NewReader(p.so)
 	for {
 		line, _, err := reader.ReadLine()

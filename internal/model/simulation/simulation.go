@@ -13,6 +13,11 @@ import (
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
 )
 
+const (
+	NO_ERROR = iota
+	TIMEOUT  = iota
+)
+
 type Simulation struct {
 	configuration *Configuration
 	views         []View
@@ -24,6 +29,7 @@ type Simulation struct {
 	finished      bool
 	duration      time.Duration
 	ticks         uint64
+	status        int
 }
 
 func New(configuration *Configuration, views []View) *Simulation {
@@ -33,6 +39,7 @@ func New(configuration *Configuration, views []View) *Simulation {
 		entities:      entities.Manager(),
 		spatial:       collision.New(64),
 		barrier:       util.NewBarrier(),
+		status:        NO_ERROR,
 	}
 }
 
@@ -72,6 +79,21 @@ func (s *Simulation) Loop() {
 	start := time.Now()
 	// create a new ticker which ticks every X milliseconds
 	ticker := time.NewTicker(time.Duration(s.configuration.Settings.TickLength * float64(time.Millisecond)))
+
+	// this is our timeout handling
+	go func() {
+		timeout := time.NewTicker(time.Duration(5 * time.Second))
+		last := s.ticks
+		<-timeout.C
+		for ; !s.finished; <-timeout.C {
+			if last == s.ticks {
+				s.Stop(TIMEOUT)
+				break
+			}
+			last = s.ticks
+		}
+	}()
+
 	for ; s.running; <-ticker.C {
 		s.tick()
 	}
@@ -80,6 +102,10 @@ func (s *Simulation) Loop() {
 }
 
 func (s *Simulation) tick() {
+	defer func() {
+		// we need to recover in case of a timeout, where barrier.Tick will panic
+		recover()
+	}()
 	s.portal.Update()
 	start := time.Now()
 	active, obstacles := s.entities.GetRunning()
@@ -105,7 +131,8 @@ func (s *Simulation) Draw() {
 	}
 }
 
-func (s *Simulation) Stop() {
+func (s *Simulation) Stop(status int) {
+	s.status = status
 	for _, e := range s.entities.Get() {
 		e.Stop()
 	}
@@ -113,6 +140,10 @@ func (s *Simulation) Stop() {
 
 // Print the summary about the simulation
 func (s *Simulation) GenerateSummary(outputPath string) {
+	// do not generate summary after timeout
+	if s.status == TIMEOUT {
+		return
+	}
 	summary := GenerateSummary(s)
 	fmt.Printf("%v\n", summary)
 

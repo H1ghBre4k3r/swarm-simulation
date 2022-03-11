@@ -155,6 +155,10 @@ func (e *Entity) loop() {
 
 	// in case of an unpredicted exit of underlying process, we still want the barrier to move on
 	defer func() {
+		defer func() {
+			// we need to recover in case of a timeout, where barrier.Resolve will panic
+			recover()
+		}()
 		if r := recover(); r != nil {
 			fmt.Printf("Process for entity '%v' ended unexpectetly!\n", e.id)
 			e.Stop()
