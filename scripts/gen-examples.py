@@ -36,7 +36,7 @@ class Mode(Enum):
 parser = argparse.ArgumentParser(description='Generate examples')
 parser.add_argument("-n", type=int, required=True, help="Number of participants")
 parser.add_argument("-r", type=float, required=True, help="Radius of the participants")
-parser.add_argument("-d", type=int, default=1, help="Scaling factor for the radius (as distance between participants)")
+parser.add_argument("-d", type=float, default=0, help="Additional distance between participants")
 parser.add_argument("-v", type=float, required=True, help="Velocity of the participants")
 parser.add_argument("-t", type=float, default=1, help="TAU for simulation")
 parser.add_argument("-s", type=str, required=True, help="Path to script")
@@ -56,10 +56,10 @@ for i in range(args.n):
         target = start + (np.array([0.5, 0.5]) - start) * 2
     elif args.m == Mode.random:
         start = np.random.uniform(0, 1, 2)
-        while some(participants, lambda p: dist(np.array([p["start"]["x"], p["start"]["y"]]), start) < args.r * args.d):
+        while some(participants, lambda p: dist(np.array([p["start"]["x"], p["start"]["y"]]), start) < args.r * 2 + args.d):
             start = np.random.uniform(0, 1, 2)
         target = np.random.uniform(0, 1, 2)
-        while some(participants, lambda p: dist(np.array([p["target"]["x"], p["target"]["y"]]), target) < args.r * args.d):
+        while some(participants, lambda p: dist(np.array([p["target"]["x"], p["target"]["y"]]), target) < args.r * 2 + args.d):
             target = np.random.uniform(0, 1, 2)
     else:
         raise Exception("Unknown mode")
