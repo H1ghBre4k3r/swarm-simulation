@@ -1,0 +1,34 @@
+{
+  "settings": {
+    "tickLength": 0.1,
+    "tau": 100.0
+  },
+  "participants": [
+    {
+      "start": {
+        "x": 0.14048123395134404,
+        "y": 0.17386033330674122
+      },
+      "target": {
+        "x": 0.6648561725559338,
+        "y": 0.2193793443807618
+      },
+      "vmax": 0.0005,
+      "radius": 0.005,
+      "script": "../../scripts/rust-orca/target/release/rust-orca"
+    },
+    {
+      "start": {
+        "x": 0.24098266583300954,
+        "y": 0.32452752025750164
+      },
+      "target": {
+        "x": 0.01738725643889949,
+        "y": 0.9253083171533524
+      },
+      "vmax": 0.0005,
+      "radius": 0.005,
+      "script": "../../scripts/rust-orca/target/release/rust-orca"
+    }
+  ]
+}

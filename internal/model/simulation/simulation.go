@@ -151,6 +151,7 @@ func (s *Simulation) Stop(status int) {
 	for _, e := range s.entities.Get() {
 		e.Stop()
 	}
+	s.finished = true
 }
 
 // Print the summary about the simulation
