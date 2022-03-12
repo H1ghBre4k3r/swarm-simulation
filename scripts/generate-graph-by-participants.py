@@ -2,6 +2,7 @@
 
 import argparse
 import json
+from cmath import nan
 from enum import Enum
 
 import matplotlib.pyplot as plt
@@ -58,14 +59,30 @@ ys = {}
 for n in x:
     for noise in args.n:
         if noise not in ys:
-            ys[noise] = []
+            ys[noise] = {
+                "mean": [],
+                "lower": [],
+                "upper": []
+            }
         if summaries[n][noise] is None:
-            ys[noise].append(None)
+            ys[noise]["mean"].append(nan)
+            ys[noise]["lower"].append(nan)
+            ys[noise]["upper"].append(nan)
         else:
-            ys[noise].append(summaries[n][noise]["mean"])
+            ys[noise]["mean"].append(summaries[n][noise]["mean"])
+            if np.isnan(summaries[n][noise]["ci"][0]):
+                ys[noise]["lower"].append(summaries[n][noise]["mean"])
+            else:
+                ys[noise]["lower"].append(summaries[n][noise]["ci"][0])
+            if np.isnan(summaries[n][noise]["ci"][1]):
+                
+                ys[noise]["upper"].append(summaries[n][noise]["mean"])
+            else:
+                ys[noise]["upper"].append(summaries[n][noise]["ci"][1])
 
 for (n, y) in ys.items():
-    plt.plot(x, y, label=f"{n} {args.l}")
+    plt.plot(x, y["mean"], label=f"{n} {args.l}")
+    plt.fill_between(x, y["lower"], y["upper"], alpha=.5)
 
 plt.legend()
 
