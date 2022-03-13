@@ -17,6 +17,7 @@ func main() {
 	noise := flag.Float64("n", 0, "noise for the data send to participants")
 	consensus := flag.Bool("consensus", false, "flag for indicating consensus between all participants regardning the noises values")
 	output := flag.String("o", "", "path to folder for outputting summary of simulation")
+	tau := flag.Float64("t", 0, "tau for the simulation")
 	flag.Parse()
 
 	if *usage {
@@ -26,6 +27,9 @@ func main() {
 	configuration := simulation.ParseConfigurationFrom(*configurationPath)
 	if *noise != 0 {
 		configuration.Settings.Noise = *noise
+	}
+	if *tau != 0 {
+		configuration.Settings.TAU = *tau
 	}
 	configuration.Settings.Consensus = *consensus
 
