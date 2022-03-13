@@ -204,3 +204,11 @@ After this, it expects an answer of each participant:
 	}
 }
 ```
+
+## Presets
+
+For testing purposes, there are currently some presets in `/examples`. `/examples/circle` contains setup with all participants placed in a circle, while `/examples/random/v...` contains different random examples (i.e., random start and end points for all participants). `v{0-7}` all contain examples with a tau value of 100, whereas `v{8,9,10}` contain examples with `tau`-values of 250, 500 and 1000 respectively. The names of the examples are pretty straight forward:
+
+```
+{n°-of-participants}-participants-{random|circle}.json
+```
