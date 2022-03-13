@@ -11,6 +11,12 @@ use ndarray::Array1;
 use obstacle::Obstacle;
 use participant::Participant;
 
+#[cfg(feature = "participant_obstacles")]
+const PART_OBSTACLES: bool = true;
+
+#[cfg(not(feature = "participant_obstacles"))]
+const PART_OBSTACLES: bool = false;
+
 /// Perform ORCA for a set of other participants and obstacles.
 ///
 /// The return value is the new velocity for the provided participant ("we").
@@ -66,7 +72,7 @@ fn generate_halfplanes(
     let parts = participants.to_vec().clone();
     for (i, p) in parts.iter().enumerate() {
         let mut in_obstacle = false;
-        if is_static(p) {
+        if PART_OBSTACLES && is_static(p) {
             for (j, other) in participants.iter_mut().enumerate() {
                 // check, if "p" is already part of an obstacle
                 if i == j {

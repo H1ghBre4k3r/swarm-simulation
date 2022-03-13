@@ -11,7 +11,11 @@ pub struct Simulation {
 }
 
 // TODO lome: maybe use different confidence intervals depending on the distance to other participant
+#[cfg(feature = "confidence")]
 const CONF: f64 = 2.0;
+
+#[cfg(not(feature = "confidence"))]
+const CONF: f64 = 0.0;
 
 impl Simulation {
     pub fn new() -> Simulation {
