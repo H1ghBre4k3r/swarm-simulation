@@ -81,7 +81,7 @@ for n in x:
                 "lower": [],
                 "upper": []
             }
-        if summaries[n][participant] is None:
+        if participant not in summaries[n]: 
             ys[participant]["mean"].append(nan)
             ys[participant]["lower"].append(nan)
             ys[participant]["upper"].append(nan)

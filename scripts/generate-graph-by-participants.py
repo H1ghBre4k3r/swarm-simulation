@@ -80,7 +80,7 @@ for n in x:
                 "lower": [],
                 "upper": []
             }
-        if summaries[n][noise] is None:
+        if noise not in summaries[n]:
             ys[noise]["mean"].append(nan)
             ys[noise]["lower"].append(nan)
             ys[noise]["upper"].append(nan)
