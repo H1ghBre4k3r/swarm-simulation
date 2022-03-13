@@ -33,17 +33,17 @@ for folderName in folders:
     if consensus not in summaryByPartsByNoise[p][tau][noise]:
         summaryByPartsByNoise[p][tau][noise][consensus] = {}
     if "summary" not in summaryByPartsByNoise[p][tau][noise][consensus]:
-        summaryByPartsByNoise[p][tau][noise][consensus]["summary"] = {}
+        summaryByPartsByNoise[p][tau][noise][consensus] = {}
     # aggregate information
     files = [f for f in listdir(folderPath) if isfile(join(folderPath, f))]
     for fileName in files:
         summary = json.loads(open(join(folderPath, fileName)).read())
-        if "collisions" not in summaryByPartsByNoise[p][tau][noise][consensus]["summary"]:
-            summaryByPartsByNoise[p][tau][noise][consensus]["summary"]["collisions"] = []
-        summaryByPartsByNoise[p][tau][noise][consensus]["summary"]["collisions"].append(summary["collisions"])
-        if "runtime" not in summaryByPartsByNoise[p][tau][noise][consensus]["summary"]:
-            summaryByPartsByNoise[p][tau][noise][consensus]["summary"]["runtime"] = []
-        summaryByPartsByNoise[p][tau][noise][consensus]["summary"]["runtime"].append(summary["runtime"])
+        if "collisions" not in summaryByPartsByNoise[p][tau][noise][consensus]:
+            summaryByPartsByNoise[p][tau][noise][consensus]["collisions"] = []
+        summaryByPartsByNoise[p][tau][noise][consensus]["collisions"].append(summary["collisions"])
+        if "runtime" not in summaryByPartsByNoise[p][tau][noise][consensus]:
+            summaryByPartsByNoise[p][tau][noise][consensus]["runtime"] = []
+        summaryByPartsByNoise[p][tau][noise][consensus]["runtime"].append(summary["runtime"])
 
 json.dump(summaryByPartsByNoise, open(args.o, "w"))
 

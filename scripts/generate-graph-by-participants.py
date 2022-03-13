@@ -47,7 +47,7 @@ for (n, p) in file.items():
         if str(args.c).lower() not in noised:
             summaries[n][noise] = None
             continue
-        consensus = noised[str(args.c).lower()]["summary"]
+        consensus = noised[str(args.c).lower()]
         mode = consensus[args.m.value]
         detail = []
         for i in range(len(mode)):
