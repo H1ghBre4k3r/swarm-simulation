@@ -6,6 +6,7 @@ import subprocess
 parser = argparse.ArgumentParser(description='Perform stuff')
 parser.add_argument("-e", type=str, required=True, help="Path to exectuable")
 parser.add_argument("-s", nargs="+", required=True, help="Path to script")
+parser.add_argument("-t", nargs="+", help="Values for tau")
 parser.add_argument("-o", type=str, required=True, help="Path to output")
 parser.add_argument("-c", action=argparse.BooleanOptionalAction, default=False, help="Consensus")
 
@@ -20,4 +21,8 @@ args = parser.parse_args()
 for script in args.s:
     for noise in noises:
         for i in range(10):
-            subprocess.call([args.e, "-c", script, "-o", args.o, "-n", str(noise), f"-consensus={args.c}"])
+            if args.t is not None:
+                for tau in args.t:
+                    subprocess.call([args.e, "-c", script, "-o", args.o, "-n", str(noise), f"-consensus={args.c}", "-t", tau])
+            else:
+                subprocess.call([args.e, "-c", script, "-o", args.o, "-n", str(noise), f"-consensus={args.c}"])
