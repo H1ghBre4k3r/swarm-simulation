@@ -21,27 +21,29 @@ for folderName in folders:
     # parse the folder name
     vals = folderName.split("-")
     p = vals[0]
-    # tau = vals[3]
+    tau = vals[3]
     noise = vals[4]
     consensus = vals[5]
     if p not in summaryByPartsByNoise:
         summaryByPartsByNoise[p] = {}
-    if noise not in summaryByPartsByNoise[p]:
-        summaryByPartsByNoise[p][noise] = {}
-    if consensus not in summaryByPartsByNoise[p][noise]:
-        summaryByPartsByNoise[p][noise][consensus] = {}
-    if "summary" not in summaryByPartsByNoise[p][noise][consensus]:
-        summaryByPartsByNoise[p][noise][consensus]["summary"] = {}
+    if tau not in summaryByPartsByNoise[p]:
+        summaryByPartsByNoise[p][tau] = {}
+    if noise not in summaryByPartsByNoise[p][tau]:
+        summaryByPartsByNoise[p][tau][noise] = {}
+    if consensus not in summaryByPartsByNoise[p][tau][noise]:
+        summaryByPartsByNoise[p][tau][noise][consensus] = {}
+    if "summary" not in summaryByPartsByNoise[p][tau][noise][consensus]:
+        summaryByPartsByNoise[p][tau][noise][consensus]["summary"] = {}
     # aggregate information
     files = [f for f in listdir(folderPath) if isfile(join(folderPath, f))]
     for fileName in files:
         summary = json.loads(open(join(folderPath, fileName)).read())
-        if "collisions" not in summaryByPartsByNoise[p][noise][consensus]["summary"]:
-            summaryByPartsByNoise[p][noise][consensus]["summary"]["collisions"] = []
-        summaryByPartsByNoise[p][noise][consensus]["summary"]["collisions"].append(summary["collisions"])
-        if "runtime" not in summaryByPartsByNoise[p][noise][consensus]["summary"]:
-            summaryByPartsByNoise[p][noise][consensus]["summary"]["runtime"] = []
-        summaryByPartsByNoise[p][noise][consensus]["summary"]["runtime"].append(summary["runtime"])
+        if "collisions" not in summaryByPartsByNoise[p][tau][noise][consensus]["summary"]:
+            summaryByPartsByNoise[p][tau][noise][consensus]["summary"]["collisions"] = []
+        summaryByPartsByNoise[p][tau][noise][consensus]["summary"]["collisions"].append(summary["collisions"])
+        if "runtime" not in summaryByPartsByNoise[p][tau][noise][consensus]["summary"]:
+            summaryByPartsByNoise[p][tau][noise][consensus]["summary"]["runtime"] = []
+        summaryByPartsByNoise[p][tau][noise][consensus]["summary"]["runtime"].append(summary["runtime"])
 
 json.dump(summaryByPartsByNoise, open(args.o, "w"))
 

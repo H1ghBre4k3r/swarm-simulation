@@ -24,6 +24,7 @@ parser.add_argument("-n", nargs="+", required=True, help="Noise")
 parser.add_argument("-c", action=argparse.BooleanOptionalAction, default=False, help="Consensus")
 parser.add_argument("-m", type=Mode, required=True, choices=list(Mode), help="Mode: runtime or collisions")
 parser.add_argument("-d", type=str, required=True, help="Name of detail")
+parser.add_argument("-t", type=int, required=True, help="Value of tau")
 parser.add_argument("-l", type=str, default="", help="Label for legend")
 
 args = parser.parse_args()
@@ -35,10 +36,14 @@ summaries = {}
 for (n, p) in file.items():
     summaries[n] = {}
     for noise in args.n:
-        if noise not in p:
+        if str(args.t) not in p:
             summaries[n][noise] = None
             continue
-        noised = p[noise]
+        tau = p[str(args.t)]
+        if noise not in tau:
+            summaries[n][noise] = None
+            continue
+        noised = tau[noise]
         if str(args.c).lower() not in noised:
             summaries[n][noise] = None
             continue
@@ -82,7 +87,10 @@ for n in x:
 
 for (n, y) in ys.items():
     plt.plot(x, y["mean"], label=f"{n} {args.l}")
-    plt.fill_between(x, y["lower"], y["upper"], alpha=.5)
+    plt.fill_between(x, y["lower"], y["upper"], alpha=.4, label="95% CI")
+
+plt.xlabel("N° of participants")
+plt.ylabel(args.m.value)
 
 plt.legend()
 
