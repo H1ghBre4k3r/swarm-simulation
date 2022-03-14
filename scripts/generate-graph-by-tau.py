@@ -34,6 +34,8 @@ parser.add_argument("-o", type=str, help="Path to output file")
 parser.add_argument("-n", type=str, required=True, help="Noise")
 parser.add_argument("-c", action=argparse.BooleanOptionalAction, default=False, help="Consensus")
 parser.add_argument("-m", type=Mode, required=True, choices=list(Mode), help="Mode: runtime or collisions")
+parser.add_argument("-s", type=float, default=1.0, help="Scale for Y-axis")
+parser.add_argument("-ci", type=float, default=0.95, help="Confidence interval")
 parser.add_argument("-d", type=str, required=True, help="Name of detail")
 parser.add_argument("-p", nargs="+", required=True, help="Participants")
 parser.add_argument("-l", type=str, default="", help="Label for legend")
@@ -84,20 +86,21 @@ for tau in x:
             ys[p]["lower"].append(nan)
             ys[p]["upper"].append(nan)
         else:
-            ys[p]["mean"].append(summaries[tau][p]["mean"])
+            ys[p]["mean"].append(summaries[tau][p]["mean"]*args.s)
             if np.isnan(summaries[tau][p]["ci"][0]):
-                ys[p]["lower"].append(summaries[tau][p]["mean"])
+                ys[p]["lower"].append(summaries[tau][p]["mean"]*args.s)
             else:
-                ys[p]["lower"].append(summaries[tau][p]["ci"][0])
+                ys[p]["lower"].append(summaries[tau][p]["ci"][0]*args.s)
             if np.isnan(summaries[tau][p]["ci"][1]):
-                ys[p]["upper"].append(summaries[tau][p]["mean"])
+                ys[p]["upper"].append(summaries[tau][p]["mean"]*args.s)
             else:
-                ys[p]["upper"].append(summaries[tau][p]["ci"][1])
+                ys[p]["upper"].append(summaries[tau][p]["ci"][1]*args.s)
 
+ci = args.ci * 100
 i = 0
 for (n, y) in ys.items():
     plt.plot(x, y["mean"],linestyle=linestyle_tuple[i], label=f"{n} {args.l}")
-    plt.fill_between(x, y["lower"], y["upper"], alpha=.4, label="95% CI")
+    plt.fill_between(x, y["lower"], y["upper"], alpha=.4, label=f"{ci if int(ci) != ci else int(ci)}% CI")
     i = (i+1) % len(linestyle_tuple)
 
 plt.xlabel(args.xlabel)

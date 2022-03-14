@@ -34,6 +34,8 @@ parser.add_argument("-o", type=str, help="Path to output file")
 parser.add_argument("-n", nargs="+", required=True, help="Noise")
 parser.add_argument("-c", action=argparse.BooleanOptionalAction, default=False, help="Consensus")
 parser.add_argument("-m", type=Mode, required=True, choices=list(Mode), help="Mode: runtime or collisions")
+parser.add_argument("-s", type=float, default=1.0, help="Scale for Y-axis")
+parser.add_argument("-ci", type=float, default=0.95, help="Confidence interval")
 parser.add_argument("-d", type=str, required=True, help="Name of detail")
 parser.add_argument("-t", type=int, required=True, help="Value of tau")
 parser.add_argument("-l", type=str, default="", help="Label for legend")
@@ -87,22 +89,22 @@ for n in x:
             ys[noise]["lower"].append(nan)
             ys[noise]["upper"].append(nan)
         else:
-            ys[noise]["mean"].append(summaries[n][noise]["mean"])
+            ys[noise]["mean"].append(summaries[n][noise]["mean"]*args.s)
             if np.isnan(summaries[n][noise]["ci"][0]):
-                ys[noise]["lower"].append(summaries[n][noise]["mean"])
+                ys[noise]["lower"].append(summaries[n][noise]["mean"]*args.s)
             else:
-                ys[noise]["lower"].append(summaries[n][noise]["ci"][0])
+                ys[noise]["lower"].append(summaries[n][noise]["ci"][0]*args.s)
             if np.isnan(summaries[n][noise]["ci"][1]):
                 
-                ys[noise]["upper"].append(summaries[n][noise]["mean"])
+                ys[noise]["upper"].append(summaries[n][noise]["mean"]*args.s)
             else:
-                ys[noise]["upper"].append(summaries[n][noise]["ci"][1])
+                ys[noise]["upper"].append(summaries[n][noise]["ci"][1]*args.s)
 
+ci = args.ci * 100
 i = 0
-
 for (n, y) in ys.items():
     plt.plot(x, y["mean"], linestyle=linestyle_tuple[i], label=f"{n} {args.l}")
-    plt.fill_between(x, y["lower"], y["upper"], alpha=.4, label="95% CI")
+    plt.fill_between(x, y["lower"], y["upper"], alpha=.4, label=f"{ci if int(ci) != ci else int(ci)}% CI")
     i = (i+1)%len(linestyle_tuple)
 
 plt.xlabel(args.xlabel)

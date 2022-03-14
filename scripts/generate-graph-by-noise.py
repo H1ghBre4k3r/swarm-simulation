@@ -35,6 +35,8 @@ parser.add_argument("-o", type=str, help="Path to output file")
 parser.add_argument("-p", nargs="+", required=True, help="Participants")
 parser.add_argument("-c", action=argparse.BooleanOptionalAction, default=False, help="Consensus")
 parser.add_argument("-m", type=Mode, required=True, choices=list(Mode), help="Mode: runtime or collisions")
+parser.add_argument("-s", type=float, default=1.0, help="Scale for Y-axis")
+parser.add_argument("-ci", type=float, default=0.95, help="Confidence interval")
 parser.add_argument("-d", type=str, required=True, help="Name of detail")
 parser.add_argument("-t", type=str, required=True, help="Value of tau")
 parser.add_argument("-l", type=str, default="", help="Label for legend")
@@ -68,7 +70,7 @@ for (n, p) in file.items():
             detail.append(mode[i][args.d]) 
         summaries[participant][n] = {
             "mean": np.mean(detail),
-            "ci": st.t.interval(alpha=0.95, df=len(detail)-1, loc=np.mean(detail), scale=st.sem(detail))
+            "ci": st.t.interval(alpha=args.ci, df=len(detail)-1, loc=np.mean(detail), scale=st.sem(detail))
         }
 
 x = [float(k) for k in summaries.keys()]
@@ -88,21 +90,22 @@ for n in x:
             ys[participant]["lower"].append(nan)
             ys[participant]["upper"].append(nan)
         else:
-            ys[participant]["mean"].append(summaries[n][participant]["mean"])
+            ys[participant]["mean"].append(summaries[n][participant]["mean"]*args.s)
             if np.isnan(summaries[n][participant]["ci"][0]):
-                ys[participant]["lower"].append(summaries[n][participant]["mean"])
+                ys[participant]["lower"].append(summaries[n][participant]["mean"]*args.s)
             else:
-                ys[participant]["lower"].append(summaries[n][participant]["ci"][0])
+                ys[participant]["lower"].append(summaries[n][participant]["ci"][0]*args.s)
             if np.isnan(summaries[n][participant]["ci"][1]):
                 
-                ys[participant]["upper"].append(summaries[n][participant]["mean"])
+                ys[participant]["upper"].append(summaries[n][participant]["mean"]*args.s)
             else:
-                ys[participant]["upper"].append(summaries[n][participant]["ci"][1])
+                ys[participant]["upper"].append(summaries[n][participant]["ci"][1]*args.s)
 
+ci = args.ci * 100
 i = 0
 for (n, y) in ys.items():
     plt.plot(x, y["mean"], linestyle=linestyle_tuple[i], label=f"{n} {args.l}")
-    plt.fill_between(x, y["lower"], y["upper"], alpha=.4, label="95% CI")
+    plt.fill_between(x, y["lower"], y["upper"], alpha=.4, label=f"{ci if int(ci) != ci else int(ci)}% CI")
     i = (i+1)%len(linestyle_tuple)
 
 plt.xlabel(args.xlabel)
