@@ -65,7 +65,7 @@ for (n, p) in file.items():
             detail.append(mode[i][args.d])
         summaries[tau][n] = {
             "mean": np.mean(detail),
-            "ci": st.t.interval(alpha=0.95, df=len(detail)-1, loc=np.mean(detail), scale=st.sem(detail))
+            "ci": st.t.interval(alpha=args.ci, df=len(detail)-1, loc=np.mean(detail), scale=st.sem(detail))
         }
 
 x = [int(k) for k in summaries.keys()]
