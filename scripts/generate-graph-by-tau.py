@@ -37,6 +37,8 @@ parser.add_argument("-m", type=Mode, required=True, choices=list(Mode), help="Mo
 parser.add_argument("-d", type=str, required=True, help="Name of detail")
 parser.add_argument("-p", nargs="+", required=True, help="Participants")
 parser.add_argument("-l", type=str, default="", help="Label for legend")
+parser.add_argument("-xlabel", type=str, default="", help="Label for x-axis")
+parser.add_argument("-ylabel", type=str, default="", help="Label for y-axis")
 args = parser.parse_args()
 
 file = json.loads(open(args.f).read())
@@ -98,10 +100,10 @@ for (n, y) in ys.items():
     plt.fill_between(x, y["lower"], y["upper"], alpha=.4, label="95% CI")
     i = (i+1) % len(linestyle_tuple)
 
-plt.xlabel("N° of participants")
-plt.ylabel(args.m.value)
+plt.xlabel(args.xlabel)
+plt.ylabel(args.ylabel)
 
-plt.legend()
+plt.legend(loc='upper left', ncol=2)
 
 if args.o is None:
     plt.show()
