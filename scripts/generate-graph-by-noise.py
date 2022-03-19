@@ -100,7 +100,8 @@ for n in x:
                 ys[participant]["upper"].append(summaries[n][participant]["mean"]*args.s)
             else:
                 ys[participant]["upper"].append(summaries[n][participant]["ci"][1]*args.s)
-
+                
+x = [str(float(k) * 1000) if k != "0" else "0" for k in x]
 ci = args.ci * 100
 i = 0
 for (n, y) in ys.items():
