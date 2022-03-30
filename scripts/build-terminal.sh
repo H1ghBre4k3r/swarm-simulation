@@ -55,6 +55,7 @@ mkdir -p bin/
 if ! which gox > /dev/null; then
     echo "==> Installing gox..."
     go get github.com/mitchellh/gox
+    go install github.com/mitchellh/gox
 fi
 
 # Ensure all remote modules are downloaded and cached before build so that
