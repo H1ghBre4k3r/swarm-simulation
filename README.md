@@ -62,7 +62,7 @@ The file has to have the following format:
 	"settings": {
 		// optional settings for the simulation
 		"tickLength": 10, // [OPTIONAL, default=1] minimum length of a tick in the simulation
-		"tau": 120, // [OPTIONAL, default=1] 'look ahead range' for participants
+		"tau": 120, // [OPTIONAL, default=1] 'look ahead range' for ORCA
 		"noise": 0.01 // [OPTIONAL, default=0] noise for the simulation (between 0 and 1 - everything else is not useful)
 	},
 	"participants": [
@@ -95,6 +95,9 @@ Additionally, the simulation supports a number of command line flags:
 - `-no-grid`: Hide the grid within the simulation
 - `-c`: Path to the configuration file
 - `-n`: Noise for the simulation (this overwrites the value in the configuration file)
+- `-o`: Path to folder for output file. If this is set, a summary of the simulation will be printed after finish
+- `-consensus`: Flag for turning on shared state between participants
+- `-t`: Value for TAU in the simulation
 
 The headless executable (only terminal - see **Headless**) supports only a part of the flags.
 
@@ -162,7 +165,9 @@ At startup, the simulation sends some initial information to each participant:
 		// coordinates of the target of this participant
 		"x": 0.8,
 		"y": 0.5
-	}
+	},
+	// tau for ORCA
+	"tau": 100
 }
 ```
 
@@ -186,7 +191,7 @@ During each tick of the simulation, it sends its current position and informatio
 			},
 			"distance": 0.412, // relative distance to this participant
 			"radius": 0.015, // radius of this participant
-			5 // stddev for this participant
+			"stddev": 0.0123 // stddev for this participant
 		}
 	]
 }
@@ -207,8 +212,44 @@ After this, it expects an answer of each participant:
 
 ## Presets
 
+> ⚠️ Attention: Every preset expects a compiled version of our ORCA implementation in **RELEASE** mode!
+
 For testing purposes, there are currently some presets in `/examples`. `/examples/circle` contains setup with all participants placed in a circle, while `/examples/random/v...` contains different random examples (i.e., random start and end points for all participants). `v{0-7}` all contain examples with a tau value of 100, whereas `v{8,9,10}` contain examples with `tau`-values of 250, 500 and 1000 respectively. The names of the examples are pretty straight forward:
 
 ```
 {n°-of-participants}-participants-{random|circle}.json
 ```
+
+## ORCA
+
+We added a sample implementation of ORCA in Rust to run for each participants. The source code can be found in [examples/scripts/rust-orca](examples/scripts/rust-orca).
+
+### Requirements
+
+You need to have Rust installed. The usual way is via [rustup](https://rustup.rs). Furthermore, `make` is more or less required.
+
+### Compilation
+
+To compile the rust implementation of ORCA, you can either run
+
+```sh
+$ make agent
+```
+
+from the root of this project or you can run
+
+```sh
+$ make release
+```
+
+from [examples/scripts/rust-orca](examples/scripts/rust-orca).
+
+#### Without make
+
+If you do not have `make` installed on your system, you can compile ORCA without make. Simply run
+
+```sh
+$ cargo build --release
+```
+
+from [examples/scripts/rust-orca](examples/scripts/rust-orca).
