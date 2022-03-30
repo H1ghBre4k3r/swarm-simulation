@@ -1,6 +1,6 @@
-.DEFAULT_GOAL := build
+.DEFAULT_GOAL := release
 
-build: 
+debug: 
 	cargo build
 
 run: 
