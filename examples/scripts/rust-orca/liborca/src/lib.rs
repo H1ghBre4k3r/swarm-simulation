@@ -17,6 +17,8 @@ const PART_OBSTACLES: bool = true;
 #[cfg(not(feature = "participant_obstacles"))]
 const PART_OBSTACLES: bool = false;
 
+const EPSILON: f64 = 0.0;
+
 /// Perform ORCA for a set of other participants and obstacles.
 ///
 /// The return value is the new velocity for the provided participant ("we").
@@ -46,6 +48,7 @@ pub fn orca(
         }
         halfplanes = new_halfplanes
     }
+    // shorten our new velocity, so we are not faster than our max velocity
     let mut vel = new_vel.unwrap();
     if norm(&vel) > we.vmax {
         vel = normalize(&vel) * we.vmax;
@@ -54,7 +57,7 @@ pub fn orca(
 }
 
 fn is_static(p: &Participant) -> bool {
-    return norm(&p.velocity) == 0.0;
+    return norm(&p.velocity) <= EPSILON;
 }
 
 /// Generate the halfplanes for other participants and static obstacles.

@@ -1,3 +1,4 @@
+/// Normalize a given vector.
 pub fn normalize(vec: &ndarray::Array1<f64>) -> ndarray::Array1<f64> {
     let len = norm(vec);
     if len == 0.0 {

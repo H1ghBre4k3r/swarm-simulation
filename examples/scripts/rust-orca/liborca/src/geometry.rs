@@ -126,6 +126,7 @@ pub fn get_adjustment_velocities(
     return (u, n);
 }
 
+/// Intersect all given halfplanes and find the best velocity
 pub fn halfplane_intersection(
     halfplanes_u: &Vec<Halfplane>,
     current_velocity: &Array1<f64>,
@@ -142,10 +143,13 @@ pub fn halfplane_intersection(
 
     for (i, plane) in halfplanes.iter().enumerate() {
         if (&new_point - &plane.u).dot(&plane.n) < 0.0 {
+            // intersect this halfplane with all other halfplanes
             let (left, right) = intersect_halfplane_with_other_halfplanes(plane, &halfplanes[..i]);
+            // check for empty intersection
             if left.is_none() || right.is_none() {
                 return None;
             }
+            // get the closes point on the new line (this is our new "preferred velocity")
             new_point = closest_point_on_line(
                 &plane.u,
                 &(&plane.u + &arr1(&[plane.n[1], -plane.n[0]])),
@@ -159,6 +163,7 @@ pub fn halfplane_intersection(
     return Some(new_point);
 }
 
+/// Intersect one halfplane with a set of halfplanes.
 fn intersect_halfplane_with_other_halfplanes(
     plane: &Halfplane,
     other_planes: &[Halfplane],
@@ -166,9 +171,12 @@ fn intersect_halfplane_with_other_halfplanes(
     let mut left = -f64::INFINITY;
     let mut right = f64::INFINITY;
 
+    // calculate direction of halfplane
     let direction = arr1(&[plane.n[1], -plane.n[0]]);
 
     for other_plane in other_planes {
+        // perform crazy math to intersect halfplane
+        // See https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect for reference
         let other_dir = arr1(&[other_plane.n[1], -other_plane.n[0]]);
         let num = cross(&(&other_plane.u - &plane.u), &other_dir);
         let den = cross(&direction, &other_dir);

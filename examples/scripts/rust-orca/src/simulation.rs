@@ -10,7 +10,6 @@ pub struct Simulation {
     tau: f64,
 }
 
-// TODO lome: maybe use different confidence intervals depending on the distance to other participant
 #[cfg(feature = "confidence")]
 const CONF: f64 = 2.0;
 
@@ -24,6 +23,7 @@ impl Simulation {
             .read_line(&mut buffer)
             .expect("Error reading stdio");
 
+        // Read setup information from stdin
         let setup: Value =
             serde_json::from_str(buffer.as_str()).expect("Error decoding setup message");
         let position = arr1(&[
@@ -50,18 +50,22 @@ impl Simulation {
         return Simulation { we, tau };
     }
 
+    /// Start this simulation with a callback to call during each tick
     pub fn start(
         &mut self,
         cb: fn(&Participant, &mut [Participant], &[Obstacle], f64) -> Array1<f64>,
     ) {
+        // continuously perform ticks
         loop {
             let mut buffer = String::new();
+            // read information from stdin
             io::stdin()
                 .read_line(&mut buffer)
-                .expect("Error reading stdio");
+                .expect("Error reading stdin");
             let inp: Value = serde_json::from_str(buffer.trim())
                 .expect("Error decoding message from simulation.");
 
+            // update our information
             let position = arr1(&[
                 inp["position"]["x"].as_f64().unwrap(),
                 inp["position"]["y"].as_f64().unwrap(),
@@ -69,6 +73,7 @@ impl Simulation {
             self.we.update_position(&position);
             self.we.confidence = inp["stddev"].as_f64().unwrap() * CONF + 0.001;
 
+            // convert the information about all other participants
             let mut participants: Vec<Participant> = Vec::new();
             for p in inp["participants"].as_array().unwrap() {
                 participants.push(Participant {
@@ -88,6 +93,7 @@ impl Simulation {
                 });
             }
 
+            // get information about static obstacles
             let mut obstacles: Vec<Obstacle> = Vec::new();
             for o in inp["obstacles"].as_array().unwrap() {
                 obstacles.push(Obstacle {
@@ -103,6 +109,7 @@ impl Simulation {
                 });
             }
 
+            // get new velocity from callback & send it via stdout
             let vel = cb(&self.we, &mut participants, &obstacles, self.tau);
             let val = json!({
                 "action": "move",
