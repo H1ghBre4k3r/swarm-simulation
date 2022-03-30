@@ -14,6 +14,7 @@ type SetupMessage struct {
 	TAU      float64    `json:"tau"`
 }
 
+// Message, each participant sends to the simulation
 type SimulationMessage struct {
 	Action  string      `json:"action"`
 	Payload interface{} `json:"payload"`
@@ -33,6 +34,7 @@ type InformationMessage struct {
 	StdDev       float64                  `json:"stddev"`
 }
 
+// Message containing all information about a participant
 type ParticipantInformation struct {
 	Position util.Vec2D `json:"position"`
 	Velocity util.Vec2D `json:"velocity"`

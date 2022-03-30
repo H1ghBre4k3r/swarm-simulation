@@ -9,6 +9,7 @@ import (
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/obstacles"
 )
 
+// Portal for the simulation to allow inverse communication from entities to simulation
 type SimulationPortal struct {
 	spatial       *collision.SpatialHashmap
 	entityManager *entities.EntityManger
@@ -19,6 +20,7 @@ type SimulationPortal struct {
 	consensus     bool
 }
 
+// Create a new portal for communicating with the simulation
 func CreateSimulationPortal(spatial *collision.SpatialHashmap, entities *entities.EntityManger, noise float64, tau float64, obstacles []*obstacles.Obstacle, consensus bool) *SimulationPortal {
 	portal := &SimulationPortal{
 		spatial:       spatial,
@@ -32,6 +34,7 @@ func CreateSimulationPortal(spatial *collision.SpatialHashmap, entities *entitie
 	return portal
 }
 
+// Update the state of this portal
 func (p *SimulationPortal) Update() {
 	ents := p.entityManager.Get()
 	p.entities = []*entities.Entity{}

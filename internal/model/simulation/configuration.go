@@ -10,6 +10,7 @@ import (
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/obstacles"
 )
 
+// Settings for the simulation
 type Settings struct {
 	TickLength float64 `json:"tickLength"`
 	Noise      float64 `json:"noise"`
@@ -25,6 +26,7 @@ TAU: 				%v
 Consensus: 			%v`, s.TickLength, s.Noise, s.TAU, s.Consensus)
 }
 
+// Configuration for the simulation, containing the information about all participants and obstacles.
 type Configuration struct {
 	Path         string
 	Settings     Settings
@@ -54,10 +56,10 @@ func ParseConfigurationFrom(path string) *Configuration {
 		p.Script = filepath.Join(filepath.Dir(path), p.Script)
 	}
 
+	// set default values for some settings
 	if configuration.Settings.TickLength <= 0 {
 		configuration.Settings.TickLength = 1
 	}
-
 	if configuration.Settings.TAU <= 0 {
 		configuration.Settings.TAU = 1
 	}

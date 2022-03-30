@@ -4,16 +4,19 @@ type EntityManger struct {
 	entities []*Entity
 }
 
+// Create a new manager for all entities
 func Manager() *EntityManger {
 	return &EntityManger{
 		entities: []*Entity{},
 	}
 }
 
+// Add a new entity
 func (m *EntityManger) Add(entities ...*Entity) {
 	m.entities = append(m.entities, entities...)
 }
 
+// Get all entities
 func (m *EntityManger) Get() []*Entity {
 	return m.entities
 }

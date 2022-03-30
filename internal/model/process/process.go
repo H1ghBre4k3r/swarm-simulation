@@ -9,6 +9,8 @@ import (
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
 )
 
+// Wrapper around the internal go cmd
+// It provides channels to write to stdin and read from stdout
 type Process struct {
 	c  *exec.Cmd
 	si io.WriteCloser
@@ -24,6 +26,7 @@ type Process struct {
 	lock    sync.Mutex
 }
 
+// Create a new process executing the provided command.
 func Spawn(command string, args ...string) (*Process, error) {
 	p := &Process{}
 	p.c = exec.Command(command, args...)
@@ -48,6 +51,7 @@ func Spawn(command string, args ...string) (*Process, error) {
 	return p, nil
 }
 
+// Start the command this process wraps around
 func (p *Process) Start() error {
 	pipe, err := p.c.StderrPipe()
 	if err != nil {
@@ -62,12 +66,14 @@ func (p *Process) Start() error {
 		p.c.Wait()
 		p.running = false
 	}()
+
+	// create a reader for stderr.
+	// this allows to read debug messages from the underlying process
 	reader := bufio.NewReader(pipe)
 	go func() {
 		for {
 			line, _, err := reader.ReadLine()
 			if err != nil {
-				// panic(err)
 				p.Stop()
 				break
 			}
@@ -80,6 +86,7 @@ func (p *Process) Start() error {
 	return nil
 }
 
+// Write to stdin of the process
 func (p *Process) writeStdIn() {
 	defer p.si.Close()
 	for {
@@ -100,6 +107,7 @@ func (p *Process) writeStdIn() {
 	}
 }
 
+// Read from stdout
 func (p *Process) readStdOut() {
 	defer p.so.Close()
 	defer func() {
@@ -118,6 +126,7 @@ func (p *Process) readStdOut() {
 	}
 }
 
+// Stop the underlying process
 func (p *Process) Stop() error {
 	p.lock.Lock()
 	defer p.lock.Unlock()

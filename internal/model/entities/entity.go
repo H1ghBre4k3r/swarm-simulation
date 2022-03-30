@@ -32,6 +32,7 @@ type Entity struct {
 	stddev       float64
 }
 
+// Create a new participant with the given information.
 func Create(id string, configuration *ParticipantSetupInformation, portal Portal, barrier *util.Barrier) *Entity {
 	p, err := process.Spawn(configuration.Script)
 	if err != nil {
@@ -125,6 +126,7 @@ func (e *Entity) Move() {
 	e.portal.Insert(e)
 }
 
+// Send the initial setup message to this participants
 func (e *Entity) sendSetupMessage() {
 	setupInformation := SetupMessage{
 		Position: e.shape.Position,
@@ -174,6 +176,7 @@ func (e *Entity) loop() {
 	}
 }
 
+// tick for this participant during the simulation
 func (e *Entity) tick() {
 	// perform movement with current velocity
 	e.Move()
@@ -198,6 +201,7 @@ func (e *Entity) sendInformationMessage() {
 	}
 
 	participants := e.portal.Participants()
+	// add information about all participants to information message
 	for _, x := range participants {
 		// check if other participant is "in sight"
 		otherIsInSight := e.shape.Position.Add(x.shape.Position.Scale(-1)).Length()-(x.shape.Radius+e.shape.Radius) < (e.vmax+x.vmax)*e.portal.TAU()
@@ -227,6 +231,7 @@ func (e *Entity) sendInformationMessage() {
 				Radius:   x.shape.Radius,
 			}
 
+			// check, if we use shared state
 			if e.portal.Consensus() {
 				participantInformation.Position = *x.shape.NoisedPoisition.Copy()
 				participantInformation.StdDev = x.stddev
@@ -297,6 +302,7 @@ func (e *Entity) IsRunning() bool {
 	return false
 }
 
+// Noise the position of this participant
 func (e *Entity) NoisePosition(stddev float64) {
 	stddev = math.Abs(stddev)
 	e.shape.NoisedPoisition = *e.shape.Position.Noise(stddev)

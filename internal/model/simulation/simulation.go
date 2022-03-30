@@ -13,6 +13,7 @@ import (
 	"github.com/H1ghBre4k3r/swarm-simulation/internal/model/util"
 )
 
+// Exit codes for simulation
 const (
 	NO_ERROR = iota
 	TIMEOUT  = iota
@@ -32,6 +33,7 @@ type Simulation struct {
 	status        int
 }
 
+// Start a new simulation with the given configuration and a set of views
 func New(configuration *Configuration, views []View) *Simulation {
 	return &Simulation{
 		configuration: configuration,
@@ -94,6 +96,7 @@ func (s *Simulation) Loop() {
 		}
 	}()
 
+	// this is our timeout handling for deadlocks
 	go func() {
 		timeout := time.NewTicker(time.Duration(5 * time.Minute))
 		active, _ := s.entities.GetRunning()
