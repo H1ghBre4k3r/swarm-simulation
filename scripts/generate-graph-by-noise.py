@@ -46,60 +46,69 @@ parser.add_argument("-ylabel", type=str, default="", help="Label for y-axis")
 args = parser.parse_args()
 
 file = json.loads(open(args.f).read())
-
-summaries = {}
-
 # participant -> tau -> noise -> consensus
 
-for (n, p) in file.items():
-    if n not in args.p:
-        continue
-    if args.t not in p:
-        continue
-    tau = p[args.t]
-    for participant in tau:
-        if participant not in summaries:
-            summaries[participant] = {}
-        noised = tau[participant]
-        if str(args.c).lower() not in tau[participant]:
+def get_summary(arguments):
+    summaries = {}
+    for (n, p) in file.items():
+        if n not in arguments.p:
             continue
-        consensus = noised[str(args.c).lower()]
-        mode = consensus[args.m.value]
-        detail = []
-        for i in range (len(mode)):
-            detail.append(mode[i][args.d]) 
-        summaries[participant][n] = {
-            "mean": np.mean(detail),
-            "ci": st.t.interval(alpha=args.ci, df=len(detail)-1, loc=np.mean(detail), scale=st.sem(detail))
-        }
+        if arguments.t not in p:
+            continue
+        tau = p[arguments.t]
+        for participant in tau:
+            if participant not in summaries:
+                summaries[participant] = {}
+            noised = tau[participant]
+            if str(arguments.c).lower() not in tau[participant]:
+                continue
+            consensus = noised[str(arguments.c).lower()]
+            mode = consensus[arguments.m.value]
+            detail = []
+            for i in range (len(mode)):
+                detail.append(mode[i][arguments.d]) 
+            summaries[participant][n] = {
+                "mean": np.mean(detail),
+                "ci": st.t.interval(alpha=arguments.ci, df=len(detail)-1, loc=np.mean(detail), scale=st.sem(detail))
+            }
+    return summaries
+
+
+def get_ys(summaries, x, args):
+    ys = {}
+    for n in x:
+        for participant in args.p:
+            if participant not in ys:
+                ys[participant] = {
+                    "mean": [],
+                    "lower": [],
+                    "upper": []
+                }
+            if participant not in summaries[n]: 
+                ys[participant]["mean"].append(nan)
+                ys[participant]["lower"].append(nan)
+                ys[participant]["upper"].append(nan)
+            else:
+                ys[participant]["mean"].append(summaries[n][participant]["mean"]*args.s)
+                if np.isnan(summaries[n][participant]["ci"][0]):
+                    ys[participant]["lower"].append(summaries[n][participant]["mean"]*args.s)
+                else:
+                    ys[participant]["lower"].append(summaries[n][participant]["ci"][0]*args.s)
+                if np.isnan(summaries[n][participant]["ci"][1]):
+                    
+                    ys[participant]["upper"].append(summaries[n][participant]["mean"]*args.s)
+                else:
+                    ys[participant]["upper"].append(summaries[n][participant]["ci"][1]*args.s)
+    return ys
+
+summaries = get_summary(args)
 
 x = [float(k) for k in summaries.keys()]
 x.sort()
 x = [str(k) if k != 0 else "0" for k in x]
-ys = {}
-for n in x:
-    for participant in args.p:
-        if participant not in ys:
-            ys[participant] = {
-                "mean": [],
-                "lower": [],
-                "upper": []
-            }
-        if participant not in summaries[n]: 
-            ys[participant]["mean"].append(nan)
-            ys[participant]["lower"].append(nan)
-            ys[participant]["upper"].append(nan)
-        else:
-            ys[participant]["mean"].append(summaries[n][participant]["mean"]*args.s)
-            if np.isnan(summaries[n][participant]["ci"][0]):
-                ys[participant]["lower"].append(summaries[n][participant]["mean"]*args.s)
-            else:
-                ys[participant]["lower"].append(summaries[n][participant]["ci"][0]*args.s)
-            if np.isnan(summaries[n][participant]["ci"][1]):
-                
-                ys[participant]["upper"].append(summaries[n][participant]["mean"]*args.s)
-            else:
-                ys[participant]["upper"].append(summaries[n][participant]["ci"][1]*args.s)
+
+
+ys = get_ys(summaries, x, args)
                 
 x = [str(float(k) * 1000) if k != "0" else "0" for k in x]
 ci = args.ci * 100
@@ -111,6 +120,7 @@ for (n, y) in ys.items():
 
 plt.xlabel(args.xlabel)
 plt.ylabel(args.ylabel)
+plt.ylim(bottom=0)
 
 plt.legend(loc='upper left', ncol=2)
 

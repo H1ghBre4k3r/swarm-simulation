@@ -111,8 +111,9 @@ for (n, y) in ys.items():
 
 plt.xlabel(args.xlabel)
 plt.ylabel(args.ylabel)
+plt.ylim(bottom=0)
 
-plt.legend(loc='upper left', ncol=2)
+plt.legend(loc='upper left', ncol=1)
 
 if args.o is None:
     plt.show()
