@@ -5,9 +5,8 @@ edition = "2021"
 authors = ["Louis Meyer"]
 
 [dependencies]
-ndarray = "0.14"
+orca-rs = "0.3.0"
 serde_json = "1.0"
-liborca = { path = "./liborca" }
 
 [features]
 # by default, enable all features (i.e., our improvements)
@@ -15,4 +14,4 @@ default = ["confidence", "participant_obstacles"]
 # feature for using confidence interval based on standard deviation
 confidence = []
 # feature for using participant obstacles
-participant_obstacles = ["liborca/participant_obstacles"]
+participant_obstacles = ["orca-rs/participant_obstacles"]

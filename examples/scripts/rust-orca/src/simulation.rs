@@ -1,10 +1,8 @@
 use std::io;
 
-use liborca::{obstacle::Obstacle, participant::Participant};
-use ndarray::{arr1, Array1};
+use orca_rs::{ndarray::arr1, obstacle::Obstacle, participant::Participant};
 use serde_json::{json, Value};
 
-use crate::math::normalize;
 pub struct Simulation {
     we: Participant,
     tau: f64,
@@ -36,25 +34,15 @@ impl Simulation {
         ]);
         let vmax = setup["vmax"].as_f64().unwrap();
         let tau = setup["tau"].as_f64().unwrap();
+        let radius = setup["radius"].as_f64().unwrap();
+        let we = Participant::new(position, arr1(&[0.0, 0.0]), radius, 0.0)
+            .with_inner_state(vmax, target);
 
-        let we = Participant {
-            velocity: normalize(&(&target - &position)) * vmax,
-            position,
-            target,
-            vmax,
-            radius: setup["radius"].as_f64().unwrap(),
-            confidence: 0.0,
-            in_obstacle: false,
-        };
-
-        return Simulation { we, tau };
+        Simulation { we, tau }
     }
 
     /// Start this simulation with a callback to call during each tick
-    pub fn start(
-        &mut self,
-        cb: fn(&Participant, &mut [Participant], &[Obstacle], f64) -> Array1<f64>,
-    ) {
+    pub fn start(&mut self) {
         // continuously perform ticks
         loop {
             let mut buffer = String::new();
@@ -76,21 +64,17 @@ impl Simulation {
             // convert the information about all other participants
             let mut participants: Vec<Participant> = Vec::new();
             for p in inp["participants"].as_array().unwrap() {
-                participants.push(Participant {
-                    position: arr1(&[
-                        p["position"]["x"].as_f64().unwrap(),
-                        p["position"]["y"].as_f64().unwrap(),
-                    ]),
-                    velocity: arr1(&[
-                        p["velocity"]["x"].as_f64().unwrap(),
-                        p["velocity"]["y"].as_f64().unwrap(),
-                    ]),
-                    radius: p["radius"].as_f64().unwrap(),
-                    confidence: p["stddev"].as_f64().unwrap() * CONF + 0.001,
-                    target: arr1(&[0.0, 0.0]),
-                    vmax: 0.0,
-                    in_obstacle: false,
-                });
+                let position = arr1(&[
+                    p["position"]["x"].as_f64().unwrap(),
+                    p["position"]["y"].as_f64().unwrap(),
+                ]);
+                let velocity = arr1(&[
+                    p["velocity"]["x"].as_f64().unwrap(),
+                    p["velocity"]["y"].as_f64().unwrap(),
+                ]);
+                let radius = p["radius"].as_f64().unwrap();
+                let confidence = p["stddev"].as_f64().unwrap() * CONF + 0.001;
+                participants.push(Participant::new(position, velocity, radius, confidence))
             }
 
             // get information about static obstacles
@@ -108,9 +92,8 @@ impl Simulation {
                     radius: 0.0,
                 });
             }
-
             // get new velocity from callback & send it via stdout
-            let vel = cb(&self.we, &mut participants, &obstacles, self.tau);
+            let vel = self.we.orca(&mut participants, &obstacles, self.tau);
             let val = json!({
                 "action": "move",
                 "payload": {
