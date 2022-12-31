@@ -11,6 +11,13 @@ Swarm simulation written in Go.
 - [x] participant configuration
 - [x] simulation configuration
 - [x] terminal only version (without SDL2 dependency)
+
+either...
+
+- [ ] switch to Rust (and use bevy)
+
+...or...
+
 - [ ] GLFW + OpenGL/BGFX for rendering
 - [ ] support for 3D
 
